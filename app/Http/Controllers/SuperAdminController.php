@@ -206,6 +206,7 @@ class SuperAdminController extends Controller
                 'max:20',
             ],
             'address' => [
+                Rule::requiredIf(fn() => $request->role === 'user'),
                 'nullable',
                 'string',
                 'max:500',
@@ -370,6 +371,7 @@ class SuperAdminController extends Controller
                 'max:20',
             ],
             'address' => [
+                Rule::requiredIf(fn() => $type === 'user'),
                 'nullable',
                 'string',
                 'max:500',

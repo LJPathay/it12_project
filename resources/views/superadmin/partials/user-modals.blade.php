@@ -66,8 +66,8 @@
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Address <small class="text-muted">(Optional)</small></label>
-                                            <textarea name="address" class="form-control @error('address') is-invalid @enderror" rows="2"
+                                            <label class="form-label">Address <span class="text-danger">*</span></label>
+                                            <textarea name="address" class="form-control @error('address') is-invalid @enderror" rows="2" required
                                                 placeholder="Enter complete address">{{ old('address', $user->address) }}</textarea>
                                             @error('address')
                                                 <div class="invalid-feedback">{{ $message }}</div>
