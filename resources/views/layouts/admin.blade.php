@@ -513,12 +513,26 @@
             color: #fff !important;
         }
 
+
         body.bg-dark {
             background-color: var(--bg-dark);
             color: var(--text-dark);
             scrollbar-color: #3a3f47 #1a1d1f;
             scrollbar-width: thin;
         }
+
+        /* Global Card Dark Mode Styling */
+        body.bg-dark .card {
+            background-color: var(--card-bg-dark) !important;
+            border-color: var(--border-dark) !important;
+            color: var(--text-dark) !important;
+        }
+
+        body.bg-dark .card-body {
+            background-color: var(--card-bg-dark) !important;
+            color: var(--text-dark) !important;
+        }
+
 
         /* Dark Mode Scrollbar Styling - Highest Priority */
         body.bg-dark::-webkit-scrollbar,

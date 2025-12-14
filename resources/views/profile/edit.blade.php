@@ -87,6 +87,92 @@
             margin-left: 0 !important;
             width: 100% !important;
         }
+
+
+        /* Dark mode support for profile page */
+        body.bg-dark .card {
+            background-color: #1a1a1a !important;
+            border-color: #2d2d2d !important;
+            border-radius: 16px !important;
+            overflow: hidden;
+        }
+
+        /* Light mode card rounded corners */
+        .card {
+            border-radius: 16px !important;
+            overflow: hidden;
+        }
+
+
+        body.bg-dark .card-body {
+            background-color: #1a1a1a !important;
+            color: #e6e6e6 !important;
+        }
+
+        body.bg-dark h4,
+        body.bg-dark h5,
+        body.bg-dark p {
+            color: #e6e6e6 !important;
+        }
+
+        body.bg-dark .text-muted {
+            color: #999 !important;
+        }
+
+        body.bg-dark .form-label {
+            color: #e6e6e6 !important;
+        }
+
+        body.bg-dark .form-control {
+            background-color: #151718 !important;
+            border-color: #2d2d2d !important;
+            color: #e6e6e6 !important;
+        }
+
+        body.bg-dark .form-control:focus {
+            background-color: #151718 !important;
+            border-color: #17a2b8 !important;
+            color: #e6e6e6 !important;
+            box-shadow: 0 0 0 0.25rem rgba(23, 162, 184, 0.25) !important;
+        }
+
+        body.bg-dark .form-control::placeholder {
+            color: #666 !important;
+        }
+
+        body.bg-dark .form-text {
+            color: #999 !important;
+        }
+
+        body.bg-dark hr {
+            border-color: #404040 !important;
+            opacity: 0.3 !important;
+        }
+
+        body.bg-dark .btn-outline-secondary {
+            color: #e6e6e6 !important;
+            border-color: #6c757d !important;
+        }
+
+        body.bg-dark .btn-outline-secondary:hover {
+            background-color: #6c757d !important;
+            color: white !important;
+        }
+
+        body.bg-dark .invalid-feedback {
+            color: #ff6b6b !important;
+        }
+
+        body.bg-dark .alert-success {
+            background-color: #1a4d2e !important;
+            border-color: #2d7a4f !important;
+            color: #90ee90 !important;
+        }
+
+        /* Profile picture styling in dark mode */
+        body.bg-dark .rounded-circle {
+            border-color: #2d2d2d !important;
+        }
     </style>
 @endpush
 
