@@ -136,10 +136,10 @@ class AuthController extends Controller
             'email' => 'required|email|unique:patient,email',
             'gender' => 'required|in:male,female,other',
             'phone' => [
-                'nullable',
+                'required',
                 'digits:11',
             ],
-            'address' => 'nullable|string|max:500',
+            'address' => 'required|string|max:500',
             'barangay' => [
                 'required',
                 Rule::in(['Barangay 11', 'Barangay 12', 'Other']),
@@ -175,7 +175,9 @@ class AuthController extends Controller
         ], [
             'name.regex' => 'The name field should not contain numbers. Only letters, spaces, periods, hyphens, and apostrophes are allowed.',
             'password.regex' => 'The password must contain at least one lowercase letter, one uppercase letter, and one special character.',
+            'phone.required' => 'Phone number is required.',
             'phone.digits' => 'Phone number must be exactly 11 digits (e.g. 09123456789).',
+            'address.required' => 'Address is required.',
             'gender.required' => 'Please select a gender.',
             'barangay.in' => 'Please select Barangay 11, Barangay 12, or choose Other.',
             'barangay_other.required' => 'Please specify your barangay.',

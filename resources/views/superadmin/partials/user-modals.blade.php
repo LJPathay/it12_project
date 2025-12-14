@@ -76,7 +76,7 @@
                                         <div class="mb-3">
                                             <label class="form-label">Barangay <span class="text-danger">*</span></label>
                                             <select name="barangay" class="form-control @error('barangay') is-invalid @enderror" required data-role="barangay">
-                                                <option value="">Select Barangay</option>
+                                                <option value="" disabled selected>Select Barangay</option>
                                                 <option value="Barangay 11" {{ old('barangay', $user->barangay) == 'Barangay 11' ? 'selected' : '' }}>Barangay 11</option>
                                                 <option value="Barangay 12" {{ old('barangay', $user->barangay) == 'Barangay 12' ? 'selected' : '' }}>Barangay 12</option>
                                                 <option value="Other" {{ old('barangay', $user->barangay) == 'Other' ? 'selected' : '' }}>Other</option>
@@ -98,7 +98,7 @@
                                         <div class="mb-3 {{ in_array(old('barangay', $user->barangay), ['Barangay 11', 'Barangay 12']) ? '' : 'd-none' }}" data-role="purok-group">
                                             <label class="form-label">Purok <span class="text-danger">*</span></label>
                                             <select name="purok" class="form-control @error('purok') is-invalid @enderror" data-role="purok" data-selected="{{ old('purok', $user->purok) }}">
-                                                 <option value="">Select Purok</option>
+                                                 <option value="" disabled selected>Select Purok</option>
                                                  @foreach($editPurokOptions as $purok)
                                                     <option value="{{ $purok }}" {{ old('purok', $user->purok) == $purok ? 'selected' : '' }}>{{ $purok }}</option>
                                                  @endforeach

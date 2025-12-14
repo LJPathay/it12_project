@@ -238,19 +238,19 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <x-input name="phone" label="Phone Number" type="tel" placeholder="Enter your phone number"
-                                    value="{{ old('phone', $user->phone) }}" />
+                                    value="{{ old('phone', $user->phone) }}" required />
                             </div>
                             <div class="col-md-6">
                                 <x-input name="birth_date" label="Date of Birth" type="date"
-                                    value="{{ old('birth_date', $user->birth_date ? $user->birth_date->format('Y-m-d') : '') }}" />
+                                    value="{{ old('birth_date', $user->birth_date ? $user->birth_date->format('Y-m-d') : '') }}" required />
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="address" class="form-label fw-medium">Address</label>
+                            <label for="address" class="form-label fw-medium">Address <span class="text-danger">*</span></label>
                             <textarea name="address" id="address" rows="3"
                                 class="form-control @error('address') is-invalid @enderror"
-                                placeholder="Enter your full address">{{ old('address', $user->address) }}</textarea>
+                                placeholder="Enter your full address" required>{{ old('address', $user->address) }}</textarea>
                             @error('address')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

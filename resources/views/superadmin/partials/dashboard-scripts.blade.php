@@ -1,5 +1,11 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    // Detect dark mode
+    const isDarkMode = document.body.classList.contains('bg-dark');
+    const legendColor = isDarkMode ? '#e2e8f0' : '#334155';
+    const gridColor = isDarkMode ? '#2d3748' : 'rgba(0, 0, 0, 0.05)';
+    const tickColor = isDarkMode ? '#94a3b8' : '#64748b';
+
     // User Growth Chart
     const userGrowthData = @json($userGrowthData);
     const growthLabels = userGrowthData.map(item => new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
@@ -29,15 +35,17 @@
                     beginAtZero: true,
                     ticks: {
                         font: { size: 16 },
-                        stepSize: 1
+                        stepSize: 1,
+                        color: tickColor
                     },
                     grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
+                        color: gridColor
                     }
                 },
                 x: {
                     ticks: {
-                        font: { size: 16 }
+                        font: { size: 16 },
+                        color: tickColor
                     },
                     grid: {
                         display: false
@@ -47,7 +55,8 @@
             plugins: {
                 legend: {
                     labels: {
-                        font: { size: 16 }
+                        font: { size: 16 },
+                        color: legendColor
                     }
                 },
                 tooltip: {
@@ -69,7 +78,7 @@
             labels: roleData.map(item => item.role),
             datasets: [{
                 data: roleData.map(item => item.count),
-                backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+                backgroundColor: ['#77dd77', '#FFF52E', '#F53838'],
                 borderWidth: 0
             }]
         },
@@ -82,7 +91,8 @@
                     position: 'bottom',
                     labels: {
                         font: { size: 16 },
-                        padding: 25
+                        padding: 25,
+                        color: legendColor
                     }
                 }
             }

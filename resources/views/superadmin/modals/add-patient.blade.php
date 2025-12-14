@@ -59,7 +59,7 @@
                     <div class="mb-3">
                         <label class="form-label">Barangay <span class="text-danger">*</span></label>
                         <select name="barangay" class="form-control @error('barangay') is-invalid @enderror" required data-role="barangay">
-                            <option value="" selected>Select Barangay</option>
+                            <option value="" disabled selected>Select Barangay</option>
                             <option value="Barangay 11" {{ old('barangay') == 'Barangay 11' ? 'selected' : '' }}>Barangay 11</option>
                             <option value="Barangay 12" {{ old('barangay') == 'Barangay 12' ? 'selected' : '' }}>Barangay 12</option>
                             <option value="Other" {{ old('barangay') == 'Other' ? 'selected' : '' }}>Other</option>
@@ -79,7 +79,7 @@
                     <div class="mb-3 d-none" data-role="purok-group">
                         <label class="form-label">Purok <span class="text-danger">*</span></label>
                         <select name="purok" class="form-control @error('purok') is-invalid @enderror" data-role="purok">
-                             <option value="">Select Purok</option>
+                             <option value="" disabled selected>Select Purok</option>
                         </select>
                         @error('purok')
                             <div class="invalid-feedback d-block">{{ $message }}</div>

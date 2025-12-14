@@ -404,6 +404,68 @@
             background: #e9ecef;
             color: #6c757d
         }
+
+        /* White scrollbar for public pages */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c0c0c0;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0;
+        }
+
+        /* Firefox scrollbar */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #c0c0c0 #f0f0f0;
+        }
+
+        /* Unified Alert/Message Colors */
+        .alert-success, .badge.bg-success, .btn-success {
+            background-color: #77dd77 !important;
+            border-color: #77dd77 !important;
+            color: #000 !important;
+        }
+        .text-success { color: #77dd77 !important; }
+        
+        .alert-warning, .badge.bg-warning, .btn-warning {
+            background-color: #FFF52E !important;
+            border-color: #FFF52E !important;
+            color: #000 !important;
+        }
+        .text-warning { color: #FFF52E !important; }
+
+        .alert-danger, .badge.bg-danger, .btn-danger {
+            background-color: #F53838 !important;
+            border-color: #F53838 !important;
+            color: #fff !important;
+        }
+        .text-danger { color: #F53838 !important; }
+
+        .alert-info, .badge.bg-info, .btn-info {
+            background-color: #009fb1 !important;
+            border-color: #009fb1 !important;
+            color: #fff !important;
+        }
+        .text-info { color: #009fb1 !important; }
+
+        /* Global Border Utility Overrides */
+        .border-primary { border-color: #009fb1 !important; }
+        .border-success { border-color: #77dd77 !important; }
+        .border-warning { border-color: #FFF52E !important; }
+        .border-danger { border-color: #F53838 !important; }
+        .border-info { border-color: #009fb1 !important; }
     </style>
 
     @stack('styles')
@@ -735,7 +797,7 @@
                         <div class="mb-3">
                             <label class="form-label">Barangay <span class="text-danger">*</span></label>
                             <select name="barangay" class="form-control @error('barangay') is-invalid @enderror" data-role="barangay" required>
-                                <option value="">Select Barangay</option>
+                                <option value="" disabled selected>Select Barangay</option>
                                 <option value="Barangay 11" {{ $selectedBarangayModal === 'Barangay 11' ? 'selected' : '' }}>Barangay 11</option>
                                 <option value="Barangay 12" {{ $selectedBarangayModal === 'Barangay 12' ? 'selected' : '' }}>Barangay 12</option>
                                 <option value="Other" {{ $selectedBarangayModal === 'Other' ? 'selected' : '' }}>Other</option>
@@ -754,7 +816,7 @@
                         <div class="mb-3 {{ in_array($selectedBarangayModal, ['Barangay 11', 'Barangay 12']) ? '' : 'd-none' }}" data-role="purok-group">
                             <label class="form-label">Purok <span class="text-danger">*</span></label>
                             <select name="purok" class="form-control @error('purok') is-invalid @enderror" data-role="purok" data-selected="{{ old('purok') }}">
-                                <option value="">Select Purok</option>
+                                <option value="" disabled selected>Select Purok</option>
                                 @foreach ($purokOptionsModal as $purok)
                                     <option value="{{ $purok }}" {{ old('purok') === $purok ? 'selected' : '' }}>{{ $purok }}</option>
                                 @endforeach
@@ -804,7 +866,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
     <script>
         function requireLogin(){@if(\App\Helpers\AuthHelper::check()) @if(\App\Helpers\AuthHelper::user()->isPatient()) window.location.href="{{ route('patient.book-appointment') }}"; @else window.location.href="{{ \App\Helpers\AuthHelper::user()->isSuperAdmin() ? route('superadmin.dashboard') : route('admin.dashboard') }}"; @endif @else window.location.href="{{ route('login') }}"; @endif}
-        document.addEventListener('DOMContentLoaded',function(){const feedbackModalEl=document.getElementById('feedbackModal');if(feedbackModalEl){const feedbackModal=new bootstrap.Modal(feedbackModalEl);feedbackModal.show();}@if($errors->has('email') || $errors->has('password')) const loginModalEl=document.getElementById('loginModal');if(loginModalEl){const loginModal=new bootstrap.Modal(loginModalEl);loginModal.show();}@endif const loginPasswordInput=document.getElementById('login-password');const loginShowPasswordBtn=document.getElementById('login-show-password-btn');const loginShowPasswordIcon=document.getElementById('login-show-password-icon');if(loginShowPasswordBtn&&loginPasswordInput){loginShowPasswordBtn.addEventListener('click',function(){const showing=loginPasswordInput.type==='text';const show=!showing;loginPasswordInput.type=show?'text':'password';if(loginShowPasswordIcon){if(show){loginShowPasswordIcon.classList.remove('fa-eye');loginShowPasswordIcon.classList.add('fa-eye-slash');}else{loginShowPasswordIcon.classList.remove('fa-eye-slash');loginShowPasswordIcon.classList.add('fa-eye');}}});}const barangayPurokMap={'Barangay 11':['Purok 1','Purok 2','Purok 3','Purok 4','Purok 5'],'Barangay 12':['Purok 1','Purok 2','Purok 3']};const registrationForms=document.querySelectorAll('.registration-form');registrationForms.forEach((form)=>{const barangaySelect=form.querySelector('[data-role="barangay"]');const barangayOtherGroup=form.querySelector('[data-role="barangay-other-group"]');const barangayOtherInput=form.querySelector('[data-role="barangay-other"]');const purokGroup=form.querySelector('[data-role="purok-group"]');const purokSelect=form.querySelector('[data-role="purok"]');const updatePurokOptions=(barangay)=>{if(!purokSelect)return;const previouslySelected=purokSelect.getAttribute('data-selected');purokSelect.innerHTML='<option value="">Select Purok</option>';if(!barangayPurokMap[barangay]){purokSelect.removeAttribute('required');purokSelect.setAttribute('data-selected','');return;}barangayPurokMap[barangay].forEach((purok)=>{const option=document.createElement('option');option.value=purok;option.textContent=purok;if(previouslySelected===purok){option.selected=true;}purokSelect.appendChild(option);});purokSelect.setAttribute('required','required');};const handleBarangayChange=()=>{const selectedBarangay=barangaySelect?barangaySelect.value:'';if(barangayOtherGroup&&barangayOtherInput){if(selectedBarangay==='Other'){barangayOtherGroup.classList.remove('d-none');barangayOtherInput.setAttribute('required','required');}else{barangayOtherGroup.classList.add('d-none');barangayOtherInput.removeAttribute('required');}}if(purokGroup&&purokSelect){if(barangayPurokMap[selectedBarangay]){purokGroup.classList.remove('d-none');updatePurokOptions(selectedBarangay);}else{purokGroup.classList.add('d-none');purokSelect.removeAttribute('required');purokSelect.value='';purokSelect.setAttribute('data-selected','');}}};if(barangaySelect){barangaySelect.addEventListener('change',()=>{if(purokSelect){purokSelect.setAttribute('data-selected','');}handleBarangayChange();});handleBarangayChange();}});});
+        document.addEventListener('DOMContentLoaded',function(){const feedbackModalEl=document.getElementById('feedbackModal');if(feedbackModalEl){const feedbackModal=new bootstrap.Modal(feedbackModalEl);feedbackModal.show();}@if($errors->has('email') || $errors->has('password')) const loginModalEl=document.getElementById('loginModal');if(loginModalEl){const loginModal=new bootstrap.Modal(loginModalEl);loginModal.show();}@endif const loginPasswordInput=document.getElementById('login-password');const loginShowPasswordBtn=document.getElementById('login-show-password-btn');const loginShowPasswordIcon=document.getElementById('login-show-password-icon');if(loginShowPasswordBtn&&loginPasswordInput){loginShowPasswordBtn.addEventListener('click',function(){const showing=loginPasswordInput.type==='text';const show=!showing;loginPasswordInput.type=show?'text':'password';if(loginShowPasswordIcon){if(show){loginShowPasswordIcon.classList.remove('fa-eye');loginShowPasswordIcon.classList.add('fa-eye-slash');}else{loginShowPasswordIcon.classList.remove('fa-eye-slash');loginShowPasswordIcon.classList.add('fa-eye');}}});}const barangayPurokMap={'Barangay 11':['Purok 1','Purok 2','Purok 3','Purok 4','Purok 5'],'Barangay 12':['Purok 1','Purok 2','Purok 3']};const registrationForms=document.querySelectorAll('.registration-form');registrationForms.forEach((form)=>{const barangaySelect=form.querySelector('[data-role="barangay"]');const barangayOtherGroup=form.querySelector('[data-role="barangay-other-group"]');const barangayOtherInput=form.querySelector('[data-role="barangay-other"]');const purokGroup=form.querySelector('[data-role="purok-group"]');const purokSelect=form.querySelector('[data-role="purok"]');const updatePurokOptions=(barangay)=>{if(!purokSelect)return;const previouslySelected=purokSelect.getAttribute('data-selected');purokSelect.innerHTML='<option value="" disabled selected>Select Purok</option>';if(!barangayPurokMap[barangay]){purokSelect.removeAttribute('required');purokSelect.setAttribute('data-selected','');return;}barangayPurokMap[barangay].forEach((purok)=>{const option=document.createElement('option');option.value=purok;option.textContent=purok;if(previouslySelected===purok){option.selected=true;}purokSelect.appendChild(option);});purokSelect.setAttribute('required','required');};const handleBarangayChange=()=>{const selectedBarangay=barangaySelect?barangaySelect.value:'';if(barangayOtherGroup&&barangayOtherInput){if(selectedBarangay==='Other'){barangayOtherGroup.classList.remove('d-none');barangayOtherInput.setAttribute('required','required');}else{barangayOtherGroup.classList.add('d-none');barangayOtherInput.removeAttribute('required');}}if(purokGroup&&purokSelect){if(barangayPurokMap[selectedBarangay]){purokGroup.classList.remove('d-none');updatePurokOptions(selectedBarangay);}else{purokGroup.classList.add('d-none');purokSelect.removeAttribute('required');purokSelect.value='';purokSelect.setAttribute('data-selected','');}}};if(barangaySelect){barangaySelect.addEventListener('change',()=>{if(purokSelect){purokSelect.setAttribute('data-selected','');}handleBarangayChange();});handleBarangayChange();}});});
                 }
                 const clearClientErrors = () => {
                     const clientErrors = form.querySelectorAll('.invalid-feedback.js-register-error');

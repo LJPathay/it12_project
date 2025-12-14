@@ -150,7 +150,7 @@
                     }
 
                     const previouslySelected = purokSelect.getAttribute('data-selected');
-                    purokSelect.innerHTML = '<option value="">Select Purok</option>';
+                    purokSelect.innerHTML = '<option value="" disabled selected>Select Purok</option>';
 
                     if (!barangayPurokMap[barangay]) {
                         purokSelect.removeAttribute('required');
@@ -191,7 +191,7 @@
                         } else {
                             purokGroup.classList.add('d-none');
                             purokSelect.removeAttribute('required');
-                            purokSelect.innerHTML = '<option value="">Select Purok</option>';
+                            purokSelect.innerHTML = '<option value="" disabled selected>Select Purok</option>';
                         }
                     }
                 };

@@ -178,8 +178,8 @@
 
             /* Analytics Theme Variables */
             --chart-height: 300px;
-            --kpi-trend-up: #10b981;
-            --kpi-trend-down: #ef4444;
+            --kpi-trend-up: #77dd77;
+            --kpi-trend-down: #F53838;
             --kpi-trend-neutral: #94a3b8;
         }
 
@@ -349,20 +349,17 @@
         body.bg-dark .alert-success {
             background-color: rgba(119, 221, 119, 0.15) !important;
             border-color: rgba(119, 221, 119, 0.3) !important;
+            border-color: #77dd77 !important;
             color: #77dd77 !important;
         }
 
-        body.bg-dark .bg-success {
+        body.bg-dark .badge.bg-success {
             background-color: #77dd77 !important;
             color: #000 !important;
         }
 
         body.bg-dark .text-success {
             color: #77dd77 !important;
-        }
-
-        body.bg-dark .badge.bg-success {
-            color: #000 !important;
         }
 
         body.bg-dark .btn-success {
@@ -493,15 +490,7 @@
         body.bg-dark .alert-danger {
             background-color: rgba(245, 56, 56, 0.15) !important;
             border-color: rgba(245, 56, 56, 0.3) !important;
-            color: #F53838 !important;
-        }
-
-        body.bg-dark .bg-danger {
-            background-color: #F53838 !important;
-            color: #000 !important;
-        }
-
-        body.bg-dark .text-danger {
+            border-color: #F53838 !important;
             color: #F53838 !important;
         }
 
@@ -513,6 +502,75 @@
             color: #fff !important;
         }
 
+
+        }
+
+        /* Global Info/Blue Color Override - Change all info to #009fb1 */
+        .bg-info,
+        .badge.bg-info,
+        .alert-info {
+            background-color: #009fb1 !important;
+            border-color: #009fb1 !important;
+            color: #fff !important;
+        }
+
+        .btn-info {
+            background-color: #009fb1 !important;
+            border-color: #009fb1 !important;
+            color: #fff !important;
+        }
+
+        .text-info {
+            color: #009fb1 !important;
+        }
+
+        .btn-info:hover,
+        .btn-info:focus,
+        .btn-info:active {
+            background-color: #008a9a !important;
+            border-color: #008a9a !important;
+            color: #fff !important;
+        }
+
+        .btn-outline-info {
+            color: #009fb1 !important;
+            border-color: #009fb1 !important;
+        }
+
+        .btn-outline-info:hover {
+            background-color: #009fb1 !important;
+            border-color: #009fb1 !important;
+            color: #fff !important;
+        }
+
+        .bg-info-subtle {
+            background-color: rgba(0, 159, 177, 0.1) !important;
+            color: #009fb1 !important;
+        }
+
+        /* Dark mode info overrides */
+        body.bg-dark .alert-info {
+            background-color: rgba(0, 159, 177, 0.15) !important;
+            border-color: rgba(0, 159, 177, 0.3) !important;
+            border-color: #009fb1 !important;
+            color: #009fb1 !important;
+        }
+
+        body.bg-dark .badge.bg-info {
+            color: #fff !important;
+            background-color: #009fb1 !important;
+        }
+
+        body.bg-dark .btn-info {
+            color: #fff !important;
+        }
+        
+        /* Global Border Utility Overrides */
+        .border-primary { border-color: var(--color-primary) !important; }
+        .border-success { border-color: #77dd77 !important; }
+        .border-warning { border-color: #FFF52E !important; }
+        .border-danger { border-color: #F53838 !important; }
+        .border-info { border-color: #009fb1 !important; }
 
         body.bg-dark {
             background-color: var(--bg-dark);
@@ -1215,8 +1273,8 @@
         }
 
         body.bg-dark .swal2-icon.swal2-warning {
-            border-color: #ffc107 !important;
-            color: #ffc107 !important;
+            border-color: #FFF52E !important;
+            color: #FFF52E !important;
         }
 
         body.bg-dark .swal2-icon.swal2-success {
@@ -2277,7 +2335,7 @@
                     const updatePurok = val => {
                         if (!purok) return;
                         const prev = purok.dataset.selected || '';
-                        purok.innerHTML = '<option value="">Select Purok</option>';
+                        purok.innerHTML = '<option value="" disabled selected>Select Purok</option>';
                         if (map[val]) {
                             map[val].forEach(p => {
                                 const opt = new Option(p, p, false, prev === p);

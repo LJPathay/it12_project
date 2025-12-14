@@ -25,8 +25,8 @@
         .kpi-label { font-size: 0.85rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
         .kpi-value { font-size: 2rem; font-weight: 700; color: #1e293b; line-height: 1; }
         .kpi-sub { font-size: 0.8rem; margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem; }
-        .text-trend-up { color: #10b981; }
-        .text-trend-down { color: #ef4444; }
+        .text-trend-up { color: #77dd77; }
+        .text-trend-down { color: #F53838; }
 
         /* Chart Cards */
         .chart-section {
@@ -48,7 +48,8 @@
         /* Dark Mode */
         body.bg-dark .kpi-card, body.bg-dark .chart-section { background: #1e2124; border-color: #2d3748; }
         body.bg-dark .kpi-value, body.bg-dark .header-title { color: #f1f5f9; }
-        body.bg-dark .kpi-label, body.bg-dark .analytics-table th { color: #94a3b8; background: #2d3136; border-color: #2d3748; }
+        body.bg-dark .kpi-label { color: #94a3b8; }
+        body.bg-dark .analytics-table th { color: #94a3b8; background: #2d3136; border-color: #2d3748; }
         body.bg-dark .analytics-table td { color: #e2e8f0; border-color: #2d3748; }
         body.bg-dark .analytics-table tr:hover { background-color: #2d3136; }
     </style>
@@ -81,7 +82,7 @@
             <div class="kpi-sub text-muted">Pending Processing</div>
         </div>
         <!-- Inventory Value (Proxy: Total Items) -->
-        <div class="kpi-card" style="border-left: 4px solid #10b981;">
+        <div class="kpi-card" style="border-left: 4px solid #77dd77;">
             <div class="kpi-label">Inventory Health</div>
             <div class="kpi-value">{{ number_format($inventoryStats['total_items']) }}</div>
             <div class="kpi-sub">
@@ -138,7 +139,7 @@
                                 <th>Total Demand</th>
                                 <th>Completion Rate</th>
                                 <th>Cancellation</th>
-                                <th class="text-end pe-4">Status</th>
+                                <th class="text-center pe-4">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -159,10 +160,10 @@
                                         </div>
                                     </td>
                                     <td class="text-muted small">{{ number_format($cancelRate, 1) }}%</td>
-                                    <td class="text-end pe-4">
+                                    <td class="text-center pe-4">
                                         @if($rate >= 80) <span class="badge bg-success bg-opacity-10 text-success">High Perf</span>
                                         @elseif($rate >= 50) <span class="badge bg-warning bg-opacity-10 text-warning">Medium</span>
-                                        @else <span class="badge bg-danger bg-opacity-10 text-danger">Needs Attn</span>
+                                        @else <span class="badge bg-danger bg-opacity-10 text-danger">Needs Attention</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -211,6 +212,12 @@
         const monthlyTrend = @json($monthlyTrend);
         const serviceData = @json($serviceTypes);
 
+        // Detect dark mode
+        const isDarkMode = document.body.classList.contains('bg-dark');
+        const legendColor = isDarkMode ? '#e2e8f0' : '#334155';
+        const gridColor = isDarkMode ? '#2d3748' : '#f1f5f9';
+        const tickColor = isDarkMode ? '#94a3b8' : '#64748b';
+
         // 1. Line Chart: Comparison (Comparison is key for Analytics)
         const trendCtx = document.getElementById('trendChart')?.getContext('2d');
         if (trendCtx) {
@@ -222,16 +229,16 @@
                         {
                             label: 'Completed',
                             data: monthlyTrend.completed,
-                            borderColor: '#10b981', // Success green
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
+                            borderColor: '#77dd77', // Success green
+                            backgroundColor: 'transparent',
+                            fill: false,
                             tension: 0.4,
                              pointRadius: 4,
                         },
                         {
                             label: 'Pending',
                             data: monthlyTrend.pending,
-                            borderColor: '#f59e0b', // Warning yellow
+                            borderColor: '#FFF52E', // Warning yellow
                             backgroundColor: 'transparent',
                             borderDash: [5, 5],
                             tension: 0.4,
@@ -240,7 +247,7 @@
                         {
                             label: 'Cancelled',
                             data: monthlyTrend.cancelled,
-                            borderColor: '#ef4444', // Danger red
+                            borderColor: '#F53838', // Danger red
                             backgroundColor: 'transparent',
                             tension: 0.4,
                             pointRadius: 0
@@ -251,16 +258,30 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8 } },
+                        legend: { 
+                            position: 'top', 
+                            align: 'end', 
+                            labels: { 
+                                usePointStyle: true, 
+                                boxWidth: 8,
+                                color: legendColor
+                            } 
+                        },
                         tooltip: { mode: 'index', intersect: false }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            grid: { color: '#f1f5f9' },
-                            ticks: { precision: 0 }
+                            grid: { color: gridColor },
+                            ticks: { 
+                                precision: 0,
+                                color: tickColor
+                            }
                         },
-                        x: { grid: { display: false } }
+                        x: { 
+                            grid: { display: false },
+                            ticks: { color: tickColor }
+                        }
                     }
                 }
             });
@@ -278,7 +299,7 @@
                     labels: labels,
                     datasets: [{
                         data: data,
-                        backgroundColor: ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#64748b'],
+                        backgroundColor: ['#009fb1', '#8b5cf6', '#77dd77', '#FFF52E', '#64748b'],
                         borderWidth: 0,
                     }]
                 },
@@ -286,7 +307,14 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 10 } }
+                        legend: { 
+                            position: 'right', 
+                            labels: { 
+                                font: { size: 10 }, 
+                                boxWidth: 10,
+                                color: legendColor
+                            } 
+                        }
                     }
                 }
              });

@@ -106,6 +106,27 @@
             font-weight: 500;
         }
 
+        /* Custom status colors */
+        .status-badge.bg-warning {
+            background-color: #FFF52E !important;
+            color: #000000 !important;
+        }
+
+        .status-badge.bg-success {
+            background-color: #77dd77 !important;
+            color: #000000 !important;
+        }
+
+        .status-badge.bg-danger {
+            background-color: #F53838 !important;
+            color: #ffffff !important;
+        }
+
+        .status-badge.bg-primary {
+            background-color: #17a2b8 !important;
+            color: #ffffff !important;
+        }
+
         /* Dark mode support */
         body.bg-dark .metric-card,
         body.bg-dark .filter-card,
@@ -138,11 +159,47 @@
             border-color: #2a2f35;
         }
 
+        body.bg-dark .table tbody tr:hover {
+            background-color: #2a2f35;
+        }
+
         body.bg-dark .form-control,
         body.bg-dark .form-select {
             background: #0f1316;
             color: #e6e6e6;
             border-color: #2a2f35;
+        }
+
+        body.bg-dark .form-control:focus,
+        body.bg-dark .form-select:focus {
+            background: #161b20;
+            border-color: #17a2b8;
+            color: #e6e6e6;
+        }
+
+        body.bg-dark .card-header {
+            background: #1a1f24 !important;
+            border-color: #2a2f35;
+            color: #e6e6e6;
+        }
+
+        body.bg-dark .card-header h5 {
+            color: #e6e6e6 !important;
+        }
+
+        body.bg-dark .modal-content {
+            background: #1e2124;
+            border-color: #2a2f35;
+            color: #e6e6e6;
+        }
+
+        body.bg-dark .modal-header,
+        body.bg-dark .modal-footer {
+            border-color: #2a2f35;
+        }
+
+        body.bg-dark .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
         }
 
         body.bg-dark .metric-icon-pill {

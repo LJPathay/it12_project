@@ -35,15 +35,15 @@
         }
 
         .stock-good {
-            background-color: #28a745;
+            background-color: #77dd77;
         }
 
         .stock-low {
-            background-color: #ffc107;
+            background-color: #FFF52E;
         }
 
         .stock-out {
-            background-color: #dc3545;
+            background-color: #F53838;
         }
 
         .modal-content {
@@ -113,14 +113,15 @@
         }
 
         /* Dark mode for expiring items alert */
+        /* Dark mode for expiring items alert */
         body.bg-dark .alert-light.border-warning {
-            background-color: #4a3a1a;
-            border-color: #6a5a2a !important;
-            color: #f5d88a;
+            background-color: rgba(255, 245, 46, 0.15);
+            border-color: #FFF52E !important;
+            color: #FFF52E;
         }
 
         body.bg-dark .alert-light.border-warning .text-warning {
-            color: #fbbf24 !important;
+            color: #FFF52E !important;
         }
 
         /* Dark mode for search input group */
@@ -290,9 +291,9 @@
         </div>
         <!-- Alerts -->
         @if(($stats['low_stock'] ?? 0) > 0)
-            <div class="alert alert-warning border-danger-subtle mb-3" role="alert">
+            <div class="alert alert-warning border-warning mb-3" role="alert">
                 <div class="d-flex align-items-center">
-                    <i class="fas fa-triangle-exclamation me-2 text-danger"></i>
+                    <i class="fas fa-triangle-exclamation me-2 text-warning"></i>
                     <strong>{{ $stats['low_stock'] }} item(s)</strong>
                     <span class="ms-2">are running low on stock and need restocking.</span>
                 </div>
@@ -639,7 +640,7 @@
                     <div class="mb-3">
                         <label for="category" class="form-label">Category *</label>
                         <select class="form-select" id="category" name="category" required>
-                            <option value="">Select Category</option>
+                            <option value="" disabled selected>Select Category</option>
                             <option value="Medicines">Medicines</option>
                             <option value="Medical Supplies">Medical Supplies</option>
                             <option value="Equipment">Equipment</option>

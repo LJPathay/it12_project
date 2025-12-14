@@ -26,8 +26,8 @@
         .kpi-value { font-size: 2rem; font-weight: 700; color: #1e293b; line-height: 1; }
         .kpi-sub { font-size: 0.8rem; margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem; color: #64748b; }
         
-        .text-trend-up { color: #10b981; }
-        .text-trend-down { color: #ef4444; }
+        .text-trend-up { color: #77dd77; }
+        .text-trend-down { color: #F53838; }
         .text-neutral { color: #94a3b8; }
 
         /* Chart & Section Cards */
@@ -97,7 +97,7 @@
         </div>
 
         <!-- Low Stock -->
-        <div class="kpi-card" style="{{ ($lowStockItems ?? 0) > 0 ? 'border-left: 4px solid #f59e0b;' : '' }}">
+        <div class="kpi-card" style="{{ ($lowStockItems ?? 0) > 0 ? 'border-left: 4px solid #FFF52E;' : '' }}">
             <div class="kpi-label">Inventory Alerts</div>
             <div class="kpi-value">{{ number_format($lowStockItems ?? 0) }}</div>
             <div class="kpi-sub">
@@ -265,6 +265,12 @@
         const chartData = @json($chartData);
         const barangayData = @json($patientsByBarangay);
 
+        // Detect dark mode
+        const isDarkMode = document.body.classList.contains('bg-dark');
+        const legendColor = isDarkMode ? '#e2e8f0' : '#334155';
+        const gridColor = isDarkMode ? '#2d3748' : '#f1f5f9';
+        const tickColor = isDarkMode ? '#94a3b8' : '#64748b';
+
         // 1. Overview Chart (Line) - Improved Styling
         const overviewCtx = document.getElementById('overviewChart').getContext('2d');
         // Gradient for Line Chart
@@ -293,10 +299,28 @@
                 responsive: true, 
                 maintainAspectRatio: false, 
                 scales: { 
-                    y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { stepSize: 1 } }, 
-                    x: { grid: { display: false } } 
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: gridColor }, 
+                        ticks: { 
+                            stepSize: 1,
+                            color: tickColor
+                        } 
+                    }, 
+                    x: { 
+                        grid: { display: false },
+                        ticks: { color: tickColor }
+                    } 
                 }, 
-                plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } } 
+                plugins: { 
+                    legend: { 
+                        display: false 
+                    }, 
+                    tooltip: { 
+                        mode: 'index', 
+                        intersect: false 
+                    } 
+                } 
             }
         });
 
@@ -332,7 +356,7 @@
                     data: [], 
                     // Vibrant Palette
                     backgroundColor: [
-                        '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'
+                        '#009fb1', '#77dd77', '#FFF52E', '#F53838', '#8b5cf6', '#06b6d4', '#ec4899'
                     ], 
                     borderRadius: 4 
                 }] 
@@ -341,10 +365,22 @@
                 responsive: true, 
                 maintainAspectRatio: false, 
                 scales: { 
-                    y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { stepSize: 1 } }, 
-                    x: { grid: { display: false } } 
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: gridColor }, 
+                        ticks: { 
+                            stepSize: 1,
+                            color: tickColor
+                        } 
+                    }, 
+                    x: { 
+                        grid: { display: false },
+                        ticks: { color: tickColor }
+                    } 
                 }, 
-                plugins: { legend: { display: false } } 
+                plugins: { 
+                    legend: { display: false } 
+                } 
             }
         });
 
@@ -367,11 +403,23 @@
                 labels: barangayData.map(i => i.barangay),
                 datasets: [{
                     data: barangayData.map(i => i.count),
-                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'],
+                    backgroundColor: ['#009fb1', '#77dd77', '#FFF52E', '#F53838', '#8b5cf6'],
                     borderWidth: 0
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10 } } } }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    legend: { 
+                        position: 'right', 
+                        labels: { 
+                            boxWidth: 10,
+                            color: legendColor
+                        } 
+                    } 
+                } 
+            }
         });
 
         // Init

@@ -30,9 +30,9 @@ class ProfileController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => "required|string|email|max:255|unique:{$table},email,{$user->id}",
-            'phone' => 'nullable|string|max:20',
-            'birth_date' => 'nullable|date',
-            'address' => 'nullable|string|max:500',
+            'phone' => 'required|digits:11',
+            'birth_date' => 'required|date',
+            'address' => 'required|string|max:500',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'current_password' => 'nullable|required_with:password',
             'password' => [
@@ -43,6 +43,10 @@ class ProfileController extends Controller
             ],
         ], [
             'password.regex' => 'The password must contain at least one lowercase letter, one uppercase letter, and one special character.',
+            'phone.required' => 'Phone number is required.',
+            'phone.digits' => 'Phone number must be exactly 11 digits (e.g. 09123456789).',
+            'birth_date.required' => 'Date of birth is required.',
+            'address.required' => 'Address is required.',
         ]);
 
         // Update basic info
@@ -51,9 +55,7 @@ class ProfileController extends Controller
         $user->phone = $request->phone;
 
         if ($user instanceof \App\Models\Patient) {
-            if ($request->filled('birth_date')) {
-                $user->birth_date = $request->birth_date;
-            }
+            $user->birth_date = $request->birth_date;
             $user->address = $request->address;
         }
 

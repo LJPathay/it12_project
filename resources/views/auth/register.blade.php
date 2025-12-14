@@ -26,27 +26,87 @@
     }
 
     .strength-bar.weak {
-        background-color: #dc3545;
+        background-color: #F53838;
     }
 
     .strength-bar.medium {
-        background-color: #ffc107;
+        background-color: #FFF52E;
     }
 
     .strength-bar.strong {
-        background-color: #28a745;
+        background-color: #77dd77;
     }
 
     #strength-text.weak {
-        color: #dc3545;
+        color: #F53838;
     }
 
     #strength-text.medium {
-        color: #ffc107;
+        color: #FFF52E;
     }
 
     #strength-text.strong {
-        color: #28a745;
+        color: #77dd77;
+    }
+
+    /* Style date input calendar icon to match password eye icon */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: opacity(0.65);
+        cursor: pointer;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator:hover {
+        filter: opacity(0.8);
+    }
+
+    /* Prevent eye icon from moving when clicked */
+    #toggle-password {
+        min-width: 44px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        vertical-align: middle !important;
+    }
+
+    #toggle-password:active,
+    #toggle-password:focus {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    #toggle-password i {
+        width: 20px !important;
+        text-align: center !important;
+        display: inline-block !important;
+        line-height: 1 !important;
+        vertical-align: middle !important;
+        padding-top: 2px !important;
+    }
+
+    /* Custom scrollbar styling to match theme */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #1a1a1a;
+        border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #17a2b8;
+        border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #138496;
+    }
+
+    /* Firefox scrollbar */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: #17a2b8 #1a1a1a;
     }
 </style>
 @endpush
@@ -78,8 +138,8 @@
                         @csrf
 
                         <div class="mb-3">
-                            <label for="name" class="form-label">Full Name</label>
-                            <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required>
+                            <label for="name" class="form-label fw-medium">Full Name <span class="text-danger">*</span></label>
+                            <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" placeholder="Enter your full name" required>
                             @error('name')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -103,7 +163,7 @@
 
                         <div class="mb-3">
                             <label for="email" class="form-label fw-medium">Email <span class="text-danger">*</span></label>
-                            <input type="email" name="email" id="register-email" class="form-control @error('email') is-invalid @enderror" required value="{{ old('email') }}">
+                            <input type="email" name="email" id="register-email" class="form-control @error('email') is-invalid @enderror" required value="{{ old('email') }}" placeholder="Enter your email address">
                             <div id="email-feedback" class="mt-1" style="font-size: 0.875rem;"></div>
                             @error('email')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -111,8 +171,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="phone" class="form-label">Phone Number</label>
-                            <input id="phone" type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') }}" placeholder="Enter your phone number (optional)">
+                            <label for="phone" class="form-label fw-medium">Phone Number <span class="text-danger">*</span></label>
+                            <input id="phone" type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') }}" placeholder="Enter your phone number" required>
                             @error('phone')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -121,11 +181,10 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="address" class="form-label fw-medium">Address <small
-                                    class="text-muted fw-normal">(Optional)</small></label>
+                            <label for="address" class="form-label fw-medium">Address <span class="text-danger">*</span></label>
                             <textarea name="address" class="form-control @error('address') is-invalid @enderror"
                                 rows="2"
-                                placeholder="Enter your complete address (optional)">{{ old('address') }}</textarea>
+                                placeholder="Enter your full address" required>{{ old('address') }}</textarea>
                             @error('address')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
@@ -136,7 +195,7 @@
                                     class="text-danger">*</span></label>
                             <select name="barangay" class="form-control @error('barangay') is-invalid @enderror"
                                 data-role="barangay" required>
-                                <option value="">Select Barangay</option>
+                                <option value="" disabled selected>Select Barangay</option>
                                 <option value="Barangay 11" {{ $selectedBarangay === 'Barangay 11' ? 'selected' : '' }}>
                                     Barangay 11</option>
                                 <option value="Barangay 12" {{ $selectedBarangay === 'Barangay 12' ? 'selected' : '' }}>
@@ -150,8 +209,8 @@
 
                         <div class="mb-3 {{ $selectedBarangay === 'Other' ? '' : 'd-none' }}"
                             data-role="barangay-other-group">
-                            <label for="barangay_other" class="form-label">Specify Barangay</label>
-                            <input id="barangay_other" type="text" class="form-control @error('barangay_other') is-invalid @enderror" name="barangay_other" value="{{ old('barangay_other') }}" data-role="barangay-other" required>
+                            <label for="barangay_other" class="form-label fw-medium">Specify Barangay <span class="text-danger">*</span></label>
+                            <input id="barangay_other" type="text" class="form-control @error('barangay_other') is-invalid @enderror" name="barangay_other" value="{{ old('barangay_other') }}" data-role="barangay-other" placeholder="Enter your barangay" required>
                             @error('barangay_other')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -165,7 +224,7 @@
                                     class="text-danger">*</span></label>
                             <select name="purok" class="form-control @error('purok') is-invalid @enderror"
                                 data-role="purok" data-selected="{{ old('purok') }}">
-                                <option value="">Select Purok</option>
+                                <option value="" disabled selected>Select Purok</option>
                                 @foreach ($purokOptions as $purok)
                                     <option value="{{ $purok }}" {{ old('purok') === $purok ? 'selected' : '' }}>{{ $purok }}
                                     </option>
@@ -177,7 +236,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="birth_date" class="form-label">Birth Date</label>
+                            <label for="birth_date" class="form-label fw-medium">Birth Date <span class="text-danger">*</span></label>
                             <input id="birth_date" type="date" class="form-control @error('birth_date') is-invalid @enderror" name="birth_date" value="{{ old('birth_date') }}" data-role="birth-date" max="{{ now()->toDateString() }}" required>
                             @error('birth_date')
                                 <span class="invalid-feedback" role="alert">
@@ -189,7 +248,7 @@
                         <div class="mb-3">
                             <label for="register-password" class="form-label fw-medium">Password <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="password" name="password" id="register-password" class="form-control @error('password') is-invalid @enderror" required style="border-right: 0;">
+                                <input type="password" name="password" id="register-password" class="form-control @error('password') is-invalid @enderror" required style="border-right: 0;" placeholder="Enter your password">
                                 <button class="btn btn-outline-secondary" type="button" id="toggle-password" style="border-left: 0; background: white; border-color: #6c757d !important;">
                                     <i class="fas fa-eye text-muted"></i>
                                 </button>
@@ -238,7 +297,7 @@
                 const updatePurokOptions = (barangay) => {
                     if (!purokSelect) return;
                     const previouslySelected = purokSelect.getAttribute('data-selected');
-                    purokSelect.innerHTML = '<option value="">Select Purok</option>';
+                    purokSelect.innerHTML = '<option value="" disabled selected>Select Purok</option>';
 
                     if (!barangayPurokMap[barangay]) {
                         purokSelect.removeAttribute('required');
@@ -442,47 +501,15 @@
             };
 
             const validateNameAndPhone = () => {
-                clearClientErrors();
-                let valid = true;
-
-                if (nameInput) {
-                    const value = nameInput.value.trim();
-                    const nameRegex = /^[a-zA-Z\s.\-']+$/;
-                    if (!value) {
-                        appendError(nameInput, 'Full name is required.');
-                        valid = false;
-                    } else if (!nameRegex.test(value)) {
-                        appendError(nameInput, 'The name field should not contain numbers. Only letters, spaces, periods, hyphens, and apostrophes are allowed.');
-                        valid = false;
-                    }
-                }
-
-                if (phoneInput) {
-                    const value = phoneInput.value.trim();
-                    if (value && !/^\d{11}$/.test(value)) {
-                        appendError(phoneInput, 'Phone number must be exactly 11 digits (e.g. 09123456789).');
-                        valid = false;
-                    }
-                }
-
-                if (passwordInput) {
-                    const value = passwordInput.value;
-                    if (!value) {
-                        appendError(passwordInput, 'Password is required.');
-                        valid = false;
-                    }
-                }
-
-                return valid;
+                // Validation removed - relying on HTML5 and server-side validation only
+                return true;
             };
 
             // Event Listeners
             if (passwordInput) {
                 passwordInput.addEventListener('input', () => {
                     updatePasswordStrength();
-                    validateNameAndPhone();
                 });
-                passwordInput.addEventListener('blur', validateNameAndPhone);
             }
 
             if (emailInput) {
@@ -491,23 +518,6 @@
                     emailCheckTimeout = setTimeout(checkEmailAvailability, 500);
                 });
                 emailInput.addEventListener('blur', checkEmailAvailability);
-            }
-
-            if (form) {
-                if (nameInput) {
-                    nameInput.addEventListener('input', validateNameAndPhone);
-                    nameInput.addEventListener('blur', validateNameAndPhone);
-                }
-                if (phoneInput) {
-                    phoneInput.addEventListener('input', validateNameAndPhone);
-                    phoneInput.addEventListener('blur', validateNameAndPhone);
-                }
-
-                form.addEventListener('submit', function (e) {
-                    if (!validateNameAndPhone()) {
-                        e.preventDefault();
-                    }
-                });
             }
         });
     </script>

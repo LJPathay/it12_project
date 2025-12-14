@@ -3,6 +3,12 @@
     // Get data from Laravel
     const monthlyData = @json($monthlyTrend ?? []);
 
+    // Detect dark mode
+    const isDarkMode = document.body.classList.contains('bg-dark');
+    const legendColor = isDarkMode ? '#e2e8f0' : '#334155';
+    const gridColor = isDarkMode ? '#2d3748' : '#e5e7eb';
+    const tickColor = isDarkMode ? '#94a3b8' : '#64748b';
+
     // Appointments Trend Chart
     const appointmentsTrendCtx = document.getElementById('appointmentsTrendChart').getContext('2d');
 
@@ -46,26 +52,25 @@
             scales: {
                 y: {
                     beginAtZero: true,
+                    grid: { color: gridColor },
                     ticks: {
-                        font: {
-                            size: 16
-                        }
+                        font: { size: 16 },
+                        color: tickColor
                     }
                 },
                 x: {
+                    grid: { color: gridColor },
                     ticks: {
-                        font: {
-                            size: 16
-                        }
+                        font: { size: 16 },
+                        color: tickColor
                     }
                 }
             },
             plugins: {
                 legend: {
                     labels: {
-                        font: {
-                            size: 16
-                        }
+                        font: { size: 16 },
+                        color: legendColor
                     }
                 }
             }
@@ -80,7 +85,7 @@
             labels: ['Patients', 'Admins'],
             datasets: [{
                 data: [{{ $userStats['patients'] ?? 0 }}, {{ $userStats['admins'] ?? 0 }}],
-                backgroundColor: ['#28a745', '#ffc107'],
+                backgroundColor: ['#77dd77', '#FFF52E'],
                 borderWidth: 0
             }]
         },
@@ -92,10 +97,9 @@
                 legend: {
                     position: 'bottom',
                     labels: {
-                        font: {
-                            size: 16
-                        },
-                        padding: 25
+                        font: { size: 16 },
+                        padding: 25,
+                        color: legendColor
                     }
                 }
             }
