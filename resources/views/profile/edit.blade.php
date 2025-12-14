@@ -173,6 +173,17 @@
         body.bg-dark .rounded-circle {
             border-color: #2d2d2d !important;
         }
+
+        /* Prevent text selection on profile picture and initials */
+        #profileImagePreview,
+        #profileInitials,
+        .rounded-circle {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
     </style>
 @endpush
 
