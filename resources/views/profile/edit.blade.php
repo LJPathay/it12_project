@@ -147,12 +147,12 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <x-input name="phone" label="Phone Number" type="tel" placeholder="09123456789"
+                                <x-input name="phone" label="Phone Number" type="tel" placeholder="Enter your phone number"
                                     value="{{ old('phone', $user->phone) }}" />
                             </div>
                             <div class="col-md-6">
-                                <x-input name="date_of_birth" label="Date of Birth" type="date"
-                                    value="{{ old('date_of_birth', $user->date_of_birth) }}" />
+                                <x-input name="birth_date" label="Date of Birth" type="date"
+                                    value="{{ old('birth_date', $user->birth_date ? $user->birth_date->format('Y-m-d') : '') }}" />
                             </div>
                         </div>
 

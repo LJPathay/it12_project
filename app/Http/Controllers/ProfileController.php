@@ -31,7 +31,7 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255',
             'email' => "required|string|email|max:255|unique:{$table},email,{$user->id}",
             'phone' => 'nullable|string|max:20',
-            'date_of_birth' => 'nullable|date',
+            'birth_date' => 'nullable|date',
             'address' => 'nullable|string|max:500',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'current_password' => 'nullable|required_with:password',
@@ -51,8 +51,8 @@ class ProfileController extends Controller
         $user->phone = $request->phone;
 
         if ($user instanceof \App\Models\Patient) {
-            if ($request->filled('date_of_birth')) {
-                $user->birth_date = $request->date_of_birth;
+            if ($request->filled('birth_date')) {
+                $user->birth_date = $request->birth_date;
             }
             $user->address = $request->address;
         }
