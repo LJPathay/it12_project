@@ -11,7 +11,7 @@
                 <th class="text-center">Actions</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="systemLogsTableBody">
             @foreach($logs as $log)
                 @php
                     // Get the actual user name from polymorphic relationship

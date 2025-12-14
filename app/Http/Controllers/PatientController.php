@@ -42,7 +42,7 @@ class PatientController extends Controller
         $rules = [
             'patient_name' => 'required|string|max:255',
             'patient_phone' => 'required|string|max:20',
-            'appointment_date' => 'required|date|after:today',
+            'appointment_date' => 'required|date|after_or_equal:today',
             'appointment_time' => 'required',
             'service_id' => 'required|exists:services,id',
             'notes' => 'nullable|string|max:1000',
@@ -82,7 +82,20 @@ class PatientController extends Controller
         ]);
 
         // Attach service to appointment
+        \Log::info('Attaching service to appointment', [
+            'appointment_id' => $appointment->id,
+            'service_id' => $service->id,
+            'service_name' => $service->name
+        ]);
+        
         $appointment->services()->attach($service->id);
+        
+        // Verify the attachment
+        $attachedServices = $appointment->services()->pluck('services.id')->toArray();
+        \Log::info('Services after attachment', [
+            'appointment_id' => $appointment->id,
+            'attached_service_ids' => $attachedServices
+        ]);
 
         // Save treatment record data if eligible
         if ($patient->age >= 6) {

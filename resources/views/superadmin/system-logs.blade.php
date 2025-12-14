@@ -164,75 +164,7 @@
     <!-- Table -->
     <div class="table-card">
         @if($logs->count() > 0)
-@include('superadmin.partials.system-logs-table')
-
-            <!-- Pagination -->
-            @if($logs->hasPages())
-                <div class="d-flex justify-content-center mt-4">
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            {{-- Previous Page Link --}}
-                            @if ($logs->onFirstPage())
-                                <li class="page-item disabled" aria-disabled="true">
-                                    <span class="page-link">&lsaquo;</span>
-                                </li>
-                            @else
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ $logs->previousPageUrl() }}">&lsaquo;</a>
-                                </li>
-                            @endif
-
-                            {{-- First page --}}
-                            @if ($logs->currentPage() > 3)
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ $logs->url(1) }}">1</a>
-                                </li>
-                                @if ($logs->currentPage() > 4)
-                                    <li class="page-item disabled">
-                                        <span class="page-link">...</span>
-                                    </li>
-                                @endif
-                            @endif
-
-                            {{-- Page numbers --}}
-                            @for ($page = max(1, $logs->currentPage() - 2); $page <= min($logs->lastPage(), $logs->currentPage() + 2); $page++)
-                                @if ($page == $logs->currentPage())
-                                    <li class="page-item active" aria-current="page">
-                                        <span class="page-link">{{ $page }}</span>
-                                    </li>
-                                @else
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $logs->url($page) }}">{{ $page }}</a>
-                                    </li>
-                                @endif
-                            @endfor
-
-                            {{-- Last page --}}
-                            @if ($logs->currentPage() < $logs->lastPage() - 2)
-                                @if ($logs->currentPage() < $logs->lastPage() - 3)
-                                    <li class="page-item disabled">
-                                        <span class="page-link">...</span>
-                                    </li>
-                                @endif
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ $logs->url($logs->lastPage()) }}">{{ $logs->lastPage() }}</a>
-                                </li>
-                            @endif
-
-                            {{-- Next Page Link --}}
-                            @if ($logs->hasMorePages())
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ $logs->nextPageUrl() }}">&rsaquo;</a>
-                                </li>
-                            @else
-                                <li class="page-item disabled" aria-disabled="true">
-                                    <span class="page-link">&rsaquo;</span>
-                                </li>
-                            @endif
-                        </ul>
-                    </nav>
-                </div>
-            @endif
+            @include('superadmin.partials.system-logs-table')
         @else
             <div class="text-center py-5">
                 <i class="fas fa-list fa-3x text-muted mb-3"></i>
@@ -242,10 +174,40 @@
         @endif
     </div>
 
+    <!-- Client-side Pagination Container -->
+    @if($logs->count() > 0)
+        <div id="logsPaginationContainer" class="mt-4"></div>
+    @endif
+
     <!-- Log Details Modal (single, dynamic) -->
 @include('superadmin.partials.log-details-modal')
 @endsection
 
 @push('scripts')
 @include('superadmin.partials.system-logs-scripts')
+@if($logs->count() > 0)
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        new TablePaginator({
+            tableId: 'systemLogsTableBody',
+            tableBodyId: 'systemLogsTableBody',
+            paginationContainerId: 'logsPaginationContainer',
+            searchId: 'searchInput',
+            filterInputs: {
+                actionFilter: (row, value) => {
+                     if (!value) return true;
+                     const text = row.cells[1].textContent.trim().toLowerCase(); // Action column
+                     return text.includes(value.toLowerCase());
+                },
+                 tableFilter: (row, value) => {
+                     if (!value) return true;
+                     const text = row.cells[2].textContent.trim().toLowerCase(); // Table column
+                     return text.includes(value.toLowerCase());
+                }
+            },
+            rowsPerPage: 10
+        });
+    });
+</script>
+@endif
 @endpush

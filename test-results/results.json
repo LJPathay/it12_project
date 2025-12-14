@@ -1,0 +1,626 @@
+{
+  "config": {
+    "configFile": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\playwright.config.js",
+    "rootDir": "C:/Users/lebro/Documents/Laravel Project/it12_project/tests/playwright",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 2
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "C:/Users/lebro/Documents/Laravel Project/it12_project/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "chrome",
+        "name": "chrome",
+        "testDir": "C:/Users/lebro/Documents/Laravel Project/it12_project/tests/playwright",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.57.0",
+    "workers": 2,
+    "webServer": {
+      "command": "php artisan serve",
+      "url": "http://127.0.0.1:8000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "auth.spec.js",
+      "file": "auth.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Authentication",
+          "file": "auth.spec.js",
+          "line": 5,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Login",
+              "file": "auth.spec.js",
+              "line": 8,
+              "column": 10,
+              "specs": [
+                {
+                  "title": "should display login form",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chrome",
+                      "projectName": "chrome",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 16756,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('input[name=\"email\"]')\nExpected: visible\nError: strict mode violation: locator('input[name=\"email\"]') resolved to 3 elements:\n    1) <input value=\"\" id=\"email\" required=\"\" type=\"email\" name=\"email\" autofocus=\"\" class=\"form-control \"/> aka getByRole('textbox', { name: 'Email' })\n    2) <input value=\"\" required=\"\" type=\"email\" name=\"email\" autofocus=\"\" id=\"login-email\" class=\"form-control \"/> aka getByLabel('Email address')\n    3) <input value=\"\" required=\"\" type=\"email\" name=\"email\" class=\"form-control \"/> aka getByLabel('Register an Account').locator('input[name=\"email\"]')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('input[name=\"email\"]')\u001b[22m\n",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('input[name=\"email\"]')\nExpected: visible\nError: strict mode violation: locator('input[name=\"email\"]') resolved to 3 elements:\n    1) <input value=\"\" id=\"email\" required=\"\" type=\"email\" name=\"email\" autofocus=\"\" class=\"form-control \"/> aka getByRole('textbox', { name: 'Email' })\n    2) <input value=\"\" required=\"\" type=\"email\" name=\"email\" autofocus=\"\" id=\"login-email\" class=\"form-control \"/> aka getByLabel('Email address')\n    3) <input value=\"\" required=\"\" type=\"email\" name=\"email\" class=\"form-control \"/> aka getByLabel('Register an Account').locator('input[name=\"email\"]')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('input[name=\"email\"]')\u001b[22m\n\n    at C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js:15:48",
+                            "location": {
+                              "file": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                              "column": 48,
+                              "line": 15
+                            },
+                            "snippet": "\u001b[0m \u001b[90m 13 |\u001b[39m\n \u001b[90m 14 |\u001b[39m         test(\u001b[32m'should display login form'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 15 |\u001b[39m             \u001b[36mawait\u001b[39m expect(loginPage\u001b[33m.\u001b[39memailInput)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 16 |\u001b[39m             \u001b[36mawait\u001b[39m expect(loginPage\u001b[33m.\u001b[39mpasswordInput)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 17 |\u001b[39m             \u001b[36mawait\u001b[39m expect(loginPage\u001b[33m.\u001b[39mloginButton)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 18 |\u001b[39m         })\u001b[33m;\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                                "column": 48,
+                                "line": 15
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('input[name=\"email\"]')\nExpected: visible\nError: strict mode violation: locator('input[name=\"email\"]') resolved to 3 elements:\n    1) <input value=\"\" id=\"email\" required=\"\" type=\"email\" name=\"email\" autofocus=\"\" class=\"form-control \"/> aka getByRole('textbox', { name: 'Email' })\n    2) <input value=\"\" required=\"\" type=\"email\" name=\"email\" autofocus=\"\" id=\"login-email\" class=\"form-control \"/> aka getByLabel('Email address')\n    3) <input value=\"\" required=\"\" type=\"email\" name=\"email\" class=\"form-control \"/> aka getByLabel('Register an Account').locator('input[name=\"email\"]')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('input[name=\"email\"]')\u001b[22m\n\n\n\u001b[0m \u001b[90m 13 |\u001b[39m\n \u001b[90m 14 |\u001b[39m         test(\u001b[32m'should display login form'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 15 |\u001b[39m             \u001b[36mawait\u001b[39m expect(loginPage\u001b[33m.\u001b[39memailInput)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 16 |\u001b[39m             \u001b[36mawait\u001b[39m expect(loginPage\u001b[33m.\u001b[39mpasswordInput)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 17 |\u001b[39m             \u001b[36mawait\u001b[39m expect(loginPage\u001b[33m.\u001b[39mloginButton)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 18 |\u001b[39m         })\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js:15:48\u001b[22m"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-13T04:29:50.441Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\test-results\\auth-Authentication-Login-should-display-login-form-chrome\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\test-results\\auth-Authentication-Login-should-display-login-form-chrome\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\test-results\\auth-Authentication-Login-should-display-login-form-chrome\\error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                            "column": 48,
+                            "line": 15
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "d5ed79a6b333c2ba7209-456846abcbdadd9f44db",
+                  "file": "auth.spec.js",
+                  "line": 14,
+                  "column": 9
+                },
+                {
+                  "title": "should show validation error for empty fields",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chrome",
+                      "projectName": "chrome",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "failed",
+                          "duration": 15891,
+                          "error": {
+                            "message": "Error: locator.click: Error: strict mode violation: locator('button[type=\"submit\"]') resolved to 3 elements:\n    1) <button type=\"submit\" class=\"btn btn-primary w-100 text-white\">Login</button> aka getByRole('button', { name: 'Login' })\n    2) <button type=\"submit\" id=\"loginSubmitBtn\" class=\"btn btn-info w-100 text-white\">Login</button> aka getByLabel('Login to Continue').getByText('Login', { exact: true })\n    3) <button type=\"submit\" class=\"btn btn-info w-100 text-white\">Register</button> aka getByLabel('Register an Account').getByText('Register', { exact: true })\n\nCall log:\n\u001b[2m  - waiting for locator('button[type=\"submit\"]')\u001b[22m\n",
+                            "stack": "Error: locator.click: Error: strict mode violation: locator('button[type=\"submit\"]') resolved to 3 elements:\n    1) <button type=\"submit\" class=\"btn btn-primary w-100 text-white\">Login</button> aka getByRole('button', { name: 'Login' })\n    2) <button type=\"submit\" id=\"loginSubmitBtn\" class=\"btn btn-info w-100 text-white\">Login</button> aka getByLabel('Login to Continue').getByText('Login', { exact: true })\n    3) <button type=\"submit\" class=\"btn btn-info w-100 text-white\">Register</button> aka getByLabel('Register an Account').getByText('Register', { exact: true })\n\nCall log:\n\u001b[2m  - waiting for locator('button[type=\"submit\"]')\u001b[22m\n\n    at C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js:27:41",
+                            "location": {
+                              "file": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                              "column": 41,
+                              "line": 27
+                            },
+                            "snippet": "\u001b[0m \u001b[90m 25 |\u001b[39m             \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mevaluate(() \u001b[33m=>\u001b[39m document\u001b[33m.\u001b[39mquerySelector(\u001b[32m'form'\u001b[39m)\u001b[33m.\u001b[39msetAttribute(\u001b[32m'novalidate'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'true'\u001b[39m))\u001b[33m;\u001b[39m\n \u001b[90m 26 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 27 |\u001b[39m             \u001b[36mawait\u001b[39m loginPage\u001b[33m.\u001b[39mloginButton\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 28 |\u001b[39m\n \u001b[90m 29 |\u001b[39m             \u001b[90m// Check for required field errors\u001b[39m\n \u001b[90m 30 |\u001b[39m             \u001b[90m// Note: The specific error text depends on Laravel's validation messages\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                                "column": 41,
+                                "line": 27
+                              },
+                              "message": "Error: locator.click: Error: strict mode violation: locator('button[type=\"submit\"]') resolved to 3 elements:\n    1) <button type=\"submit\" class=\"btn btn-primary w-100 text-white\">Login</button> aka getByRole('button', { name: 'Login' })\n    2) <button type=\"submit\" id=\"loginSubmitBtn\" class=\"btn btn-info w-100 text-white\">Login</button> aka getByLabel('Login to Continue').getByText('Login', { exact: true })\n    3) <button type=\"submit\" class=\"btn btn-info w-100 text-white\">Register</button> aka getByLabel('Register an Account').getByText('Register', { exact: true })\n\nCall log:\n\u001b[2m  - waiting for locator('button[type=\"submit\"]')\u001b[22m\n\n\n\u001b[0m \u001b[90m 25 |\u001b[39m             \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mevaluate(() \u001b[33m=>\u001b[39m document\u001b[33m.\u001b[39mquerySelector(\u001b[32m'form'\u001b[39m)\u001b[33m.\u001b[39msetAttribute(\u001b[32m'novalidate'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'true'\u001b[39m))\u001b[33m;\u001b[39m\n \u001b[90m 26 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 27 |\u001b[39m             \u001b[36mawait\u001b[39m loginPage\u001b[33m.\u001b[39mloginButton\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 28 |\u001b[39m\n \u001b[90m 29 |\u001b[39m             \u001b[90m// Check for required field errors\u001b[39m\n \u001b[90m 30 |\u001b[39m             \u001b[90m// Note: The specific error text depends on Laravel's validation messages\u001b[39m\u001b[0m\n\u001b[2m    at C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js:27:41\u001b[22m"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-13T04:29:50.531Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\test-results\\auth-Authentication-Login--723c1-tion-error-for-empty-fields-chrome\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\test-results\\auth-Authentication-Login--723c1-tion-error-for-empty-fields-chrome\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\test-results\\auth-Authentication-Login--723c1-tion-error-for-empty-fields-chrome\\error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                            "column": 41,
+                            "line": 27
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "d5ed79a6b333c2ba7209-565a8bba9c28e4748ffd",
+                  "file": "auth.spec.js",
+                  "line": 20,
+                  "column": 9
+                },
+                {
+                  "title": "should show error for invalid credentials",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chrome",
+                      "projectName": "chrome",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 1,
+                          "status": "timedOut",
+                          "duration": 30577,
+                          "error": {
+                            "message": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
+                            "stack": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js:9:14",
+                            "location": {
+                              "file": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                              "column": 14,
+                              "line": 9
+                            },
+                            "snippet": "\u001b[0m \u001b[90m  7 |\u001b[39m\n \u001b[90m  8 |\u001b[39m     test\u001b[33m.\u001b[39mdescribe(\u001b[32m'Login'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  9 |\u001b[39m         test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 10 |\u001b[39m             loginPage \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mLoginPage\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 11 |\u001b[39m             \u001b[36mawait\u001b[39m loginPage\u001b[33m.\u001b[39mgoto()\u001b[33m;\u001b[39m\n \u001b[90m 12 |\u001b[39m         })\u001b[33m;\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                                "column": 14,
+                                "line": 9
+                              },
+                              "message": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n\u001b[0m \u001b[90m  7 |\u001b[39m\n \u001b[90m  8 |\u001b[39m     test\u001b[33m.\u001b[39mdescribe(\u001b[32m'Login'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  9 |\u001b[39m         test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 10 |\u001b[39m             loginPage \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mLoginPage\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 11 |\u001b[39m             \u001b[36mawait\u001b[39m loginPage\u001b[33m.\u001b[39mgoto()\u001b[33m;\u001b[39m\n \u001b[90m 12 |\u001b[39m         })\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js:9:14\u001b[22m"
+                            },
+                            {
+                              "location": {
+                                "file": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage.js",
+                                "column": 25,
+                                "line": 27
+                              },
+                              "message": "Error: page.goto: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8000/login\", waiting until \"load\"\u001b[22m\n\n\u001b[2m    at LoginPage.goto (C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage.js:27:25)\u001b[22m\n\u001b[2m    at C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js:11:29\u001b[22m"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-13T04:30:10.394Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\test-results\\auth-Authentication-Login--ad725-ror-for-invalid-credentials-chrome\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\test-results\\auth-Authentication-Login--ad725-ror-for-invalid-credentials-chrome\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\test-results\\auth-Authentication-Login--ad725-ror-for-invalid-credentials-chrome\\error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                            "column": 14,
+                            "line": 9
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "d5ed79a6b333c2ba7209-088639172a5526f7b413",
+                  "file": "auth.spec.js",
+                  "line": 35,
+                  "column": 9
+                },
+                {
+                  "title": "should login as admin successfully",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chrome",
+                      "projectName": "chrome",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 0,
+                          "status": "timedOut",
+                          "duration": 32269,
+                          "error": {
+                            "message": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
+                            "stack": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js:9:14",
+                            "location": {
+                              "file": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                              "column": 14,
+                              "line": 9
+                            },
+                            "snippet": "\u001b[0m \u001b[90m  7 |\u001b[39m\n \u001b[90m  8 |\u001b[39m     test\u001b[33m.\u001b[39mdescribe(\u001b[32m'Login'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  9 |\u001b[39m         test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 10 |\u001b[39m             loginPage \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mLoginPage\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 11 |\u001b[39m             \u001b[36mawait\u001b[39m loginPage\u001b[33m.\u001b[39mgoto()\u001b[33m;\u001b[39m\n \u001b[90m 12 |\u001b[39m         })\u001b[33m;\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                                "column": 14,
+                                "line": 9
+                              },
+                              "message": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n\u001b[0m \u001b[90m  7 |\u001b[39m\n \u001b[90m  8 |\u001b[39m     test\u001b[33m.\u001b[39mdescribe(\u001b[32m'Login'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  9 |\u001b[39m         test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 10 |\u001b[39m             loginPage \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mLoginPage\u001b[39m(page)\u001b[33m;\u001b[39m\n \u001b[90m 11 |\u001b[39m             \u001b[36mawait\u001b[39m loginPage\u001b[33m.\u001b[39mgoto()\u001b[33m;\u001b[39m\n \u001b[90m 12 |\u001b[39m         })\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js:9:14\u001b[22m"
+                            },
+                            {
+                              "location": {
+                                "file": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage.js",
+                                "column": 25,
+                                "line": 27
+                              },
+                              "message": "Error: page.goto: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8000/login\", waiting until \"load\"\u001b[22m\n\n\u001b[2m    at LoginPage.goto (C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage.js:27:25)\u001b[22m\n\u001b[2m    at C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js:11:29\u001b[22m"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-13T04:30:10.938Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\test-results\\auth-Authentication-Login-should-login-as-admin-successfully-chrome\\video.webm"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                            "column": 14,
+                            "line": 9
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "d5ed79a6b333c2ba7209-a1821603d35806a2a1d5",
+                  "file": "auth.spec.js",
+                  "line": 44,
+                  "column": 9
+                },
+                {
+                  "title": "should login as super admin successfully",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chrome",
+                      "projectName": "chrome",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "failed",
+                          "duration": 0,
+                          "error": {
+                            "message": "Error: Cannot find module 'C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage' imported from C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                            "stack": "Error: Cannot find module 'C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage' imported from C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js"
+                          },
+                          "errors": [
+                            {
+                              "message": "Error: Cannot find module 'C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage' imported from C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-13T04:30:44.615Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "d5ed79a6b333c2ba7209-afa541ff4ebd08c6eddc",
+                  "file": "auth.spec.js",
+                  "line": 49,
+                  "column": 9
+                },
+                {
+                  "title": "should have forgot password link",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chrome",
+                      "projectName": "chrome",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "failed",
+                          "duration": 0,
+                          "error": {
+                            "message": "Error: Cannot find module 'C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage' imported from C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                            "stack": "Error: Cannot find module 'C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage' imported from C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js"
+                          },
+                          "errors": [
+                            {
+                              "message": "Error: Cannot find module 'C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage' imported from C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-13T04:30:46.140Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "d5ed79a6b333c2ba7209-b7276db8c5800505ea39",
+                  "file": "auth.spec.js",
+                  "line": 54,
+                  "column": 9
+                },
+                {
+                  "title": "should navigate to register page",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chrome",
+                      "projectName": "chrome",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "failed",
+                          "duration": 0,
+                          "error": {
+                            "message": "Error: Cannot find module 'C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage' imported from C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                            "stack": "Error: Cannot find module 'C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage' imported from C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js"
+                          },
+                          "errors": [
+                            {
+                              "message": "Error: Cannot find module 'C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage' imported from C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-13T04:30:46.183Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "d5ed79a6b333c2ba7209-a1cb1625374386b78bd9",
+                  "file": "auth.spec.js",
+                  "line": 58,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Logout",
+              "file": "auth.spec.js",
+              "line": 66,
+              "column": 10,
+              "specs": [
+                {
+                  "title": "should logout patient successfully",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chrome",
+                      "projectName": "chrome",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "failed",
+                          "duration": 0,
+                          "error": {
+                            "message": "Error: Cannot find module 'C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage' imported from C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                            "stack": "Error: Cannot find module 'C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage' imported from C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js"
+                          },
+                          "errors": [
+                            {
+                              "message": "Error: Cannot find module 'C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage' imported from C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-13T04:30:47.570Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "d5ed79a6b333c2ba7209-d1dd1de441e808603efa",
+                  "file": "auth.spec.js",
+                  "line": 67,
+                  "column": 9
+                },
+                {
+                  "title": "should logout admin successfully",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chrome",
+                      "projectName": "chrome",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "failed",
+                          "duration": 0,
+                          "error": {
+                            "message": "Error: Cannot find module 'C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage' imported from C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js",
+                            "stack": "Error: Cannot find module 'C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage' imported from C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js"
+                          },
+                          "errors": [
+                            {
+                              "message": "Error: Cannot find module 'C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\pages\\LoginPage' imported from C:\\Users\\lebro\\Documents\\Laravel Project\\it12_project\\tests\\playwright\\auth.spec.js"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-13T04:30:47.513Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "d5ed79a6b333c2ba7209-feaf7e5febd1108644a3",
+                  "file": "auth.spec.js",
+                  "line": 75,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-12-13T04:29:40.046Z",
+    "duration": 67554.34400000001,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 9,
+    "flaky": 0
+  }
+}

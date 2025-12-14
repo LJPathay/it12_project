@@ -17,6 +17,10 @@ class EnsureAdmin
     public function handle(Request $request, Closure $next): Response
     {
         if (!Auth::guard('admin')->check()) {
+            // If user is logged in as another role, show unauthorized instead of login redirect
+            if (Auth::guard('patient')->check() || Auth::guard('super_admin')->check() || Auth::check()) {
+                return redirect()->back();
+            }
             return redirect('/login')->with('error', 'Please login as an admin to access this page.');
         }
 

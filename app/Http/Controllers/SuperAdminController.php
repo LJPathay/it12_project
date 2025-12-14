@@ -141,34 +141,8 @@ class SuperAdminController extends Controller
         // Merge all users
         $allUsers = $patients->concat($admins)->concat($superAdmins);
 
-        // Filter by Role
-        if ($request->has('role') && $request->role) {
-            $allUsers = $allUsers->where('role', $request->role);
-        }
-
-        // Filter by Search
-        if ($request->has('search') && $request->search) {
-            $search = strtolower($request->search);
-            $allUsers = $allUsers->filter(function ($user) use ($search) {
-                return str_contains(strtolower($user->name), $search) ||
-                    str_contains(strtolower($user->email), $search);
-            });
-        }
-
-        // Sort by created_at desc
-        $sortedUsers = $allUsers->sortByDesc('created_at');
-
-        // Manual Pagination
-        $page = $request->get('page', 1);
-        $perPage = 15;
-
-        $users = new \Illuminate\Pagination\LengthAwarePaginator(
-            $sortedUsers->forPage($page, $perPage),
-            $sortedUsers->count(),
-            $perPage,
-            $page,
-            ['path' => $request->url(), 'query' => $request->query()]
-        );
+        // Sort by Name Ascending (Global Sort)
+        $users = $allUsers->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE);
 
         return view('superadmin.users', compact('users'));
     }
@@ -191,7 +165,11 @@ class SuperAdminController extends Controller
                 'regex:/^[a-zA-Z\s\.\-\']+$/',
             ],
             'email' => "required|string|email|max:255|unique:{$emailTable}",
-            'gender' => 'required|in:male,female,other',
+            'gender' => [
+                Rule::requiredIf(fn() => $request->role === 'user'),
+                'nullable',
+                'in:male,female,other',
+            ],
             'role' => 'required|in:user,admin,superadmin',
             'barangay' => [
                 Rule::requiredIf(fn() => $request->role === 'user'),
@@ -240,7 +218,7 @@ class SuperAdminController extends Controller
         ], [
             'name.regex' => 'The name field should not contain numbers. Only letters, spaces, periods, hyphens, and apostrophes are allowed.',
             'password.regex' => 'The password must contain at least one lowercase letter, one uppercase letter, and one number.',
-            'gender.required' => 'Please select a gender.',
+            'gender.required' => 'Gender is required for patient accounts.',
             'barangay.in' => 'Please select Barangay 11, Barangay 12, or choose Other.',
             'barangay.required' => 'Barangay is required for patient accounts.',
             'barangay_other.required' => 'Please specify the barangay.',
@@ -264,11 +242,53 @@ class SuperAdminController extends Controller
                 'password' => Hash::make($validated['password']),
             ]);
         } elseif ($request->role === 'admin') {
-            Admin::create([
+            \Log::info('Creating admin user', [
                 'name' => $validated['name'],
                 'email' => $validated['email'],
-                'password' => Hash::make($validated['password']),
+                'validated_keys' => array_keys($validated),
+                'db_connection' => config('database.default'),
+                'db_driver' => DB::connection()->getDriverName(),
+                'db_database' => DB::connection()->getDatabaseName()
             ]);
+            
+            try {
+                DB::beginTransaction();
+                
+                $admin = Admin::create([
+                    'name' => $validated['name'],
+                    'email' => $validated['email'],
+                    'password' => Hash::make($validated['password']),
+                ]);
+                
+                \Log::info('Admin created successfully', [
+                    'id' => $admin->id,
+                    'name' => $admin->name,
+                    'email' => $admin->email,
+                    'connection' => $admin->getConnectionName()
+                ]);
+                
+                DB::commit();
+                \Log::info('Transaction committed for admin', [
+                    'id' => $admin->id,
+                    'db_connection' => DB::getDefaultConnection()
+                ]);
+                
+                // Verify it's really there
+                $check = Admin::find($admin->id);
+                \Log::info('Admin verification after commit', [
+                    'found' => $check ? 'yes' : 'no',
+                    'id' => $check?->id ?? 'null',
+                    'connection_used' => $check?->getConnectionName() ?? 'null'
+                ]);
+                
+            } catch (\Exception $e) {
+                DB::rollBack();
+                \Log::error('Failed to create admin', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                return redirect()->back()->with('error', 'Failed to create admin: ' . $e->getMessage());
+            }
         } elseif ($request->role === 'superadmin') {
             SuperAdmin::create([
                 'name' => $validated['name'],
@@ -309,7 +329,11 @@ class SuperAdminController extends Controller
                 'regex:/^[a-zA-Z\s\.\-\']+$/',
             ],
             'email' => 'required|string|email|max:255|unique:' . $emailTable . ',email,' . $id,
-            'gender' => 'required|in:male,female,other',
+            'gender' => [
+                Rule::requiredIf(fn() => $type === 'user'),
+                'nullable',
+                'in:male,female,other',
+            ],
             // Role validation removed as we don't support switching roles via update yet
             'barangay' => [
                 Rule::requiredIf(fn() => $type === 'user'),
@@ -499,7 +523,7 @@ class SuperAdminController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        $logs = $query->latest()->paginate(10)->withQueryString();
+        $logs = $query->latest()->get();
 
         // Get unique actions and tables for filter dropdowns
         $actions = SystemLog::distinct()->pluck('action')->filter();

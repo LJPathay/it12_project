@@ -11,6 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->append([
+            \App\Http\Middleware\SecurityHeaders::class,
+        ]);
+
         $middleware->web(append: [
             \App\Http\Middleware\RunQueueWorker::class,
         ]);
@@ -21,6 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'super_admin' => \App\Http\Middleware\EnsureSuperAdmin::class,
             'auth.multi' => \App\Http\Middleware\AuthenticateMultiGuard::class,
         ]);
+
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

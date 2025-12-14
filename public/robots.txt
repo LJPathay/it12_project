@@ -1,2 +1,6 @@
 User-agent: *
+<<<<<<< HEAD
+Disallow: /
+=======
 Disallow:
+>>>>>>> parent of c8a9a7a (ignore this im testing for robot.txt)

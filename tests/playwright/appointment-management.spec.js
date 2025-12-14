@@ -1,63 +1,78 @@
 import { test, expect } from '@playwright/test';
+import { AppointmentPage } from './pages/AppointmentPage';
 import { login, testUsers } from './helpers.js';
 
 test.describe('Appointment Management Module', () => {
+    let appointmentPage;
+
     test.beforeEach(async ({ page }) => {
+        // Initialize page object
+        appointmentPage = new AppointmentPage(page);
+
+        // Login and navigate
         await login(page, testUsers.admin.email, testUsers.admin.password);
-        await page.goto('/admin/appointments');
+        await appointmentPage.goto();
     });
 
     test('should display appointments page', async ({ page }) => {
-        await expect(page.locator('h1, h2, h3, .page-title').filter({ hasText: /appointment/i })).toBeVisible();
-        await expect(page.locator('table, .table, .appointment-card, .card')).toBeVisible();
+        await expect(appointmentPage.pageTitle).toBeVisible();
+        await expect(appointmentPage.appointmentsTable).toBeVisible();
     });
 
     test('should show appointment status badges', async ({ page }) => {
-        // Look for status badges
-        const statusBadges = page.locator('.badge, .status-badge, span[class*="badge"]');
+        // Wait for table data to load
+        await expect(appointmentPage.appointmentsTable).toBeVisible();
 
-        if (await statusBadges.count() > 0) {
-            await expect(statusBadges.first()).toBeVisible();
+        // Check if we have rows
+        const rowCount = await appointmentPage.appointmentRows.count();
+        if (rowCount > 0) {
+            await expect(appointmentPage.statusBadges.first()).toBeVisible();
+        } else {
+            // If empty, verify empty state message
+            await expect(appointmentPage.emptyStateMessage).toBeVisible();
         }
     });
 
     test('should be able to filter appointments', async ({ page }) => {
-        // Look for filter/search options
-        const filterSelect = page.locator('select[name*="status"], select[name*="filter"]').first();
+        await expect(appointmentPage.statusFilter).toBeVisible();
 
-        if (await filterSelect.isVisible()) {
-            await filterSelect.selectOption({ index: 1 });
-            await page.waitForTimeout(500);
+        // Try filtering by 'Pending'
+        await appointmentPage.filterByStatus('Pending');
 
-            // Page should still display appointments
-            await expect(page.locator('table, .appointment-card')).toBeVisible();
-        }
+        // Verify table or empty state is visible
+        await expect(appointmentPage.appointmentsTable).toBeVisible();
     });
 
     test('should be able to update appointment status', async ({ page }) => {
-        // Check if there are any appointments
-        const appointmentRows = page.locator('table tbody tr, .appointment-card');
-        const count = await appointmentRows.count();
-
-        if (count > 0) {
-            // Look for status update button/dropdown
-            const statusButton = appointmentRows.first().locator('button:has-text("Approve"), button:has-text("Complete"), select[name*="status"]').first();
-
-            if (await statusButton.isVisible()) {
-                await expect(statusButton).toBeVisible();
+        // This test depends on data being present. 
+        // Ideally we should seed data or mock the response.
+        // For now, we'll check if the Approve button exists on pending items
+        const pendingRows = page.locator('tr[data-status="pending"]');
+        if (await pendingRows.count() > 0) {
+            const approveButton = pendingRows.first().locator('button:has-text("Approve")').first();
+            if (await approveButton.isVisible()) {
+                await expect(approveButton).toBeVisible();
             }
         }
     });
 
     test('should display appointment details', async ({ page }) => {
-        // Check if there are appointments with view/details buttons
-        const viewButtons = page.locator('button:has-text("View"), a:has-text("View"), .fa-eye');
+        const rowCount = await appointmentPage.appointmentRows.count();
 
-        if (await viewButtons.count() > 0) {
-            await viewButtons.first().click();
+        if (rowCount > 0) {
+            // Click the first view button/icon
+            const viewButton = appointmentPage.appointmentRows.first().locator('.fa-eye').first();
+            await viewButton.click();
 
-            // Modal or details page should appear
-            await expect(page.locator('.modal, [role="dialog"], .appointment-details')).toBeVisible({ timeout: 3000 });
+            // Modal should appear
+            // Using a generic selector for any modal that opens
+            await expect(page.locator('.modal.show')).toBeVisible();
         }
+    });
+
+    test('should open add appointment modal', async ({ page }) => {
+        await appointmentPage.addAppointmentButton.click();
+        await expect(appointmentPage.addAppointmentModal).toBeVisible();
+        await expect(appointmentPage.addAppointmentModal.locator('.modal-title')).toHaveText('Add New Appointment');
     });
 });

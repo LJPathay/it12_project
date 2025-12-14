@@ -430,3 +430,139 @@ body.bg-dark .btn-ghost:hover {
 .border-accent {
     border-color: var(--color-accent) !important;
 }
+
+/* ===== Responsive Utility Classes ===== */
+
+/* Display Utilities - Hide/Show at breakpoints */
+@media (max-width: 575px) {
+    .d-xs-none {
+        display: none !important;
+    }
+
+    .d-xs-block {
+        display: block !important;
+    }
+
+    .d-xs-inline-block {
+        display: inline-block !important;
+    }
+
+    .d-xs-flex {
+        display: flex !important;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+    .d-sm-none {
+        display: none !important;
+    }
+
+    .d-sm-block {
+        display: block !important;
+    }
+
+    .d-sm-flex {
+        display: flex !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .d-md-none {
+        display: none !important;
+    }
+
+    .d-md-block {
+        display: block !important;
+    }
+
+    .d-md-flex {
+        display: flex !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .d-lg-none {
+        display: none !important;
+    }
+
+    .d-lg-block {
+        display: block !important;
+    }
+
+    .d-lg-flex {
+        display: flex !important;
+    }
+}
+
+/* Responsive Spacing */
+@media (max-width: 767px) {
+    .p-mobile-sm {
+        padding: var(--space-sm);
+    }
+
+    .p-mobile-md {
+        padding: var(--space-md);
+    }
+
+    .m-mobile-sm {
+        margin: var(--space-sm);
+    }
+
+    .m-mobile-md {
+        margin: var(--space-md);
+    }
+
+    /* Mobile-specific spacing resets */
+    .no-p-mobile {
+        padding: 0 !important;
+    }
+
+    .no-m-mobile {
+        margin: 0 !important;
+    }
+}
+
+/* Responsive Text Alignment */
+@media (max-width: 767px) {
+    .text-mobile-center {
+        text-align: center !important;
+    }
+
+    .text-mobile-left {
+        text-align: left !important;
+    }
+
+    .text-mobile-right {
+        text-align: right !important;
+    }
+}
+
+/* Container Width Utilities */
+.container-fluid-mobile {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+}
+
+@media (max-width: 767px) {
+    .container-fluid-mobile {
+        padding-left: var(--space-sm);
+        padding-right: var(--space-sm);
+    }
+}
+
+/* Touch-friendly classes */
+.touch-target {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Prevent text selection on interactive elements */
+.no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}

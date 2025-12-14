@@ -40,17 +40,24 @@ Route::get('/booking', function () {
 
 // Authentication Routes
 Route::get('/login', fn() => view('auth.login'))->name('login');
-Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
+Route::post('/login', [App\Http\Controllers\AuthController::class, 'login'])
+    ->middleware('throttle:5,1'); // 5 attempts per minute
 
 Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
 // Password Reset Routes
 Route::get('/forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('/forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendOtp'])->name('password.email');
+Route::post('/forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendOtp'])
+    ->middleware('throttle:3,1') // 3 attempts per minute
+    ->name('password.email');
 Route::get('/forgot-password/verify', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'showOtpForm'])->name('password.otp');
-Route::post('/forgot-password/verify', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'verifyOtp'])->name('password.verify');
+Route::post('/forgot-password/verify', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'verifyOtp'])
+    ->middleware('throttle:5,1') // 5 attempts per minute for OTP verification
+    ->name('password.verify');
 Route::get('/reset-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('/reset-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'resetPassword'])->name('password.update');
+Route::post('/reset-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'resetPassword'])
+    ->middleware('throttle:3,1') // 3 attempts per minute
+    ->name('password.update');
 
 // Profile Routes
 Route::middleware(['auth.multi'])->group(function () {

@@ -279,7 +279,7 @@
                 <span class="input-group-text">
                     <i class="fas fa-search"></i>
                 </span>
-                <input type="text" class="form-control" id="searchInput" placeholder="Search users by name or email..."
+                <input type="text" class="form-control" id="userSearch" placeholder="Search users by name or email..."
                     value="{{ request('search') }}">
             </div>
         </div>
@@ -300,22 +300,12 @@
     </div>
 
     <!-- Users Table -->
-    <div class="table-container">
+    <div class="table-container" id="usersTableContainer">
         @if($users->count() > 0)
             @include('superadmin.partials.users-table')
             
             <!-- Modals for EACH user are placed here so they are refreshed with AJAX -->
             @include('superadmin.partials.user-modals')
-
-            <!-- Pagination (Inside table-container for AJAX) -->
-            <div class="d-flex flex-column align-items-center mt-4" id="usersPaginationContainer">
-                <div>
-                    {{ $users->links('pagination::bootstrap-5') }}
-                </div>
-                <div class="small text-muted mb-0 mt-n2">
-                    Showing {{ $users->firstItem() }}-{{ $users->lastItem() }} of {{ $users->total() }} users
-                </div>
-            </div>
         @else
             <div class="text-center py-5">
                 <i class="fas fa-users fa-3x text-muted mb-3"></i>
@@ -324,6 +314,11 @@
             </div>
         @endif
     </div>
+
+    <!-- Pagination -->
+    @if($users->count() > 0)
+        <div id="usersPaginationContainer" class="mt-4"></div>
+    @endif
     <!-- Confirm Action Modal -->
     <div class="modal fade" id="confirmActionModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -352,4 +347,25 @@
 
 @push('scripts')
     @include('superadmin.partials.users-scripts')
+    @if($users->count() > 0)
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            new TablePaginator({
+                tableId: 'usersTableBody',
+                tableBodyId: 'usersTableBody',
+                paginationContainerId: 'usersPaginationContainer',
+                searchId: 'userSearch',
+                filterInputs: {
+                    roleFilter: (row, roleToCheck) => {
+                        if (!roleToCheck) return true;
+                        // Role is in the 3rd column (index 2)
+                        const roleCell = row.cells[2].textContent.trim().toLowerCase();
+                        return roleCell.includes(roleToCheck.toLowerCase());
+                    }
+                },
+                rowsPerPage: 10
+            });
+        });
+    </script>
+    @endif
 @endpush

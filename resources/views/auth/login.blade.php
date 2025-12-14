@@ -34,7 +34,7 @@
 <div class="position-fixed top-0 start-0 w-100 h-100" style="z-index: 1050; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(5px); overflow-y: auto;">
     <div class="d-flex min-vh-100 align-items-center justify-content-center py-5">
         <div class="container" style="max-width: 450px;">
-            <x-card class="shadow-lg border-0" noPadding>
+            <div class="card shadow-lg border-0">
                 <div class="card-header bg-primary text-white text-center position-relative py-3">
                     <h4 class="mb-0">Login</h4>
                     <a href="{{ route('home') }}" class="btn-close btn-close-white position-absolute top-50 end-0 translate-middle-y me-3" aria-label="Close"></a>
@@ -53,21 +53,25 @@
                             </div>
                         @endif
 
-                        <x-input 
-                            name="email" 
-                            label="Email" 
-                            type="email" 
-                            value="{{ old('email') }}" 
-                            required 
-                            autofocus 
-                        />
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autofocus>
+                            @error('email')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
 
-                        <x-input 
-                            name="password" 
-                            label="Password" 
-                            type="password" 
-                            required 
-                        />
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required>
+                            @error('password')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
 
                         <div class="mb-3 d-flex justify-content-between align-items-center">
                             <div class="form-check">
@@ -79,13 +83,13 @@
                             <a href="{{ route('password.request') }}" class="text-decoration-none small">Forgot Password?</a>
                         </div>
 
-                        <x-button type="submit" variant="primary" class="w-100 text-white">Login</x-button>
+                        <button type="submit" class="btn btn-primary w-100 text-white">Login</button>
                     </form>
                     <div class="text-center mt-3">
                         <small>Don’t have an account? <a href="{{ route('register') }}">Register here</a></small>
                     </div>
                 </div>
-            </x-card>
+            </div>
         </div>
     </div>
 </div>

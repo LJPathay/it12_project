@@ -1,0 +1,84 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e4]:
+    - navigation [ref=e5]:
+      - generic [ref=e6]:
+        - link "Malasakit Logo MALASAKIT" [ref=e7] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000
+          - img "Malasakit Logo"
+          - generic [ref=e8]: MALASAKIT
+        - list [ref=e10]:
+          - listitem [ref=e11]:
+            - link "Home" [ref=e12] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000
+          - listitem [ref=e13]:
+            - link "Booking Policy" [ref=e14] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/policy
+          - listitem [ref=e15]:
+            - link "Contact Us!" [ref=e16] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/contact
+          - listitem [ref=e17]:
+            - link "Login" [ref=e18] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/login
+  - main [ref=e19]:
+    - generic [ref=e24]:
+      - heading "Easy Online Booking for Your Healthcare Needs" [level=1] [ref=e25]
+      - paragraph [ref=e26]: Skip the long queues and book your appointment online. Access quality healthcare services right in your barangay with just a few clicks.
+      - link "Book Appointment Now" [ref=e27] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/login
+      - link "View Services" [ref=e28] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/services
+    - generic [ref=e30]:
+      - heading "How It Works" [level=2] [ref=e31]
+      - paragraph [ref=e32]: We’ve made healthcare booking simple and fast — just follow these easy steps.
+      - generic [ref=e33]:
+        - generic [ref=e36]:
+          - generic [ref=e37]: 
+          - heading "1. Create an Account" [level=5] [ref=e38]
+          - paragraph [ref=e39]: Sign up using your email to start booking appointments and manage your visits online.
+        - generic [ref=e42]:
+          - generic [ref=e43]: 
+          - heading "2. Choose a Service" [level=5] [ref=e44]
+          - paragraph [ref=e45]: Select the medical service you need from our list of available healthcare offerings.
+        - generic [ref=e48]:
+          - generic [ref=e49]: 
+          - heading "3. Book & Confirm" [level=5] [ref=e50]
+          - paragraph [ref=e51]: Pick a convenient date and time — then receive instant confirmation of your appointment.
+      - link "Learn More" [ref=e52] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/how-it-works
+    - generic [ref=e56]:
+      - generic [ref=e57]:
+        - heading "Login" [level=4] [ref=e58]
+        - link "Close" [ref=e59] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000
+      - generic [ref=e60]:
+        - generic [ref=e61]:
+          - generic [ref=e62]:
+            - generic [ref=e63]: Email
+            - textbox "Email" [active] [ref=e64]
+          - generic [ref=e65]:
+            - generic [ref=e66]: Password
+            - textbox "Password" [ref=e67]
+          - generic [ref=e68]:
+            - generic [ref=e69]:
+              - checkbox "Remember Me" [ref=e70]
+              - generic [ref=e71]: Remember Me
+            - link "Forgot Password?" [ref=e72] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/forgot-password
+          - button "Login" [ref=e73] [cursor=pointer]
+        - generic [ref=e75]:
+          - text: Don’t have an account?
+          - link "Register here" [ref=e76] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/register
+  - contentinfo [ref=e77]:
+    - generic [ref=e78]:
+      - text: Barangay Health Clinic © 2025. All rights reserved. |
+      - link "Privacy Policy" [ref=e79] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/privacy
+      - text: "|"
+      - link "Terms of Service" [ref=e80] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/terms
+  - text:  
+```

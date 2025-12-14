@@ -431,19 +431,7 @@
                     </table>
                 </div>
             </div>
-            <div class="d-flex flex-column align-items-center mt-4"
-                id="inventoryPaginationContainer">
-                <div>
-                    {{ $inventory->links('pagination::bootstrap-5') }}
-                </div>
-                <div class="small text-muted mb-0 mt-n2">
-                    @if($inventory->total() > 0)
-                        Showing {{ $inventory->firstItem() }}-{{ $inventory->lastItem() }} of {{ $inventory->total() }} items
-                    @else
-                        Showing 0 items
-                    @endif
-                </div>
-            </div>
+            <div id="inventoryPagination"></div>
 
             <!-- Per-item View Modals -->
             @foreach($inventory as $item)
@@ -688,7 +676,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="expiry_date" class="form-label">Expiry Date</label>
-                                <input type="date" class="form-control" id="expiry_date" name="expiry_date">
+                                <input type="date" class="form-control" id="expiry_date" name="expiry_date" min="{{ date('Y-m-d', strtotime('+1 day')) }}">
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -723,82 +711,19 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const searchInput = document.getElementById('inventorySearchInput');
-            const categorySelect = document.getElementById('inventoryCategorySelect');
-            const form = searchInput ? searchInput.closest('form') : null;
-            const tableBody = document.getElementById('inventoryTableBody');
-            const paginationContainer = document.getElementById('inventoryPaginationContainer');
-
-            let debounceTimer;
-
-            const fetchResults = () => {
-                if (!form) return;
-
-                const formData = new FormData(form);
-                const params = new URLSearchParams(formData);
-                const url = `${form.action}?${params.toString()}`;
-
-                // Show loading state
-                if (tableBody) tableBody.style.opacity = '0.5';
-
-                fetch(url, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                    .then(response => response.text())
-                    .then(html => {
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-
-                        // Update Table Body
-                        const newTableBody = doc.getElementById('inventoryTableBody');
-                        if (newTableBody && tableBody) {
-                            tableBody.innerHTML = newTableBody.innerHTML;
-                            tableBody.style.opacity = '1';
-                        }
-
-                        // Update Pagination & Summary (Bottom)
-                        const newPagination = doc.getElementById('inventoryPaginationContainer');
-                        if (newPagination && paginationContainer) {
-                            paginationContainer.innerHTML = newPagination.innerHTML;
-                        }
-
-                        // Update Filter Card Summary (Top)
-                        const newTopSummary = doc.querySelector('.filter-card .mt-2.small.text-muted');
-                        const currentTopSummary = document.querySelector('.filter-card .mt-2.small.text-muted');
-                        if (newTopSummary && currentTopSummary) {
-                            currentTopSummary.innerHTML = newTopSummary.innerHTML;
-                        }
-
-                        // Update URL
-                        window.history.pushState({}, '', url);
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        if (tableBody) tableBody.style.opacity = '1';
-                    });
-            };
-
-            if (searchInput && form) {
-                searchInput.addEventListener('input', function () {
-                    clearTimeout(debounceTimer);
-                    debounceTimer = setTimeout(fetchResults, 500);
-                });
-
-                // Prevent form submission on Enter and use AJAX
-                form.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    fetchResults();
-                });
-            }
-
-            if (categorySelect && form) {
-                categorySelect.addEventListener('change', function () {
-                    fetchResults();
-                });
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize reusable pagination
+            // Note: window.paginatorInstance assignment is optional now but kept for legacy external access if needed
+            window.paginatorInstance = new TablePaginator({
+                tableId: 'inventoryTable',
+                tableBodyId: 'inventoryTableBody',
+                paginationContainerId: 'inventoryPagination',
+                searchId: 'inventorySearchInput',
+                rowsPerPage: 10,
+                filterInputs: {
+                    'inventoryCategorySelect': 'data-category'
+                }
+            });
         });
     </script>
 @endpush

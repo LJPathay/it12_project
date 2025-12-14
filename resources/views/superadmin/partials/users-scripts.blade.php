@@ -4,82 +4,72 @@
             const roleFilter = document.getElementById('roleFilter');
             const clearBtn = document.getElementById('clearFiltersBtn');
             const tableContainer = document.querySelector('.table-container');
+            const tableBody = document.querySelector('.users-table tbody');
+            const totalCountSpan = document.getElementById('totalUsersCount');
+            
+            function filterUsers() {
+                const searchText = searchInput.value.toLowerCase().trim();
+                const selectedRole = roleFilter.value.toLowerCase();
+                const rows = tableBody.querySelectorAll('tr');
+                let visibleCount = 0;
 
-            function fetchUsers(url) {
-                tableContainer.style.opacity = '0.5';
+                rows.forEach(row => {
+                    // Extract data from columns
+                    const name = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase().trim() || '';
+                    const email = row.querySelector('td:nth-child(3)')?.textContent.toLowerCase().trim() || '';
+                    // Get raw role text from hidden inputs or infer from badge class/text if needed.
+                    // Assuming the badge text contains the role e.g., "Patient", "Admin", "Superadmin"
+                    const roleBadge = row.querySelector('.status-badge');
+                    const roleText = roleBadge ? roleBadge.textContent.toLowerCase().trim() : '';
 
-                fetch(url, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                    .then(response => response.text())
-                    .then(html => {
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        const newTableContainer = doc.querySelector('.table-container');
-
-                        if (newTableContainer && tableContainer) {
-                            tableContainer.innerHTML = newTableContainer.innerHTML;
-                            // Re-initialize dynamic forms
-                            if (typeof initSuperadminUserForms === 'function') {
-                                initSuperadminUserForms(tableContainer);
-                            }
+                    // Map role filter values to display text matching
+                    // Filter value: 'user', 'admin'
+                    // Display text: 'patient', 'admin', 'super admin'
+                    let roleMatch = true;
+                    if (selectedRole) {
+                        if (selectedRole === 'user') {
+                            roleMatch = roleText === 'patient';
+                        } else if (selectedRole === 'admin') {
+                            roleMatch = roleText === 'admin';
+                        } else {
+                            // strictly match others if any
+                            roleMatch = roleText.includes(selectedRole);
                         }
+                    }
 
-                        window.history.pushState({}, '', url);
-                        tableContainer.style.opacity = '1';
-                    })
-                    .catch(error => {
-                        console.error('Error fetching users:', error);
-                        tableContainer.style.opacity = '1';
-                    });
-            }
+                    const searchMatch = name.includes(searchText) || email.includes(searchText);
 
-            function updateFilters() {
-                const search = searchInput.value;
-                const role = roleFilter.value;
-                const url = new URL(window.location.href);
-
-                if (search) url.searchParams.set('search', search);
-                else url.searchParams.delete('search');
-
-                if (role) url.searchParams.set('role', role);
-                else url.searchParams.delete('role');
-
-                url.searchParams.set('page', 1);
-
-                fetchUsers(url.toString());
-            }
-
-            let timeout = null;
-            if (searchInput) {
-                searchInput.addEventListener('input', function () {
-                    clearTimeout(timeout);
-                    timeout = setTimeout(updateFilters, 500);
+                    if (roleMatch && searchMatch) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
                 });
+
+                // Update count
+                if (totalCountSpan) {
+                    totalCountSpan.textContent = visibleCount;
+                }
+
+                // Show/Hide "No users found" message if needed (optional enhancement)
+                // Existing "No users found" div is outside the table, handled by backend usually, 
+                // but for client side we might want to toggle a hidden row or div.
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', filterUsers);
             }
 
             if (roleFilter) {
-                roleFilter.addEventListener('change', updateFilters);
+                roleFilter.addEventListener('change', filterUsers);
             }
 
             if (clearBtn) {
                 clearBtn.addEventListener('click', function () {
                     searchInput.value = '';
                     roleFilter.value = '';
-                    updateFilters();
-                });
-            }
-
-            // Handle pagination clicks
-            if (tableContainer) {
-                tableContainer.addEventListener('click', function (e) {
-                    const link = e.target.closest('.pagination .page-link');
-                    if (link && !link.parentElement.classList.contains('disabled') && !link.parentElement.classList.contains('active')) {
-                        e.preventDefault();
-                        fetchUsers(link.href);
-                    }
+                    filterUsers();
                 });
             }
         });

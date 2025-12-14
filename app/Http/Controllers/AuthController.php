@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+
 class AuthController extends Controller
 {
     /**
@@ -22,8 +26,20 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
+        // Rate Limiting: 5 attempts per minute
+        $throttleKey = Str::lower($request->input('email')) . '|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            
+            throw ValidationException::withMessages([
+                'email' => "Too many login attempts. Please try again in {$seconds} seconds.",
+            ]);
+        }
+
+        // Additional input sanitization
         $credentials = $request->only('email', 'password');
-        $email = $request->input('email');
+        $email = strip_tags(trim($request->input('email')));
 
         // Try to find user in all three tables
         $patient = Patient::where('email', $email)->first();
@@ -48,19 +64,23 @@ class AuthController extends Controller
             $welcomeMessage = 'Welcome back, ' . $superAdmin->name . '! You have successfully logged in.';
         }
 
+        // Generic error message to prevent User Enumeration
+        $genericError = ['email' => 'Invalid login credentials.'];
+
         // If no user found in any table
         if (!$guard) {
-            $errors = ['password' => 'Invalid Credentials.'];
-
+            RateLimiter::hit($throttleKey);
+            
             if ($request->expectsJson() || $request->ajax()) {
-                return response()->json(['errors' => $errors], 422);
+                return response()->json(['errors' => $genericError], 422);
             }
 
-            return back()->withErrors($errors)->withInput($request->only('email'));
+            return back()->withErrors($genericError)->withInput($request->only('email'));
         }
 
         // Attempt authentication with the appropriate guard
         if (Auth::guard($guard)->attempt($credentials)) {
+            RateLimiter::clear($throttleKey);
             $request->session()->regenerate();
 
             if ($welcomeMessage) {
@@ -75,13 +95,13 @@ class AuthController extends Controller
         }
 
         // Authentication failed
-        $errors = ['password' => 'Incorrect password. Please try again.'];
+        RateLimiter::hit($throttleKey);
 
         if ($request->expectsJson() || $request->ajax()) {
-            return response()->json(['errors' => $errors], 422);
+            return response()->json(['errors' => $genericError], 422);
         }
 
-        return back()->withErrors($errors)->withInput($request->only('email'));
+        return back()->withErrors($genericError)->withInput($request->only('email'));
     }
 
     /**

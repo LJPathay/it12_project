@@ -175,9 +175,99 @@
             --shadow-dark-sm: 0 2px 8px rgba(0, 0, 0, .3);
             --shadow-dark-md: 0 6px 18px rgba(0, 0, 0, .4);
             --shadow-dark-lg: 0 10px 30px rgba(0, 0, 0, .5);
+
+            /* Analytics Theme Variables */
+            --chart-height: 300px;
+            --kpi-trend-up: #10b981;
+            --kpi-trend-down: #ef4444;
+            --kpi-trend-neutral: #94a3b8;
         }
 
-        body {
+        /* --- Global Analytics Components --- */
+
+        /* 1. KPI Cards */
+        .kpi-row { 
+            display: flex; gap: 1rem; margin-bottom: 2rem; overflow-x: auto; padding-bottom: 0.5rem; 
+        }
+        
+        .kpi-card {
+            flex: 1;
+            min-width: 200px;
+            background: var(--card-bg-light);
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: #cbd5e1;
+        }
+
+        .kpi-label { 
+            font-size: 0.85rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; 
+        }
+        
+        .kpi-value { 
+            font-size: 2rem; font-weight: 700; color: #1e293b; line-height: 1; 
+        }
+        
+        .kpi-sub { 
+            font-size: 0.8rem; margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem; color: #64748b; 
+        }
+        
+        .text-trend-up { color: var(--kpi-trend-up) !important; }
+        .text-trend-down { color: var(--kpi-trend-down) !important; }
+        .text-neutral { color: var(--kpi-trend-neutral) !important; }
+
+        /* 2. Chart Sections */
+        .chart-section {
+            background: var(--card-bg-light); 
+            border: 1px solid #e2e8f0; 
+            border-radius: var(--radius-md); 
+            padding: 1.5rem; 
+            height: 100%;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .section-header { 
+            margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; 
+        }
+        
+        .header-title { 
+            font-size: 1.1rem; font-weight: 700; color: #334155; 
+        }
+
+        /* 3. Filter Buttons */
+        .btn-filter {
+            border: none; background: transparent; color: #94a3b8; font-weight: 600; font-size: 0.85rem; padding: 0.25rem 0.75rem;
+            transition: color 0.2s;
+        }
+        .btn-filter:hover { color: #64748b; }
+        .btn-filter.active { color: #0f172a; text-decoration: underline; text-underline-offset: 4px; }
+
+        /* Dark Mode Overrides for Analytics */
+        body.bg-dark .kpi-card, 
+        body.bg-dark .chart-section { 
+            background: var(--card-bg-dark); 
+            border-color: var(--border-dark); 
+        }
+        
+        body.bg-dark .kpi-value, 
+        body.bg-dark .header-title { color: #f1f5f9; }
+        
+        body.bg-dark .kpi-label,
+        body.bg-dark .kpi-sub,
+        body.bg-dark .btn-filter { color: #94a3b8; }
+        
+        body.bg-dark .btn-filter:hover { color: #cbd5e1; }
+        body.bg-dark .btn-filter.active { color: #f1f5f9; }
             background-color: var(--bg-light);
             color: var(--text-light);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -1273,22 +1363,148 @@
         }
 
         /* ---------- Responsive ---------- */
+        
+        /* Sidebar Overlay for Mobile */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity var(--transition), visibility var(--transition);
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        body.bg-dark .sidebar-overlay {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Hide overlay on desktop - only show on mobile */
+        @media (min-width: 992px) {
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
+
+        /* Ensure modals appear above sidebar overlay */
+        .modal {
+            z-index: 1050 !important;
+        }
+
+        .modal-backdrop {
+            z-index: 1040 !important;
+        }
+
+        /* Ensure dropdown menus appear above everything */
+        .dropdown-menu {
+            z-index: 1060 !important;
+        }
+
+        /* Mobile Header Button */
+        .mobile-menu-btn {
+            display: none;
+            width: 44px;
+            height: 44px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #495057;
+            cursor: pointer;
+            padding: 0;
+            border-radius: 10px;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .mobile-menu-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--color-primary);
+        }
+
+        body.bg-dark .mobile-menu-btn {
+            color: #cbd3da;
+        }
+
+        body.bg-dark .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--color-primary-light);
+        }
+
+        /* Tablet and Below (≤991px) */
         @media (max-width: 991px) {
+            /* CRITICAL FIX: Force main content to full width */
+            html, body {
+                width: 100% !important;
+                max-width: 100vw !important;
+                overflow-x: hidden !important;
+            }
+
+            .main-content, #mainContent {
+                width: 100% !important;
+                max-width: 100vw !important;
+                margin-left: 0 !important;
+                box-sizing: border-box !important;
+            }
+
+            main, main.p-4 {
+                width: 100% !important;
+                max-width: 100vw !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Hide desktop sidebar by default, show as off-canvas */
             .sidebar {
                 transform: translateX(-100%);
                 width: var(--sidebar-width);
+                box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
             }
 
             .sidebar.show {
                 transform: translateX(0);
             }
 
+            /* CRITICAL: Remove margin from main content - it's full width on mobile */
             .main-content {
                 margin-left: 0 !important;
+                width: 100% !important;
+                max-width: 100vw !important;
             }
 
+            /* Ensure body and html don't create gray space */
+            body, html {
+                width: 100%;
+                max-width: 100vw;
+                overflow-x: hidden;
+            }
+
+            /* Show mobile menu button in header */
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            /* Show close button inside sidebar on mobile */
+            .close-sidebar-btn {
+                display: flex;
+            }
+
+            .burger-menu-btn:not(.close-sidebar-btn) {
+                display: none;
+            }
+
+            /* Adjust header padding for mobile */
             .header {
                 padding: 1rem;
+                width: 100%;
             }
 
             .header h4 {
@@ -1296,15 +1512,273 @@
             }
 
             .header .text-muted {
-                font-size: .85rem;
+                font-size: 0.85rem;
+            }
+
+            /* Make cards more compact on tablet */
+            .card-surface,
+            .metric-card,
+            .inventory-card,
+            .chart-container,
+            .filter-card,
+            .table-card {
+                padding: var(--spacing-md);
+                border-radius: var(--radius-md);
+            }
+
+            /* Adjust chart container height */
+            .chart-container {
+                min-height: 320px;
+            }
+
+            /* Make buttons slightly smaller on tablet */
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+
+            .btn-sm {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.8125rem;
+            }
+
+            /* Improve table responsiveness */
+            .table-responsive {
+                border-radius: var(--radius-md);
+                overflow-x: auto;
+                width: 100%;
+            }
+
+            /* Remove any fixed widths */
+            .container,
+            .container-fluid,
+            .row,
+            [class*="col-"] {
+                max-width: 100% !important;
+                width: 100%;
             }
         }
 
+        /* Mobile Phones (≤767px) */
+        @media (max-width: 767px) {
+            /* Further reduce header padding */
+            .header {
+                padding: 0.75rem;
+            }
+
+            .header h4 {
+                font-size: 1rem;
+            }
+
+            .header .text-muted {
+                font-size: 0.8rem;
+                display: none; /* Hide subtitle on very small screens */
+            }
+
+            /* Mobile header logo */
+            .header img {
+                width: 36px !important;
+                height: 36px !important;
+                margin-right: 10px !important;
+            }
+
+            /* Even more compact cards */
+            .card-surface,
+            .metric-card,
+            .inventory-card,
+            .filter-card {
+                padding: var(--spacing-sm);
+                margin-bottom: var(--spacing-sm);
+            }
+
+            .chart-container {
+                padding: var(--spacing-md);
+                min-height: 280px;
+            }
+
+            /* Responsive typography */
+            h1, .h1 {
+                font-size: 1.75rem;
+            }
+
+            h2, .h2 {
+                font-size: 1.5rem;
+            }
+
+            h3, .h3 {
+                font-size: 1.25rem;
+            }
+
+            h4, .h4 {
+                font-size: 1.1rem;
+            }
+
+            h5, .h5 {
+                font-size: 1rem;
+            }
+
+            h6, .h6 {
+                font-size: 0.875rem;
+            }
+
+            /* Stack elements vertically */
+            .d-flex.flex-row {
+                flex-direction: column !important;
+            }
+
+            /* Full width buttons on mobile */
+            .btn-group {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-group .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            /* Improve form controls for touch */
+            .form-control,
+            .form-select {
+                font-size: 16px; /* Prevents zoom on iOS */
+                min-height: 44px; /* Touch-friendly */
+            }
+
+            /* Modal adjustments for mobile */
+            .modal-dialog {
+                margin: 0.5rem;
+            }
+
+            .modal-content {
+                border-radius: var(--radius-md);
+            }
+
+            /* Table improvements */
+            .table {
+                font-size: 0.875rem;
+            }
+
+            .table thead th,
+            .table tbody td {
+                padding: 0.5rem;
+            }
+
+            /* Pagination */
+            .pagination {
+                font-size: 0.875rem;
+            }
+
+            .page-link {
+                padding: 0.375rem 0.75rem;
+            }
+        }
+
+        /* Small Mobile (≤576px) */
         @media (max-width: 576px) {
             .header img {
                 width: 32px !important;
                 height: 32px !important;
                 margin-right: 8px !important;
+            }
+
+            .header h4 {
+                font-size: 0.95rem;
+            }
+
+            /* Ultra compact cards */
+            .card-surface,
+            .metric-card,
+            .inventory-card,
+            .filter-card {
+                padding: 0.75rem;
+            }
+
+            /* Dropdown menus full width on small mobile */
+            .dropdown-menu {
+                min-width: calc(100vw - 2rem);
+            }
+
+            /* User profile dropdown adjustments */
+            .header .dropdown-menu {
+                right: 0;
+                left: auto;
+                transform: translateX(0) !important;
+            }
+        }
+
+        /* Landscape mode on mobile devices */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .sidebar {
+                width: 200px; /* Narrower sidebar in landscape */
+            }
+
+            .header {
+                padding: 0.5rem 1rem;
+                min-height: 56px;
+            }
+
+            .chart-container {
+                min-height: 240px;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            /* Ensure all interactive elements are touch-friendly */
+            .btn,
+            .nav-link,
+            .dropdown-item,
+            a {
+                min-height: 44px;
+                min-width: 44px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* Remove hover effects on touch devices */
+            .card-surface:hover,
+            .metric-card:hover,
+            .inventory-card:hover {
+                transform: none;
+            }
+
+            /* Larger tap targets for nav items */
+            .sidebar .nav-link {
+                min-height: 48px;
+            }
+        }
+
+        /* High DPI screens */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            /* Ensure crisp fonts and icons */
+            body {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .sidebar,
+            .header,
+            .sidebar-overlay,
+            .mobile-menu-btn,
+            .btn,
+            .no-print {
+                display: none !important;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+            }
+
+            .card-surface,
+            .metric-card,
+            .table-card {
+                box-shadow: none !important;
+                border: 1px solid #dee2e6 !important;
             }
         }
 
@@ -1341,6 +1815,13 @@
         <!-- Header -->
         <header class="header">
             <div class="d-flex align-items-center">
+                <!-- Mobile Menu Button (shown only on mobile) -->
+                @if(!View::hasSection('hide-sidebar'))
+                    <button class="mobile-menu-btn me-2" id="mobileMenuBtn" aria-label="Open menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                @endif
+                
                 <img src="{{ asset('images/malasakit-logo-blue.png') }}" alt="Logo"
                     style="width:40px;height:40px;margin-right:12px;">
                 <div>
@@ -1465,21 +1946,23 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+    </script>
+
     @if(session('success') || session('status') || session('error') || session('warning') || session('info'))
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 1000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.addEventListener('mouseenter', Swal.stopTimer)
-                        toast.addEventListener('mouseleave', Swal.resumeTimer)
-                    }
-                });
-
                 @if(session('success') || session('status'))
                     Toast.fire({ icon: 'success', title: "{{ session('success') ?? session('status') }}" });
                 @endif
@@ -1492,7 +1975,7 @@
                 @if(session('info'))
                     Toast.fire({ icon: 'info', title: "{{ session('info') }}" });
                 @endif
-                            });
+            });
         </script>
     @endif
 
@@ -1608,6 +2091,11 @@
             };
 
             toggleBtn?.addEventListener('click', toggleSidebar);
+            
+            // Mobile menu button
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            mobileMenuBtn?.addEventListener('click', toggleSidebar);
+            
             closeBtn?.addEventListener('click', () => {
                 sidebar.classList.remove('show');
                 overlay.classList.remove('show');
@@ -1615,6 +2103,26 @@
             overlay?.addEventListener('click', () => {
                 sidebar.classList.remove('show');
                 overlay.classList.remove('show');
+            });
+
+            // Handle window resize
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    // Re-initialize sidebar state based on new window size
+                    if (isDesktop()) {
+                        overlay.classList.remove('show');
+                        const collapsed = localStorage.getItem(sidebarKey) !== 'false';
+                        sidebar.classList.toggle('collapsed', collapsed);
+                        mainContent.classList.toggle('sidebar-closed', collapsed);
+                        sidebar.classList.add('show');
+                    } else {
+                        sidebar.classList.remove('collapsed', 'show');
+                        overlay.classList.remove('show');
+                        mainContent.classList.remove('sidebar-closed');
+                    }
+                }, 150);
             });
 
             let rt;
@@ -1819,6 +2327,242 @@
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        /**
+         * Reusable Client-Side Pagination & Search Class
+         */
+        /**
+         * Reusable Client-Side Pagination & Search Class
+         * Enhanced with premium styling and robust state management.
+         */
+        class TablePaginator {
+            constructor(config) {
+                this.tableId = config.tableId;
+                this.tableBodyId = config.tableBodyId;
+                this.paginationContainerId = config.paginationContainerId;
+                this.searchId = config.searchId; 
+                this.rowsPerPage = config.rowsPerPage || 10;
+                this.filterInputs = config.filterInputs || {};
+                
+                // State
+                this.rows = Array.from(document.querySelectorAll(`#${this.tableBodyId} tr`));
+                this.filteredRows = [...this.rows];
+                this.currentPage = 1;
+
+                // Register instance globally for onclick handlers
+                window.TablePaginators = window.TablePaginators || {};
+                window.TablePaginators[this.tableId] = this;
+
+                this.init();
+            }
+
+            init() {
+                // Setup Search Listener
+                if (this.searchId) {
+                    const searchInput = document.getElementById(this.searchId);
+                    if (searchInput) {
+                        searchInput.addEventListener('input', (e) => {
+                            this.currentPage = 1; // Reset to page 1 on search
+                            this.filterRows(e.target.value);
+                        });
+                    }
+                }
+
+                // Setup Custom Filter Listeners
+                for (const [inputId, attribute] of Object.entries(this.filterInputs)) {
+                     const input = document.getElementById(inputId);
+                     if(input) {
+                         input.addEventListener('change', () => {
+                             this.currentPage = 1; // Reset to page 1 on filter change
+                             this.filterRows();
+                         });
+                     }
+                }
+
+                // Initial Render
+                this.render();
+            }
+
+            filterRows(searchValue = null) {
+                // Get current search value if not provided
+                if (searchValue === null && this.searchId) {
+                    const el = document.getElementById(this.searchId);
+                    searchValue = el ? el.value : '';
+                }
+                
+                const term = (searchValue || '').toLowerCase().trim();
+
+                this.filteredRows = this.rows.filter(row => {
+                    // Text Search
+                    // We join all cell text to ensure we search the visible content
+                    const textMatch = row.innerText.toLowerCase().includes(term);
+                    
+                    // Attribute Filters
+                    let attrMatch = true;
+                    for (const [inputId, filterDef] of Object.entries(this.filterInputs)) {
+                        const input = document.getElementById(inputId);
+                        if(input && input.value) {
+                             if (typeof filterDef === 'function') {
+                                 // Custom filter function: (row, inputValue) => boolean
+                                 if (!filterDef(row, input.value)) {
+                                     attrMatch = false;
+                                 }
+                             } else {
+                                 // Simple attribute match
+                                 const attribute = filterDef;
+                                 const rowValue = row.getAttribute(attribute);
+                                 // Exact match or contains? Using exact for dropdowns usually.
+                                 if (input.value.toLowerCase() !== (rowValue || '').toLowerCase()) {
+                                     attrMatch = false;
+                                 }
+                             }
+                        }
+                    }
+
+                    return textMatch && attrMatch;
+                });
+
+                this.render();
+            }
+
+            render() {
+                const totalRows = this.filteredRows.length;
+                const totalPages = Math.ceil(totalRows / this.rowsPerPage);
+                
+                // Ensure current page is valid
+                if (this.currentPage > totalPages) this.currentPage = totalPages || 1;
+                if (this.currentPage < 1) this.currentPage = 1;
+
+                const start = (this.currentPage - 1) * this.rowsPerPage;
+                const end = start + this.rowsPerPage;
+                const pageRows = this.filteredRows.slice(start, end);
+
+                // Batch DOM updates for rows
+                this.rows.forEach(row => {
+                    if (row.style.display !== 'none') row.style.display = 'none';
+                });
+
+                pageRows.forEach(row => {
+                    if (row.style.display !== '') row.style.display = '';
+                });
+
+                this.renderPaginationControls(totalRows, totalPages, start, end);
+            }
+
+            renderPaginationControls(totalRows, totalPages, start, end) {
+                const container = document.getElementById(this.paginationContainerId);
+                if (!container) return;
+
+                if (totalRows === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-4">
+                            <i class="fas fa-search text-muted fa-2x mb-2 opacity-50"></i>
+                            <p class="text-muted small mb-0">No records found matching your query.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const showingStart = start + 1;
+                const showingEnd = Math.min(end, totalRows);
+
+                // Premium Pagination Styling
+                let paginationHtml = `
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-4 gap-3">
+                        <div class="small text-muted order-2 order-sm-1">
+                            Showing <span class="fw-bold text-dark">${showingStart}</span> to <span class="fw-bold text-dark">${showingEnd}</span> of <span class="fw-bold text-dark">${totalRows}</span> entries
+                        </div>
+                        
+                        <nav aria-label="Page navigation" class="order-1 order-sm-2">
+                            <ul class="pagination pagination-sm mb-0 shadow-sm rounded-pill overflow-hidden">
+                                <li class="page-item ${this.currentPage === 1 ? 'disabled' : ''}">
+                                    <button class="page-link border-0 px-3 h-100 d-flex align-items-center" 
+                                            onclick="window.TablePaginators['${this.tableId}'].goToPage(${this.currentPage - 1})"
+                                            ${this.currentPage === 1 ? 'disabled' : ''}>
+                                        <i class="fas fa-chevron-left x-small"></i>
+                                    </button>
+                                </li>`;
+
+                // Smart Pagination Logic (1 ... 4 5 6 ... 10)
+                const maxPagesToShow = 5;
+                let startPage, endPage;
+
+                if (totalPages <= maxPagesToShow) {
+                    startPage = 1;
+                    endPage = totalPages;
+                } else {
+                    const maxPagesBeforeCurrentPage = Math.floor(maxPagesToShow / 2);
+                    const maxPagesAfterCurrentPage = Math.ceil(maxPagesToShow / 2) - 1;
+                    
+                    if (this.currentPage <= maxPagesBeforeCurrentPage) {
+                        startPage = 1;
+                        endPage = maxPagesToShow;
+                    } else if (this.currentPage + maxPagesAfterCurrentPage >= totalPages) {
+                        startPage = totalPages - maxPagesToShow + 1;
+                        endPage = totalPages;
+                    } else {
+                        startPage = this.currentPage - maxPagesBeforeCurrentPage;
+                        endPage = this.currentPage + maxPagesAfterCurrentPage;
+                    }
+                }
+
+                // First Page + Ellipsis
+                if (startPage > 1) {
+                    paginationHtml += `
+                        <li class="page-item">
+                            <button class="page-link border-0" onclick="window.TablePaginators['${this.tableId}'].goToPage(1)">1</button>
+                        </li>
+                        ${startPage > 2 ? '<li class="page-item disabled"><span class="page-link border-0">...</span></li>' : ''}
+                    `;
+                }
+
+                // Page Numbers
+                for (let i = startPage; i <= endPage; i++) {
+                     const activeClass = i === this.currentPage ? 'active bg-primary text-white fw-bold' : 'text-muted';
+                     paginationHtml += `
+                        <li class="page-item">
+                            <button class="page-link border-0 ${activeClass}" 
+                                    style="${i === this.currentPage ? 'pointer-events: none;' : ''}"
+                                    onclick="window.TablePaginators['${this.tableId}'].goToPage(${i})">
+                                ${i}
+                            </button>
+                        </li>
+                     `;
+                }
+
+                // Last Page + Ellipsis
+                if (endPage < totalPages) {
+                    paginationHtml += `
+                        ${endPage < totalPages - 1 ? '<li class="page-item disabled"><span class="page-link border-0">...</span></li>' : ''}
+                        <li class="page-item">
+                            <button class="page-link border-0" onclick="window.TablePaginators['${this.tableId}'].goToPage(${totalPages})">${totalPages}</button>
+                        </li>
+                    `;
+                }
+
+                paginationHtml += `
+                                <li class="page-item ${this.currentPage === totalPages ? 'disabled' : ''}">
+                                    <button class="page-link border-0 px-3 h-100 d-flex align-items-center" 
+                                            onclick="window.TablePaginators['${this.tableId}'].goToPage(${this.currentPage + 1})"
+                                            ${this.currentPage === totalPages ? 'disabled' : ''}>
+                                        <i class="fas fa-chevron-right x-small"></i>
+                                    </button>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                `;
+
+                container.innerHTML = paginationHtml;
+            }
+
+            goToPage(page) {
+                this.currentPage = page;
+                this.render();
+            }
+        }
+    </script>
 
     @stack('scripts')
 </body>

@@ -166,6 +166,7 @@
         }
 
         /* Calendar Styles */
+        /* Calendar Styles */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -251,6 +252,11 @@
             line-height: 1;
             width: auto;
             white-space: nowrap;
+        }
+
+        .calendar-day.selected .slot-indicator {
+            color: white;
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .time-slots-grid {
@@ -392,12 +398,7 @@
 
 @section('content')
     <!-- Success/Error Messages -->
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show m-4" role="alert">
-            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
+
     @if(session('error'))
         <div class="alert alert-danger alert-dismissible fade show m-4" role="alert">
             <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
@@ -447,7 +448,7 @@
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Search</label>
-                            <input type="text" class="form-control" id="barangayFilter"
+                            <input type="text" class="form-control" id="patientSearch"
                                 placeholder="Enter Patient's Name, Barangay or Purok">
                         </div>
                         <div class="col-md-2">
@@ -524,34 +525,32 @@
                                         <td class="text-center">
                                             <div class="btn-group" role="group">
                                                 <button
-                                                    class="btn btn-outline-primary btn-sm d-inline-flex align-items-center justify-content-center"
-                                                    data-bs-toggle="modal" data-bs-target="#viewPatientModal{{ $patient->id }}">
-                                                    <i class="fas fa-eye"></i>
+                                                    class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center justify-content-center"
+                                                    data-bs-toggle="modal" data-bs-target="#viewPatientModal{{ $patient->id }}"
+                                                    title="View Details">
+                                                    <i class="fas fa-eye text-info"></i>
                                                 </button>
-                                                @if($patient->age >= 6)
-                                                    <a href="{{ route('admin.patient.medical-profile', $patient) }}"
-                                                        class="btn btn-outline-info btn-sm d-inline-flex align-items-center justify-content-center"
-                                                        title="View Medical Profile">
-                                                        <i class="fas fa-file-medical"></i>
-                                                    </a>
-                                                @endif
+
                                                 <button
-                                                    class="btn btn-outline-success btn-sm d-inline-flex align-items-center justify-content-center"
+                                                    class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center justify-content-center"
                                                     data-bs-toggle="modal" data-bs-target="#createAppointmentModal"
                                                     data-user-id="{{ $patient->id }}" data-user-name="{{ $patient->name }}"
                                                     data-user-phone="{{ $patient->phone ?? '' }}"
-                                                    data-user-address="{{ $patient->address ?? $patient->barangay ?? '' }}">
-                                                    <i class="fas fa-calendar-plus"></i>
+                                                    data-user-address="{{ $patient->address ?? $patient->barangay ?? '' }}"
+                                                    title="Add Appointment">
+                                                    <i class="fas fa-calendar-plus text-success"></i>
                                                 </button>
                                                 <button
-                                                    class="btn btn-outline-warning btn-sm d-inline-flex align-items-center justify-content-center"
-                                                    data-bs-toggle="modal" data-bs-target="#editPatientModal{{ $patient->id }}">
-                                                    <i class="fas fa-edit"></i>
+                                                    class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center justify-content-center"
+                                                    data-bs-toggle="modal" data-bs-target="#editPatientModal{{ $patient->id }}"
+                                                    title="Edit Patient">
+                                                    <i class="fas fa-edit text-warning"></i>
                                                 </button>
                                                 <button
-                                                    class="btn btn-outline-danger btn-sm d-inline-flex align-items-center justify-content-center"
-                                                    data-bs-toggle="modal" data-bs-target="#archivePatientModal{{ $patient->id }}">
-                                                    <i class="fas fa-archive"></i>
+                                                    class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center justify-content-center"
+                                                    data-bs-toggle="modal" data-bs-target="#archivePatientModal{{ $patient->id }}"
+                                                    title="Archive Patient">
+                                                    <i class="fas fa-archive text-danger"></i>
                                                 </button>
                                             </div>
                                         </td>
@@ -571,19 +570,8 @@
             </div>
         @endif
         <!-- Pagination -->
-        <div class="d-flex flex-column align-items-center mt-4"
-            id="patientsPaginationContainer">
-            <div>
-                {{ $patients->links('pagination::bootstrap-5') }}
-            </div>
-            <div class="small text-muted mb-0 mt-n2">
-                @if($patients->total() > 0)
-                    Showing {{ $patients->firstItem() }}-{{ $patients->lastItem() }} of {{ $patients->total() }} patients
-                @else
-                    Showing 0 patients
-                @endif
-            </div>
-        </div>
+        <!-- Pagination -->
+        <div id="patientsPaginationContainer" class="mt-4"></div>
     </div>
     </div>
 @endsection
@@ -768,81 +756,87 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-6">
-                            <h6 class="fw-bold mb-3">Personal Information</h6>
-                            <div class="mb-3">
-                                <label class="form-label text-muted">Full Name</label>
-                                <p class="fw-bold">{{ $patient->name }}</p>
+                        <!-- Left Panel: Profile & Details -->
+                        <div class="col-md-5 border-end">
+                            <div class="text-center mb-4">
+                                <div class="patient-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
+                                    {{ substr($patient->name, 0, 2) }}
+                                </div>
+                                <h5 class="fw-bold mb-1">{{ $patient->name }}</h5>
+                                <p class="text-muted mb-2 small">{{ $patient->email }}</p>
+                                <span class="status-badge status-active">Active Patient</span>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label text-muted">Gender</label>
-                                <p>{{ ucfirst($patient->gender ?? 'N/A') }}</p>
+
+                            <div class="mb-4">
+                                <h6 class="text-uppercase text-muted small fw-bold mb-3 border-bottom pb-2">
+                                    <i class="fas fa-user-circle me-2"></i>Personal Details
+                                </h6>
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <label class="small text-muted d-block">Gender</label>
+                                        <span class="fw-medium text-dark">{{ ucfirst($patient->gender ?? 'N/A') }}</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small text-muted d-block">Age</label>
+                                        <span class="fw-medium text-dark">{{ $patient->age ?? 'N/A' }} years</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small text-muted d-block">Birth Date</label>
+                                        <span class="fw-medium text-dark">{{ $patient->birth_date ? \Illuminate\Support\Carbon::parse($patient->birth_date)->format('M d, Y') : 'N/A' }}</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small text-muted d-block">Phone</label>
+                                        <span class="fw-medium text-dark">{{ $patient->phone ?? 'N/A' }}</span>
+                                    </div>
+                                </div>
                             </div>
+
                             <div class="mb-3">
-                                <label class="form-label text-muted">Email</label>
-                                <p>{{ $patient->email }}</p>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label text-muted">Phone</label>
-                                <p>{{ $patient->phone ?? 'N/A' }}</p>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label text-muted">Barangay / Purok</label>
-                                <p>
-                                    @php
-                                        $barangayLabel = $patient->barangay === 'Other'
-                                            ? ($patient->barangay_other ?? 'Other Barangay')
-                                            : ($patient->barangay ?? 'N/A');
-                                    @endphp
-                                    {{ $barangayLabel }}
-                                    @if($patient->purok)
-                                        <span class="text-muted">· {{ $patient->purok }}</span>
-                                    @endif
-                                </p>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label text-muted">Birth Date</label>
-                                <p>{{ $patient->birth_date ? \Illuminate\Support\Carbon::parse($patient->birth_date)->format('F d, Y') : 'N/A' }}
-                                </p>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label text-muted">Age</label>
-                                <p>{{ $patient->age ?? 'N/A' }}</p>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label text-muted">Address</label>
-                                <p>{{ $patient->address ?? 'N/A' }}</p>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label text-muted">Registration Date</label>
-                                <p>{{ $patient->created_at->format('F d, Y \a\t g:i A') }}</p>
+                                <h6 class="text-uppercase text-muted small fw-bold mb-3 border-bottom pb-2">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Address
+                                </h6>
+                                <p class="mb-1 fw-medium">{{ $patient->barangay ?? 'N/A' }}{{ $patient->purok ? ', ' . $patient->purok : '' }}</p>
+                                <p class="small text-muted mb-0">{{ $patient->address ?? '' }}</p>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <h6 class="fw-bold mb-3">Appointment History</h6>
+
+                        <!-- Right Panel: History -->
+                        <div class="col-md-7 ps-md-4">
+                            <h6 class="text-uppercase text-muted small fw-bold mb-3 border-bottom pb-2">
+                                <i class="fas fa-history me-2"></i>Recent Appointments
+                            </h6>
+                            
                             @if($patient->appointments->count() > 0)
                                 <div class="table-responsive">
-                                    <table class="table table-sm">
-                                        <thead>
+                                    <table class="table table-hover align-middle">
+                                        <thead class="table-light">
                                             <tr>
-                                                <th>Date</th>
-                                                <th>Service</th>
-                                                <th>Status</th>
+                                                <th class="small text-muted text-uppercase">Date</th>
+                                                <th class="small text-muted text-uppercase">Service</th>
+                                                <th class="small text-muted text-uppercase">Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($patient->appointments->take(5) as $appointment)
+                                            @foreach($patient->appointments->sortByDesc('appointment_date')->take(5) as $appointment)
                                                 <tr>
-                                                    <td>{{ $appointment->appointment_date->format('M d, Y') }}</td>
-                                                    <td>{{ $appointment->service_type }}</td>
                                                     <td>
-                                                        <span class="badge 
-                                                                                                        @if($appointment->status == 'pending') bg-warning
-                                                                                                        @elseif($appointment->status == 'approved') bg-success
-                                                                                                        @elseif($appointment->status == 'completed') bg-info
-                                                                                                        @elseif($appointment->status == 'cancelled') bg-danger
-                                                                                                        @else bg-secondary
-                                                                                                        @endif">
+                                                        <div class="fw-bold">{{ $appointment->appointment_date->format('M d, Y') }}</div>
+                                                        <small class="text-muted">{{ $appointment->appointment_time }}</small>
+                                                    </td>
+                                                    <td>
+                                                        <span class="d-block">{{ $appointment->service_type }}</span>
+                                                    </td>
+                                                    <td>
+                                                        @php
+                                                            $statusClass = match($appointment->status) {
+                                                                'approved' => 'bg-success',
+                                                                'pending' => 'bg-warning',
+                                                                'completed' => 'bg-info',
+                                                                'cancelled' => 'bg-danger',
+                                                                default => 'bg-secondary'
+                                                            };
+                                                        @endphp
+                                                        <span class="badge {{ $statusClass }} rounded-pill font-monospace" style="font-weight: normal;">
                                                             {{ ucfirst($appointment->status) }}
                                                         </span>
                                                     </td>
@@ -851,13 +845,34 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                @if($patient->appointments->count() > 5)
+                                    <div class="text-center mt-3">
+                                        <small class="text-muted">Showing last 5 records</small>
+                                    </div>
+                                @endif
                             @else
-                                <p class="text-muted">No appointment history</p>
+                                <div class="text-center py-5 rounded-3 border border-dashed" style="background-color: #f8f9fa;">
+                                    <i class="fas fa-calendar-times text-muted fa-3x mb-3"></i>
+                                    <p class="text-muted fw-medium mb-1">No appointments yet</p>
+                                    <p class="small text-muted mb-0">Scheduled appointments will appear here.</p>
+                                </div>
                             @endif
+                            
+                            <div class="mt-4 pt-3">
+                                <h6 class="text-uppercase text-muted small fw-bold mb-2">Registration Info</h6>
+                                <p class="small text-muted mb-0">
+                                    Registered on {{ $patient->created_at->format('F d, Y') }} at {{ $patient->created_at->format('h:i A') }}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
+                    @if($patient->age >= 6)
+                        <a href="{{ route('admin.patient.medical-profile', $patient) }}" class="btn btn-primary">
+                            <i class="fas fa-file-medical me-2"></i> View Medical Profile
+                        </a>
+                    @endif
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -1156,7 +1171,7 @@
 
                                 <div class="row g-3">
                                     <!-- Calendar Column -->
-                                    <div class="col-md-5">
+                                    <div class="col-md-7">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <button type="button" class="btn btn-sm btn-outline-primary"
                                                 id="prevMonth"><i class="fas fa-chevron-left"></i></button>
@@ -1170,7 +1185,7 @@
                                     </div>
 
                                     <!-- Time Slots Column -->
-                                    <div class="col-md-7">
+                                    <div class="col-md-5">
                                         <div class="card h-100">
                                             <div class="card-header">
                                                 <h6 class="mb-0" id="selectedDateDisplay">Select a date</h6>
@@ -1476,13 +1491,21 @@
                 this.calendarData.forEach(dayData => {
                     const dayElement = document.createElement('div');
                     dayElement.className = 'calendar-day';
+                    dayElement.dataset.date = dayData.date; // Critical for selection
 
                     const dayNumber = document.createElement('span');
                     dayNumber.className = 'day-number';
                     dayNumber.textContent = dayData.day;
                     dayElement.appendChild(dayNumber);
 
-                    if (dayData.is_weekend) dayElement.classList.add('weekend');
+                    if (dayData.is_weekend) {
+                        dayElement.classList.add('weekend');
+                        // Visually disable weekends
+                        dayElement.style.opacity = '0.5';
+                        dayElement.style.cursor = 'not-allowed';
+                        dayElement.style.backgroundColor = '#f8f9fa';
+                        dayElement.style.pointerEvents = 'none'; // Ensure no clicks
+                    }
 
                     if (dayData.is_past) {
                         dayElement.classList.add('past');
@@ -1492,12 +1515,15 @@
                         dayElement.classList.add('partially-occupied');
                     }
 
-                    const indicator = document.createElement('span');
-                    indicator.className = 'slot-indicator';
-                    indicator.textContent = `${dayData.occupied_slots}/${dayData.total_slots}`;
-                    dayElement.appendChild(indicator);
+                    // Only show indicator if there are occupied slots
+                    if (Number(dayData.occupied_slots) > 0) {
+                        const indicator = document.createElement('span');
+                        indicator.className = 'slot-indicator';
+                        indicator.textContent = `${dayData.occupied_slots}/${dayData.total_slots}`;
+                        dayElement.appendChild(indicator);
+                    }
 
-                    if (!dayData.is_past) {
+                    if (!dayData.is_past && !dayData.is_weekend) {
                         dayElement.addEventListener('click', () => this.selectDate(dayData.date));
                     }
 
@@ -1516,17 +1542,11 @@
                 // Remove previous selection
                 document.querySelectorAll('.calendar-day.selected').forEach(el => el.classList.remove('selected'));
 
-                // Add selection to clicked date
-                document.querySelectorAll('.calendar-day').forEach(el => {
-                    // Note: This is a simple check, might need more robust matching if multiple months displayed (not the case here)
-                    // But since we redraw calendar on month change, checking text content or index is tricky. 
-                    // Ideally we'd store date in dataset.
-                    // Let's rely on re-rendering or just adding a data attribute in renderCalendar (which I didn't do above, let me fix that in renderCalendar logic implicitly or just add it now)
-                });
-                // Wait, I didn't add data-date in renderCalendar above. Let me fix that in the previous method or just handle it here.
-                // Actually, I can't easily find the element without the data attribute. 
-                // I will update renderCalendar to add data-date.
-
+                // Add selection to clicked date using dataset
+                const selectedEl = document.querySelector(`.calendar-day[data-date="${date}"]`);
+                if (selectedEl) {
+                    selectedEl.classList.add('selected');
+                }
                 this.selectedDate = date;
 
                 // Update display
@@ -1604,56 +1624,6 @@
             // Initialize calendar if not already done
             if (!appointmentCalendar) {
                 appointmentCalendar = new AppointmentCalendar();
-                // Monkey-patch renderCalendar to add data-date (since I missed it in the class definition above)
-                const originalRender = appointmentCalendar.renderCalendar.bind(appointmentCalendar);
-                appointmentCalendar.renderCalendar = function () {
-                    const calendarGrid = document.getElementById('calendarGrid');
-                    calendarGrid.innerHTML = '';
-
-                    // Headers
-                    ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
-                        const header = document.createElement('div');
-                        header.className = 'calendar-header';
-                        header.textContent = day;
-                        calendarGrid.appendChild(header);
-                    });
-
-                    // Empty cells
-                    const firstDay = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1).getDay();
-                    for (let i = 0; i < firstDay; i++) calendarGrid.appendChild(document.createElement('div'));
-
-                    // Days
-                    this.calendarData.forEach(dayData => {
-                        const dayElement = document.createElement('div');
-                        dayElement.className = 'calendar-day';
-                        dayElement.dataset.date = dayData.date; // Added this
-
-                        const dayNumber = document.createElement('span');
-                        dayNumber.className = 'day-number';
-                        dayNumber.textContent = dayData.day;
-                        dayElement.appendChild(dayNumber);
-
-                        if (dayData.is_weekend) dayElement.classList.add('weekend');
-                        if (dayData.is_past) dayElement.classList.add('past');
-                        else if (dayData.is_fully_occupied) dayElement.classList.add('occupied');
-                        else if (dayData.occupied_slots > 0) dayElement.classList.add('partially-occupied');
-
-                        const indicator = document.createElement('span');
-                        indicator.className = 'slot-indicator';
-                        indicator.textContent = `${dayData.occupied_slots}/${dayData.total_slots}`;
-                        dayElement.appendChild(indicator);
-
-                        if (!dayData.is_past) {
-                            dayElement.addEventListener('click', () => {
-                                document.querySelectorAll('.calendar-day.selected').forEach(el => el.classList.remove('selected'));
-                                dayElement.classList.add('selected');
-                                this.selectDate(dayData.date);
-                            });
-                        }
-                        calendarGrid.appendChild(dayElement);
-                    });
-                };
-                appointmentCalendar.renderCalendar(); // Initial render
             }
         });
 
@@ -1666,6 +1636,36 @@
                 appointmentCalendar.selectedDate = null;
                 document.querySelectorAll('.calendar-day.selected').forEach(el => el.classList.remove('selected'));
             }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the TablePaginator for Patients
+            new TablePaginator({
+                tableId: 'patientsTableBody', // Using tbody ID as the main table reference
+                tableBodyId: 'patientsTableBody',
+                paginationContainerId: 'patientsPaginationContainer',
+                searchId: 'patientSearch',
+                filterInputs: {
+                    statusFilter: (row, statusToCheck) => {
+                        // Logic to find status in the row
+                        // The status is in the 3rd column (index 2)
+                        const statusCell = row.cells[2].textContent.trim().toLowerCase();
+                        if (statusToCheck === 'active') return statusCell === 'active';
+                        if (statusToCheck === 'inactive') return statusCell === 'inactive';
+                        return true;
+                    },
+                     appointmentFilter: (row, value) => {
+                        // Logic to check appointments
+                        // Appointment count is in the 5th column (index 4)
+                        const appointmentCount = parseInt(row.cells[4].textContent.trim());
+                        if (value === 'with-appointments') return appointmentCount > 0;
+                        if (value === 'no-appointments') return appointmentCount === 0;
+                        return true;
+                     }
+                },
+                rowsPerPage: 10
+            });
         });
     </script>
 @endpush

@@ -1,326 +1,296 @@
 @extends('admin.layout')
 
-@section('title', 'Services & Reports - Barangay Health Center')
-@section('page-title', 'Services & Reports')
-@section('page-description', 'Analytics and reporting dashboard')
+@section('title', 'Analytics & Reports - Barangay Health Center')
+@section('page-title', 'Clinic Analytics')
+@section('page-description', 'Performance metrics, efficiency analysis, and long-term trends.')
 
 @section('page-styles')
     <style>
-            body { color: inherit; }
-            .stats-card {
-                background: #ffffff;
-                border-radius: 12px;
-                padding: 0.85rem;
-                box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
-                margin-bottom: 0.75rem;
-                border: 1px solid #edf1f7;
-                transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-                min-width: 70px;
-                min-height: 80px;
-            }
-            .d-flex .stats-card {
-                margin-bottom: 0;
-            }
-            .stats-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
-                border-color: #d0e2ff;
-            }
-            .stat-number {
-                font-size: 1.3rem;
-                font-weight: 700;
-                margin-bottom: 0.25rem;
-            }
-            .stat-label {
-                color: #6c757d;
-                font-size: 0.75rem;
-                margin-bottom: 0;
-            }
-            .chart-container {
-                background: #ffffff;
-                border-radius: 14px;
-                padding: 1rem;
-                box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
-                margin-bottom: 0.75rem;
-                min-height: auto;
-                height: auto !important;
-                border: 1px solid #edf1f7;
-            }
-            .chart-container canvas {
-                max-height: 460px !important;
-            }
-            /* Ensure cards inherit theme text color */
-            .stats-card, .chart-container { color: inherit; }
-            .stat-number { color: inherit; }
+        /* Modern Analytics Theme */
+        .analytics-container { max-width: 1400px; }
+        
+        /* KPI Cards - Compact & Data-First */
+        .kpi-row { display: flex; gap: 1rem; margin-bottom: 2rem; overflow-x: auto; padding-bottom: 0.5rem; }
+        .kpi-card {
+            flex: 1;
+            min-width: 200px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .kpi-label { font-size: 0.85rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+        .kpi-value { font-size: 2rem; font-weight: 700; color: #1e293b; line-height: 1; }
+        .kpi-sub { font-size: 0.8rem; margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem; }
+        .text-trend-up { color: #10b981; }
+        .text-trend-down { color: #ef4444; }
 
-            /* Dark mode surfaces */
-            body.bg-dark .main-content { background-color: #151718; }
-            body.bg-dark .sidebar { background: #131516; border-right-color: #2a2f35; }
-            body.bg-dark .header { background: #1b1e20; border-bottom-color: #2a2f35; }
-            body.bg-dark .stats-card, body.bg-dark .chart-container { background: #1e2124; color: #e6e6e6; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border-color: #2a2f35; }
-            body.bg-dark .table thead { background: #1a1f24; color: #e6e6e6; }
-            /* Headings and muted text visibility */
-            h1, h2, h3, h4, h5, h6 { color: inherit; }
-            body.bg-dark .text-muted, body.bg-dark small, body.bg-dark .stat-label { color: #b0b0b0 !important; }
-            /* Headings and muted text visibility */
-            h1, h2, h3, h4, h5, h6 { color: inherit; }
-            body.bg-dark .text-muted, body.bg-dark small, body.bg-dark .stat-label { color: #b0b0b0 !important; }
+        /* Chart Cards */
+        .chart-section {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; height: 100%;
+        }
+        .section-header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .header-title { font-size: 1.1rem; font-weight: 700; color: #334155; }
+        
+        /* Data Tables */
+        .analytics-table th { 
+            background: #f8fafc; color: #475569; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; padding: 1rem; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;
+        }
+        .analytics-table td { padding: 1rem; vertical-align: middle; border-bottom: 1px solid #f1f5f9; color: #334155; font-size: 0.9rem; }
+        .analytics-table tr:hover { background-color: #f8fafc; }
+        
+        .progress-thin { height: 6px; border-radius: 3px; background-color: #e2e8f0; width: 100px; display: inline-block; }
+        .progress-bar-custom { height: 100%; border-radius: 3px; }
 
-            /* Filter Toggle Styles */
-            .filter-toggle {
-                background: #e2e8f0;
-                border-radius: 50rem;
-                padding: 4px;
-                display: inline-flex;
-                align-items: center;
-            }
-            .filter-btn {
-                border: none;
-                background: transparent;
-                padding: 6px 18px;
-                border-radius: 50rem;
-                font-size: 0.85rem;
-                font-weight: 500;
-                color: #64748b;
-                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-                cursor: pointer;
-                line-height: 1.2;
-            }
-            .filter-btn:hover {
-                color: #334155;
-            }
-            .filter-btn.active {
-                background: #ffffff;
-                color: #0f172a;
-                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-                font-weight: 600;
-            }
-
-            /* Dark mode adjustments for filters */
-            body.bg-dark .filter-toggle { background: #27272a; }
-            body.bg-dark .filter-btn { color: #a1a1aa; }
-            body.bg-dark .filter-btn:hover { color: #e4e4e7; }
-            body.bg-dark .filter-btn.active { background: #3f3f46; color: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+        /* Dark Mode */
+        body.bg-dark .kpi-card, body.bg-dark .chart-section { background: #1e2124; border-color: #2d3748; }
+        body.bg-dark .kpi-value, body.bg-dark .header-title { color: #f1f5f9; }
+        body.bg-dark .kpi-label, body.bg-dark .analytics-table th { color: #94a3b8; background: #2d3136; border-color: #2d3748; }
+        body.bg-dark .analytics-table td { color: #e2e8f0; border-color: #2d3748; }
+        body.bg-dark .analytics-table tr:hover { background-color: #2d3136; }
+    </style>
 @endsection
 
 @section('content')
-    <div class="p-0 p-md-2">
-        <div class="d-flex flex-wrap justify-content-end align-items-end mb-3 gap-2">
-            <form class="d-flex align-items-end gap-2 flex-wrap" method="GET" action="{{ route('admin.reports.export.appointments') }}">
-                <div>
-                    <label class="form-label mb-1">From</label>
-                    <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}" required>
-                </div>
-                <div>
-                    <label class="form-label mb-1">To</label>
-                    <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}" required>
-                </div>
-                <div class="mb-0 d-flex gap-2">
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-file-excel me-2"></i> Export Excel
-                    </button>
-                    <button type="submit" class="btn btn-danger" formaction="{{ route('admin.reports.export.appointments.pdf') }}">
-                        <i class="fas fa-file-pdf me-2"></i> Export PDF
-                    </button>
-                </div>
-            </form>
-        </div>
-        <!-- Statistics Row -->
-        <div class="row mb-2">
-            <!-- Appointment Statistics -->
-            <div class="col-md-6">
-                <div class="chart-container" style="padding: 0.75rem;">
-                    <h6 class="mb-2" style="font-size: 1rem;">Appointment Statistics</h6>
-                    <div class="d-flex justify-content-center align-items-stretch gap-2 flex-wrap">
-                        <div class="stats-card text-center d-flex flex-column justify-content-center" style="flex: 1 1 auto; min-width: 70px; max-width: 100px;">
-                            <div class="stat-number text-primary">{{ $appointmentStats['total'] ?? 0 }}</div>
-                            <div class="stat-label">Total</div>
-                        </div>
-                        <div class="stats-card text-center d-flex flex-column justify-content-center" style="flex: 1 1 auto; min-width: 70px; max-width: 100px;">
-                            <div class="stat-number text-warning">{{ $appointmentStats['pending'] ?? 0 }}</div>
-                            <div class="stat-label">Pending</div>
-                        </div>
-                        <div class="stats-card text-center d-flex flex-column justify-content-center" style="flex: 1 1 auto; min-width: 70px; max-width: 100px;">
-                            <div class="stat-number text-success">{{ $appointmentStats['approved'] ?? 0 }}</div>
-                            <div class="stat-label">Approved</div>
-                        </div>
-                        <div class="stats-card text-center d-flex flex-column justify-content-center" style="flex: 1 1 auto; min-width: 70px; max-width: 100px;">
-                            <div class="stat-number text-info">{{ $appointmentStats['completed'] ?? 0 }}</div>
-                            <div class="stat-label">Completed</div>
-                        </div>
-                        <div class="stats-card text-center d-flex flex-column justify-content-center" style="flex: 1 1 auto; min-width: 70px; max-width: 100px;">
-                            <div class="stat-number text-danger">{{ $appointmentStats['cancelled'] ?? 0 }}</div>
-                            <div class="stat-label">Cancelled</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="analytics-container container-fluid px-2">
 
-            <!-- Inventory Statistics -->
-            <div class="col-md-6">
-                <div class="chart-container" style="padding: 0.75rem;">
-                    <h6 class="mb-2" style="font-size: 1rem;">Inventory Statistics</h6>
-                    <div class="d-flex justify-content-center align-items-stretch gap-2 flex-wrap">
-                        <div class="stats-card text-center d-flex flex-column justify-content-center" style="flex: 1 1 auto; min-width: 70px; max-width: 100px;">
-                            <div class="stat-number text-primary">{{ $inventoryStats['total_items'] ?? 0 }}</div>
-                            <div class="stat-label">Total Items</div>
-                        </div>
-                        <div class="stats-card text-center d-flex flex-column justify-content-center" style="flex: 1 1 auto; min-width: 70px; max-width: 100px;">
-                            <div class="stat-number text-warning">{{ $inventoryStats['low_stock'] ?? 0 }}</div>
-                            <div class="stat-label">Low Stock</div>
-                        </div>
-                        <div class="stats-card text-center d-flex flex-column justify-content-center" style="flex: 1 1 auto; min-width: 70px; max-width: 100px;">
-                            <div class="stat-number text-danger">{{ $inventoryStats['out_of_stock'] ?? 0 }}</div>
-                            <div class="stat-label">Out of Stock</div>
-                        </div>
-                        <div class="stats-card text-center d-flex flex-column justify-content-center" style="flex: 1 1 auto; min-width: 70px; max-width: 100px;">
-                            <div class="stat-number text-dark">{{ $inventoryStats['expired'] ?? 0 }}</div>
-                            <div class="stat-label">Expired</div>
-                        </div>
-                    </div>
-                </div>
+    <!-- KPI Row: Performance at a Glance -->
+    <div class="kpi-row">
+        <!-- Total Appointments -->
+        <div class="kpi-card">
+            <div class="kpi-label">Volume</div>
+            <div class="kpi-value">{{ number_format($appointmentStats['total']) }}</div>
+            <div class="kpi-sub text-muted">Total Appointments</div>
+        </div>
+        <!-- Completion Rate -->
+        @php 
+            $completionRate = $appointmentStats['total'] > 0 ? ($appointmentStats['completed'] / $appointmentStats['total']) * 100 : 0; 
+        @endphp
+        <div class="kpi-card">
+            <div class="kpi-label">Success Rate</div>
+            <div class="kpi-value text-primary">{{ number_format($completionRate, 1) }}%</div>
+            <div class="kpi-sub text-muted">Appointments Completed</div>
+        </div>
+        <!-- Pending Queue -->
+        <div class="kpi-card">
+            <div class="kpi-label">Backlog</div>
+            <div class="kpi-value text-warning">{{ number_format($appointmentStats['pending']) }}</div>
+            <div class="kpi-sub text-muted">Pending Processing</div>
+        </div>
+        <!-- Inventory Value (Proxy: Total Items) -->
+        <div class="kpi-card" style="border-left: 4px solid #10b981;">
+            <div class="kpi-label">Inventory Health</div>
+            <div class="kpi-value">{{ number_format($inventoryStats['total_items']) }}</div>
+            <div class="kpi-sub">
+                @if($inventoryStats['low_stock'] > 0)
+                    <span class="text-danger fw-bold">{{ $inventoryStats['low_stock'] }} Alerts</span>
+                @else
+                    <span class="text-success">Healthy</span>
+                @endif
             </div>
         </div>
-
-        <!-- Charts Row -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="chart-container">
-                    <h6 class="mb-2">Appointments by Service Type</h6>
-                    <canvas id="serviceChart" height="460"></canvas>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="chart-container">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="mb-0">Appointments Trend</h6>
-                        <div class="filter-toggle" id="trendFilter">
-                            <button class="filter-btn" onclick="updateTrendChart('weekly', this)">Weekly</button>
-                            <button class="filter-btn active" onclick="updateTrendChart('monthly', this)">Monthly</button>
-                            <button class="filter-btn" onclick="updateTrendChart('yearly', this)">Yearly</button>
-                        </div>
-                    </div>
-                    <canvas id="trendChart" height="460"></canvas>
-                </div>
-            </div>
-        </div>
-
-
     </div>
+
+    <!-- Charts Row: Trends & Distribution -->
+    <div class="row g-4 mb-4">
+        <!-- Main Trend Chart (Comparison) -->
+        <div class="col-lg-8">
+            <div class="chart-section">
+                <div class="section-header">
+                    <div class="header-title">Appointment Performance Trends</div>
+                    <small class="text-muted">Monthly volume by status (This Year)</small>
+                </div>
+                <div style="height: 300px;">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Distribution -->
+        <div class="col-lg-4">
+            <div class="chart-section d-flex flex-column">
+                 <div class="section-header">
+                    <div class="header-title">Demand by Service</div>
+                </div>
+                <div class="flex-grow-1 position-relative d-flex justify-content-center align-items-center">
+                     <canvas id="serviceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables Row: Deep Dive -->
+    <div class="row g-4">
+        <!-- Service Efficiency Report -->
+        <div class="col-lg-8">
+            <div class="chart-section p-0 overflow-hidden">
+                <div class="p-4 border-bottom">
+                    <div class="header-title">Service Efficiency Report</div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table analytics-table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Service Name</th>
+                                <th>Total Demand</th>
+                                <th>Completion Rate</th>
+                                <th>Cancellation</th>
+                                <th class="text-end pe-4">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($servicePerformance as $perf)
+                                @php 
+                                    $rate = $perf->total > 0 ? ($perf->completed / $perf->total) * 100 : 0;
+                                    $cancelRate = $perf->total > 0 ? ($perf->cancelled / $perf->total) * 100 : 0;
+                                @endphp
+                                <tr>
+                                    <td class="ps-4 fw-bold">{{ $perf->service_type }}</td>
+                                    <td>{{ $perf->total }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="progress-thin">
+                                                <div class="progress-bar-custom bg-success" style="width: {{ $rate }}%"></div>
+                                            </div>
+                                            <span class="small fw-bold">{{ number_format($rate, 0) }}%</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-muted small">{{ number_format($cancelRate, 1) }}%</td>
+                                    <td class="text-end pe-4">
+                                        @if($rate >= 80) <span class="badge bg-success bg-opacity-10 text-success">High Perf</span>
+                                        @elseif($rate >= 50) <span class="badge bg-warning bg-opacity-10 text-warning">Medium</span>
+                                        @else <span class="badge bg-danger bg-opacity-10 text-danger">Needs Attn</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Summary -->
+        <div class="col-lg-4">
+             <div class="chart-section p-0 overflow-hidden">
+                 <div class="p-4 border-bottom">
+                    <div class="header-title">Inventory Composition</div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table analytics-table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Category</th>
+                                <th class="text-end pe-4">Items Traced</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($inventoryByCategory as $cat)
+                                <tr>
+                                    <td class="ps-4">{{ $cat->category ?: 'Uncategorized' }}</td>
+                                    <td class="text-end pe-4 fw-bold">{{ $cat->count }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+             </div>
+        </div>
+    </div>
+
+</div>
 @endsection
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-            // Get data from Laravel
-            const serviceData = @json($serviceTypes);
+        // Data Injection
+        const monthlyTrend = @json($monthlyTrend);
+        const serviceData = @json($serviceTypes);
 
-            // Service Chart
-            const serviceCtx = document.getElementById('serviceChart').getContext('2d');
-            const serviceLabels = serviceData.map(item => item.service_type);
-            const serviceCounts = serviceData.map(item => item.count);
-
-            new Chart(serviceCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: serviceLabels,
-                    datasets: [{
-                        data: serviceCounts,
-                        backgroundColor: ['#009fb1', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#009fb1', '#6f42c1']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    aspectRatio: 0.9,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                font: {
-                                    size: 16
-                                },
-                                padding: 25
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Trend Chart
-            const trendCtx = document.getElementById('trendChart').getContext('2d');
-            const trendData = @json($trendData);
-
-            let trendChart = new Chart(trendCtx, {
+        // 1. Line Chart: Comparison (Comparison is key for Analytics)
+        const trendCtx = document.getElementById('trendChart')?.getContext('2d');
+        if (trendCtx) {
+            new Chart(trendCtx, {
                 type: 'line',
                 data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Appointments',
-                        data: [],
-                        borderColor: '#009fb1',
-                        backgroundColor: 'rgba(0, 159, 177, 0.1)',
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        fill: true
-                    }]
+                    labels: monthlyTrend.labels,
+                    datasets: [
+                        {
+                            label: 'Completed',
+                            data: monthlyTrend.completed,
+                            borderColor: '#10b981', // Success green
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                             pointRadius: 4,
+                        },
+                        {
+                            label: 'Pending',
+                            data: monthlyTrend.pending,
+                            borderColor: '#f59e0b', // Warning yellow
+                            backgroundColor: 'transparent',
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Cancelled',
+                            data: monthlyTrend.cancelled,
+                            borderColor: '#ef4444', // Danger red
+                            backgroundColor: 'transparent',
+                            tension: 0.4,
+                            pointRadius: 0
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: true,
-                    aspectRatio: 1.2,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8 } },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { font: { size: 12 } }
+                            grid: { color: '#f1f5f9' },
+                            ticks: { precision: 0 }
                         },
-                        x: {
-                            ticks: { font: { size: 12 } }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
+                        x: { grid: { display: false } }
                     }
                 }
             });
+        }
 
-            function updateTrendChart(timeframe, element) {
-                // Update active state
-                document.querySelectorAll('#trendFilter .filter-btn').forEach(btn => btn.classList.remove('active'));
-                element.classList.add('active');
-
-                let labels = [];
-                let data = [];
-                const rawData = trendData[timeframe];
-
-                if (timeframe === 'weekly') {
-                    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                    for (let i = 1; i <= 7; i++) {
-                        labels.push(dayNames[i-1]);
-                        data.push(rawData[i] || 0);
-                    }
-                } else if (timeframe === 'monthly') {
-                    const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-                    for (let i = 1; i <= daysInMonth; i++) {
-                        labels.push(i);
-                        data.push(rawData[i] || 0);
-                    }
-                } else if (timeframe === 'yearly') {
-                    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                    for (let i = 1; i <= 12; i++) {
-                        labels.push(monthNames[i-1]);
-                        data.push(rawData[i] || 0);
+        // 2. Service Demand (Doughnut)
+        const serviceCtx = document.getElementById('serviceChart')?.getContext('2d');
+        if (serviceCtx && serviceData.length > 0) {
+             const labels = serviceData.map(s => s.service_type);
+             const data = serviceData.map(s => s.count);
+             
+             new Chart(serviceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#64748b'],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 10 } }
                     }
                 }
+             });
+        }
 
-                trendChart.data.labels = labels;
-                trendChart.data.datasets[0].data = data;
-                trendChart.update();
-            }
-
-            // Initialize Trend Chart
-            document.querySelector('#trendFilter .filter-btn.active').click();
-        </script>
+    </script>
 @endpush

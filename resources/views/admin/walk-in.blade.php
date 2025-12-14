@@ -187,82 +187,52 @@
             <i class="fas fa-plus me-2"></i>Add Walk-In Patient
         </button>
     </div>
-
-    <!-- Filters -->
-    <div class="filter-card">
-        <form method="GET" action="{{ route('admin.walk-in') }}" class="row g-3">
-            <div class="col-md-4">
-                <label class="form-label">Search</label>
-                <input type="text" name="search" class="form-control" placeholder="Name, phone, service..."
-                    value="{{ request('search') }}">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Status</label>
-                <select name="status" class="form-select">
+    <!-- Walk-in Queue Table -->
+    <div class="card">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0 fw-bold text-secondary">Walk-In Queue</h5>
+            <div class="d-flex gap-2">
+                 <input type="text" id="walkInSearch" class="form-control form-control-sm" placeholder="Search walk-ins..." style="width: 200px;">
+                <select id="statusFilter" class="form-select form-select-sm" style="width: 150px;">
                     <option value="">All Statuses</option>
                     <option value="waiting" {{ request('status') == 'waiting' ? 'selected' : '' }}>Waiting</option>
-                    <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress
-                    </option>
+                    <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
                     <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
                     <option value="no_show" {{ request('status') == 'no_show' ? 'selected' : '' }}>No Show</option>
                 </select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Service</label>
-                <select name="service" class="form-select">
-                    <option value="">All Services</option>
-                    @foreach ($services as $service)
-                        <option value="{{ $service }}" {{ request('service') == $service ? 'selected' : '' }}>
-                            {{ $service }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="fas fa-filter me-2"></i>Filter
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#walkInModal">
+                    <i class="fas fa-plus me-1"></i> Add Walk-In
                 </button>
             </div>
-        </form>
-    </div>
-
-    <!-- Walk-Ins Table -->
-    <div class="table-card">
-        <div class="table-header">
-            <h5 class="mb-0">Walk-In Patients ({{ $walkIns->total() }})</h5>
         </div>
-        <div class="table-responsive">
-            @if ($walkIns->count() > 0)
-                <table class="table table-hover mb-0">
-                    <thead>
+        <div class="card-body p-0">
+             <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle" id="walkInTable">
+                    <thead class="table-light">
                         <tr>
-                            <th>ID</th>
+                            <th>Time</th>
                             <th>Patient Name</th>
-                            <th>Phone</th>
                             <th>Service</th>
-                            <th>Date & Time</th>
-                            <th class="text-center">Status</th>
-                            <th class="text-center">Actions</th>
+                            <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="walkInTableBody">
                         @foreach ($walkIns as $walkIn)
                             <tr>
-                                <td>#{{ $walkIn->id }}</td>
-                                <td>
-                                    <div class="fw-bold">{{ $walkIn->patient_name }}</div>
-                                    <small class="text-muted">{{ $walkIn->patient_address }}</small>
-                                </td>
-                                <td>{{ $walkIn->patient_phone }}</td>
-                                <td>{{ $walkIn->service_type }}</td>
                                 <td>
                                     <div>{{ $walkIn->appointment_date->format('M d, Y') }}</div>
                                     <small
                                         class="text-muted">{{ \Carbon\Carbon::parse($walkIn->appointment_time)->format('h:i A') }}</small>
                                 </td>
-                                <td class="text-center">
+                                <td>
+                                    <div class="fw-bold">{{ $walkIn->patient_name }}</div>
+                                    <small class="text-muted">{{ $walkIn->patient_address }}</small>
+                                </td>
+                                <td>{{ $walkIn->service_type }}</td>
+                                <td>
                                     <span
-                                        class="status-badge 
+                                        class="status-badge
                                                                                                                 @if ($walkIn->status == 'waiting') bg-warning text-dark
                                                                                                                 @elseif($walkIn->status == 'in_progress') bg-primary text-white
                                                                                                                 @elseif($walkIn->status == 'completed') bg-success text-white
@@ -360,7 +330,7 @@
                                                             <th>Status:</th>
                                                             <td>
                                                                 <span
-                                                                    class="status-badge 
+                                                                    class="status-badge
                                                                                                                                             @if ($walkIn->status == 'waiting') bg-warning text-dark
                                                                                                                                             @elseif($walkIn->status == 'in_progress') bg-primary text-white
                                                                                                                                             @elseif($walkIn->status == 'completed') bg-success text-white
@@ -390,18 +360,9 @@
                         @endforeach
                     </tbody>
                 </table>
-            @else
-                <div class="text-center py-5">
-                    <i class="fas fa-walking text-muted mb-3" style="font-size: 3rem;"></i>
-                    <p class="text-muted">No walk-in patients found.</p>
-                </div>
-            @endif
+             </div> <!-- End table-responsive -->
         </div>
-        @if ($walkIns->hasPages())
-            <div class="p-3">
-                {{ $walkIns->links() }}
-            </div>
-        @endif
+         <div id="walkInPaginationContainer" class="p-3"></div>
     </div>
 
     <!-- Add Walk-In Modal -->
@@ -485,16 +446,10 @@
             </div>
         </div>
     </div>
+@endsection
 
+@push('scripts')
     <script>
-        let searchTimeout;
-        const searchInput = document.getElementById('patientSearch');
-        const searchResults = document.getElementById('searchResults');
-        const selectedPatientInfo = document.getElementById('selectedPatientInfo');
-        const selectedPatientDetails = document.getElementById('selectedPatientDetails');
-        const selectedPatientId = document.getElementById('selected_patient_id');
-        const manualEntrySection = document.getElementById('manualEntrySection');
-
         // Patient search with debounce
         searchInput.addEventListener('input', function () {
             clearTimeout(searchTimeout);
@@ -581,4 +536,4 @@
             clearPatientSelection();
         });
     </script>
-@endsection
+@endpush

@@ -7,13 +7,29 @@
 @section('content')
     <div class="p-0 p-md-4">
         <!-- Export Buttons -->
-        <div class="d-flex justify-content-end mb-3 gap-2">
-            <a href="{{ route('admin.reports.export.patients') }}" class="btn btn-success">
-                <i class="fas fa-file-excel me-2"></i>Export Excel
-            </a>
-            <a href="{{ route('admin.reports.export.patients.pdf') }}" class="btn btn-danger">
-                <i class="fas fa-file-pdf me-2"></i>Export PDF
-            </a>
+        <!-- Export Form -->
+        <div class="card-surface p-3 mb-4">
+            <form action="{{ route('admin.reports.export.patients') }}" method="GET" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Start Date</label>
+                    <input type="date" name="start_date" class="form-control" required
+                        value="{{ now()->startOfMonth()->format('Y-m-d') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">End Date</label>
+                    <input type="date" name="end_date" class="form-control" required
+                        value="{{ now()->endOfMonth()->format('Y-m-d') }}">
+                </div>
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="submit" class="btn btn-success flex-grow-1">
+                        <i class="fas fa-file-excel me-2"></i>Export Excel (Report)
+                    </button>
+                    <button type="submit" formaction="{{ route('admin.reports.export.patients.pdf') }}"
+                        class="btn btn-danger flex-grow-1">
+                        <i class="fas fa-file-pdf me-2"></i>Export PDF
+                    </button>
+                </div>
+            </form>
         </div>
 
         <!-- Overview Cards -->
@@ -61,7 +77,7 @@
         <div class="row g-3 mb-4">
             <!-- Age Distribution -->
             <div class="col-md-6">
-                <div class="card-surface p-3">
+                <div class="card-surface p-3 h-100">
                     <h5 class="mb-3">Age Distribution</h5>
                     <div class="table-responsive">
                         <table class="table table-sm mb-0">
@@ -78,7 +94,8 @@
                                         <td>{{ $group }} years</td>
                                         <td class="text-end"><strong>{{ $count }}</strong></td>
                                         <td class="text-end">
-                                            {{ $totalPatients > 0 ? round(($count / $totalPatients) * 100, 1) : 0 }}%</td>
+                                            {{ $totalPatients > 0 ? round(($count / $totalPatients) * 100, 1) : 0 }}%
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -89,7 +106,7 @@
 
             <!-- Barangay Distribution -->
             <div class="col-md-6">
-                <div class="card-surface p-3">
+                <div class="card-surface p-3 h-100">
                     <h5 class="mb-3">Barangay Distribution</h5>
                     <div class="table-responsive">
                         <table class="table table-sm mb-0">
@@ -106,7 +123,8 @@
                                         <td>{{ $item->barangay }}</td>
                                         <td class="text-end"><strong>{{ $item->count }}</strong></td>
                                         <td class="text-end">
-                                            {{ $totalPatients > 0 ? round(($item->count / $totalPatients) * 100, 1) : 0 }}%</td>
+                                            {{ $totalPatients > 0 ? round(($item->count / $totalPatients) * 100, 1) : 0 }}%
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -123,7 +141,7 @@
         <!-- Top Patients by Appointments -->
         <div class="row g-3 mb-4">
             <div class="col-md-6">
-                <div class="card-surface p-3">
+                <div class="card-surface p-3 h-100">
                     <h5 class="mb-3">Top Patients by Appointments</h5>
                     <div class="table-responsive">
                         <table class="table table-sm mb-0">
@@ -153,7 +171,7 @@
 
             <!-- Recent Registrations -->
             <div class="col-md-6">
-                <div class="card-surface p-3">
+                <div class="card-surface p-3 h-100">
                     <h5 class="mb-3">Recent Registrations</h5>
                     <div class="table-responsive">
                         <table class="table table-sm mb-0">

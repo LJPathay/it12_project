@@ -58,7 +58,7 @@
         style="z-index: 1050; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(5px); overflow-y: auto;">
         <div class="d-flex min-vh-100 align-items-center justify-content-center py-5">
             <div class="container" style="max-width: 450px;">
-                <x-card class="shadow-lg border-0" noPadding>
+                <div class="card shadow-lg border-0">
                 <div class="card-header bg-primary text-white text-center position-relative py-3">
                     <h4 class="mb-0">Register</h4>
                     <a href="{{ route('home') }}"
@@ -77,7 +77,15 @@
                     <form method="POST" action="{{ route('register') }}" class="registration-form">
                         @csrf
 
-                        <x-input name="name" label="Full Name" required value="{{ old('name') }}" />
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required>
+                            @error('name')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
 
                         <div class="mb-3">
                             <label for="gender" class="form-label fw-medium">Gender <span
@@ -102,8 +110,15 @@
                             @enderror
                         </div>
 
-                        <x-input name="phone" label="Phone Number" placeholder="Enter your phone number (optional)"
-                            value="{{ old('phone') }}" />
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input id="phone" type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') }}" placeholder="Enter your phone number (optional)">
+                            @error('phone')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
 
                         <div class="mb-3">
                             <label for="address" class="form-label fw-medium">Address <small
@@ -135,8 +150,13 @@
 
                         <div class="mb-3 {{ $selectedBarangay === 'Other' ? '' : 'd-none' }}"
                             data-role="barangay-other-group">
-                            <x-input name="barangay_other" label="Specify Barangay" required
-                                value="{{ old('barangay_other') }}" data-role="barangay-other" />
+                            <label for="barangay_other" class="form-label">Specify Barangay</label>
+                            <input id="barangay_other" type="text" class="form-control @error('barangay_other') is-invalid @enderror" name="barangay_other" value="{{ old('barangay_other') }}" data-role="barangay-other" required>
+                            @error('barangay_other')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
                         </div>
 
                         <div class="mb-3 {{ in_array($selectedBarangay, ['Barangay 11', 'Barangay 12']) ? '' : 'd-none' }}"
@@ -156,8 +176,15 @@
                             @enderror
                         </div>
 
-                        <x-input name="birth_date" label="Birth Date" type="date" required
-                            value="{{ old('birth_date') }}" data-role="birth-date" max="{{ now()->toDateString() }}" />
+                        <div class="mb-3">
+                            <label for="birth_date" class="form-label">Birth Date</label>
+                            <input id="birth_date" type="date" class="form-control @error('birth_date') is-invalid @enderror" name="birth_date" value="{{ old('birth_date') }}" data-role="birth-date" max="{{ now()->toDateString() }}" required>
+                            @error('birth_date')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
 
                         <div class="mb-3">
                             <label for="register-password" class="form-label fw-medium">Password <span class="text-danger">*</span></label>
@@ -181,13 +208,13 @@
                         </div>
 
 
-                        <x-button type="submit" variant="primary" class="w-100 text-white">Register</x-button>
+                        <button type="submit" class="btn btn-primary w-100 text-white">Register</button>
                         </form>
                         <div class="text-center mt-3">
                             <small>Already have an account? <a href="{{ route('login') }}">Login here</a></small>
                         </div>
                     </div>
-                </x-card>
+                </div>
             </div>
         </div>
     </div>

@@ -32,18 +32,24 @@
                 <th>Item Name</th>
                 <th>Category</th>
                 <th>Current Stock</th>
-                <th>Minimum Stock</th>
+                <th>Stocks Used</th>
                 <th>Status</th>
                 <th>Expiry Date</th>
             </tr>
         </thead>
         <tbody>
             @foreach($inventory as $item)
+            @php
+                $stocksUsed = $item->transactions
+                    ->where('transaction_type', '!=', 'restock')
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->sum('quantity');
+            @endphp
             <tr>
                 <td>{{ $item->item_name }}</td>
                 <td>{{ $item->category }}</td>
                 <td>{{ $item->current_stock }} {{ $item->unit }}</td>
-                <td>{{ $item->minimum_stock }} {{ $item->unit }}</td>
+                <td>{{ $stocksUsed }} {{ $item->unit }}</td>
                 <td>
                     <span class="status-badge status-{{ $item->status }}">
                         {{ str_replace('_', ' ', ucfirst($item->status)) }}

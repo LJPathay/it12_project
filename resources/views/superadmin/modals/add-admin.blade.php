@@ -19,18 +19,6 @@
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Gender <span class="text-danger">*</span></label>
-                        <select name="gender" class="form-control @error('gender') is-invalid @enderror" required>
-                            <option value="" disabled selected>Select Gender</option>
-                            <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
-                            <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
-                            <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Prefer not to say</option>
-                        </select>
-                        @error('gender')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="mb-3">
                         <label class="form-label">Email <span class="text-danger">*</span></label>
                         <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
                             value="{{ old('email') }}" required>
