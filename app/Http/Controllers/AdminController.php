@@ -1025,90 +1025,134 @@ class AdminController extends Controller
         return $this->reports();
     }
 
-    public function patientReports()
+    public function patientReports(Request $request)
     {
+        $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        $startDate = $request->filled('start_date')
+            ? Carbon::parse($request->start_date)->startOfDay()
+            : now()->startOfMonth();
+        $endDate = $request->filled('end_date')
+            ? Carbon::parse($request->end_date)->endOfDay()
+            : now()->endOfMonth();
+
+        $patientRangeQuery = Patient::query()->whereBetween('created_at', [$startDate, $endDate]);
+
         // Patient statistics
-        $totalPatients = Patient::query()->count();
-        $maleCount = Patient::query()->where('gender', 'male')->count();
-        $femaleCount = Patient::query()->where('gender', 'female')->count();
-        $newPatientsThisMonth = Patient::query()
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
-            ->count();
+        $totalPatients = (clone $patientRangeQuery)->count();
+        $maleCount = (clone $patientRangeQuery)->where('gender', 'male')->count();
+        $femaleCount = (clone $patientRangeQuery)->where('gender', 'female')->count();
+        $newPatientsInRange = $totalPatients;
 
         // Age distribution
         $ageGroups = [
-            '0-17' => Patient::query()->whereBetween('age', [0, 17])->count(),
-            '18-30' => Patient::query()->whereBetween('age', [18, 30])->count(),
-            '31-50' => Patient::query()->whereBetween('age', [31, 50])->count(),
-            '51-70' => Patient::query()->whereBetween('age', [51, 70])->count(),
-            '71+' => Patient::query()->where('age', '>', 70)->count(),
+            '0-17' => (clone $patientRangeQuery)->whereBetween('age', [0, 17])->count(),
+            '18-30' => (clone $patientRangeQuery)->whereBetween('age', [18, 30])->count(),
+            '31-50' => (clone $patientRangeQuery)->whereBetween('age', [31, 50])->count(),
+            '51-70' => (clone $patientRangeQuery)->whereBetween('age', [51, 70])->count(),
+            '71+' => (clone $patientRangeQuery)->where('age', '>', 70)->count(),
         ];
 
         // Barangay distribution
-        $barangayDistribution = Patient::query()
+        $barangayDistribution = (clone $patientRangeQuery)
             ->selectRaw('barangay, count(*) as count')
             ->groupBy('barangay')
             ->get();
 
-        // Patients with most appointments
+        // Patients with most appointments within range
         $topPatients = Patient::query()
-            ->withCount('appointments')
+            ->withCount(['appointments' => function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('appointment_date', [$startDate, $endDate]);
+            }])
+            ->whereHas('appointments', function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('appointment_date', [$startDate, $endDate]);
+            })
             ->orderByDesc('appointments_count')
             ->limit(5)
             ->get();
 
-        // Recent registrations
+        // Recent registrations in range
         $recentPatients = Patient::query()
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->latest()
             ->limit(10)
             ->get();
+
+        $filterStartDate = $startDate->toDateString();
+        $filterEndDate = $endDate->toDateString();
 
         return view('admin.reports.patients', compact(
             'totalPatients',
             'maleCount',
             'femaleCount',
-            'newPatientsThisMonth',
+            'newPatientsInRange',
             'ageGroups',
             'barangayDistribution',
             'topPatients',
-            'recentPatients'
+            'recentPatients',
+            'filterStartDate',
+            'filterEndDate'
         ));
     }
 
-    public function inventoryReports()
+    public function inventoryReports(Request $request)
     {
+        $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        $startDate = $request->filled('start_date')
+            ? Carbon::parse($request->start_date)->startOfDay()
+            : now()->startOfMonth();
+        $endDate = $request->filled('end_date')
+            ? Carbon::parse($request->end_date)->endOfDay()
+            : now()->endOfMonth();
+
+        $inventoryRangeQuery = Inventory::query()->whereBetween('created_at', [$startDate, $endDate]);
+
         // Inventory statistics
-        $totalItems = Inventory::count();
-        $lowStockCount = Inventory::whereColumn('current_stock', '<=', 'minimum_stock')->count();
-        $outOfStockCount = Inventory::where('current_stock', 0)->count();
-        $expiringSoonCount = Inventory::whereNotNull('expiry_date')
-            ->whereBetween('expiry_date', [now(), now()->addDays(90)])
+        $totalItems = (clone $inventoryRangeQuery)->count();
+        $lowStockCount = (clone $inventoryRangeQuery)->whereColumn('current_stock', '<=', 'minimum_stock')->count();
+        $outOfStockCount = (clone $inventoryRangeQuery)->where('current_stock', 0)->count();
+        $expiringSoonCount = (clone $inventoryRangeQuery)
+            ->whereNotNull('expiry_date')
+            ->whereBetween('expiry_date', [$startDate->toDateString(), $endDate->toDateString()])
             ->count();
 
         // Category breakdown
-        $categoryBreakdown = Inventory::selectRaw('category, count(*) as count, sum(current_stock) as total_stock')
+        $categoryBreakdown = (clone $inventoryRangeQuery)
+            ->selectRaw('category, count(*) as count, sum(current_stock) as total_stock')
             ->groupBy('category')
             ->get();
 
         // Low stock items
-        $lowStockItems = Inventory::whereColumn('current_stock', '<=', 'minimum_stock')
+        $lowStockItems = (clone $inventoryRangeQuery)
+            ->whereColumn('current_stock', '<=', 'minimum_stock')
             ->orderBy('current_stock', 'asc')
             ->limit(10)
             ->get();
 
         // Expiring soon items
-        $expiringSoonItems = Inventory::whereNotNull('expiry_date')
-            ->whereBetween('expiry_date', [now(), now()->addDays(90)])
+        $expiringSoonItems = (clone $inventoryRangeQuery)
+            ->whereNotNull('expiry_date')
+            ->whereBetween('expiry_date', [$startDate->toDateString(), $endDate->toDateString()])
             ->orderBy('expiry_date', 'asc')
             ->limit(10)
             ->get();
 
-        // Recent transactions
+        // Recent transactions within range
         $recentTransactions = InventoryTransaction::with(['inventory', 'user'])
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->latest()
             ->limit(10)
             ->get();
+
+        $filterStartDate = $startDate->toDateString();
+        $filterEndDate = $endDate->toDateString();
 
         return view('admin.reports.inventory', compact(
             'totalItems',
@@ -1118,7 +1162,9 @@ class AdminController extends Controller
             'categoryBreakdown',
             'lowStockItems',
             'expiringSoonItems',
-            'recentTransactions'
+            'recentTransactions',
+            'filterStartDate',
+            'filterEndDate'
         ));
     }
 

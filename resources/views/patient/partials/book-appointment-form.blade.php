@@ -118,7 +118,7 @@
     @if($user->age >= 6)
         <!-- Treatment Record Section -->
         <div class="form-section">
-            <h6><i class="fas fa-file-medical me-2"></i>Individual Treatment Record</h6>
+            <h6><i class="fas fa-file-medical me-2"></i>Individual Treatment Record (Optional)</h6>
             <p class="text-muted small mb-3">
                 <i class="fas fa-info-circle me-1"></i>
                 This information helps us provide better healthcare. Fields are optional and auto-filled

@@ -9,19 +9,22 @@
         <!-- Export Buttons -->
         <!-- Export Form -->
         <div class="card-surface p-3 mb-4">
-            <form action="{{ route('admin.reports.export.inventory') }}" method="GET" class="row g-3 align-items-end">
+            <form action="{{ route('admin.reports.inventory') }}" method="GET" class="row g-3 align-items-end">
                 <div class="col-md-3">
                     <label class="form-label small text-muted">Start Date</label>
                     <input type="date" name="start_date" class="form-control" required
-                        value="{{ now()->startOfMonth()->format('Y-m-d') }}">
+                        value="{{ request('start_date', $filterStartDate) }}">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small text-muted">End Date</label>
                     <input type="date" name="end_date" class="form-control" required
-                        value="{{ now()->endOfMonth()->format('Y-m-d') }}">
+                        value="{{ request('end_date', $filterEndDate) }}">
                 </div>
-                <div class="col-md-6 d-flex gap-2">
-                    <button type="submit" class="btn btn-success flex-grow-1">
+                <div class="col-md-6 d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1">
+                        <i class="fas fa-filter me-2"></i>Apply Filter
+                    </button>
+                    <button type="submit" formaction="{{ route('admin.reports.export.inventory') }}" class="btn btn-success flex-grow-1">
                         <i class="fas fa-file-excel me-2"></i>Export Excel (Report)
                     </button>
                     <button type="submit" formaction="{{ route('admin.reports.export.inventory.pdf') }}"
@@ -31,6 +34,11 @@
                 </div>
             </form>
         </div>
+
+        <p class="text-muted small mb-3">
+            Showing results from <strong>{{ \Carbon\Carbon::parse($filterStartDate)->format('M d, Y') }}</strong>
+            to <strong>{{ \Carbon\Carbon::parse($filterEndDate)->format('M d, Y') }}</strong>
+        </p>
 
         <!-- Overview Cards -->
         <div class="row g-3 mb-4">
@@ -64,7 +72,7 @@
             <div class="col-md-3">
                 <div class="card-surface p-3 h-100">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <small class="text-muted">Expiring Soon (90d)</small>
+                        <small class="text-muted">Expiring In Range</small>
                         <i class="fas fa-clock text-info"></i>
                     </div>
                     <h3 class="mb-0">{{ number_format($expiringSoonCount) }}</h3>
