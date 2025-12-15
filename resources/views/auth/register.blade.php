@@ -83,31 +83,7 @@
         padding-top: 2px !important;
     }
 
-    /* Custom scrollbar styling to match theme */
-    ::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
-    }
 
-    ::-webkit-scrollbar-track {
-        background: #1a1a1a;
-        border-radius: 5px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #17a2b8;
-        border-radius: 5px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #138496;
-    }
-
-    /* Firefox scrollbar */
-    * {
-        scrollbar-width: thin;
-        scrollbar-color: #17a2b8 #1a1a1a;
-    }
 </style>
 @endpush
 
