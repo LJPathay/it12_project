@@ -137,7 +137,7 @@
 
                         <!-- Action Buttons -->
                         <div class="d-grid gap-2">
-                            <a href="{{ route('register') }}" class="btn btn-primary btn-lg shadow-sm">
+                            <a href="{{ route('login') }}" class="btn btn-primary btn-lg shadow-sm">
                                 <i class="fas fa-user-plus me-2"></i>Register Now
                             </a>
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
