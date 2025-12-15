@@ -267,8 +267,8 @@
                             <th>Time</th>
                             <th>Patient Name</th>
                             <th>Service</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="walkInTableBody">
@@ -284,7 +284,7 @@
                                     <small class="text-muted">{{ $walkIn->patient_address }}</small>
                                 </td>
                                 <td>{{ $walkIn->service_type }}</td>
-                                <td>
+                                <td class="text-center">
                                     <span
                                         class="status-badge
                                                                                                                 @if ($walkIn->status == 'waiting') bg-warning text-dark
