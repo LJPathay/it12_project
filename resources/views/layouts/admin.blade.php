@@ -381,58 +381,58 @@
             color: #000 !important;
         }
 
-        /* Global Yellow/Warning Color Override - Change all yellow to #FFF52E */
+        /* Global Yellow/Warning Color Override - Change all yellow to #D1C700 */
         .bg-warning,
         .badge.bg-warning,
         .btn-warning,
         .alert-warning {
-            background-color: #FFF52E !important;
-            border-color: #FFF52E !important;
+            background-color: #D1C700 !important;
+            border-color: #D1C700 !important;
             color: #000 !important;
         }
 
         .text-warning {
-            color: #FFF52E !important;
+            color: #D1C700 !important;
         }
 
         .btn-warning:hover,
         .btn-warning:focus,
         .btn-warning:active {
-            background-color: #ffe61f !important;
-            border-color: #ffe61f !important;
+            background-color: #bfa500 !important;
+            border-color: #bfa500 !important;
             color: #000 !important;
         }
 
         .btn-outline-warning {
-            color: #FFF52E !important;
-            border-color: #FFF52E !important;
+            color: #D1C700 !important;
+            border-color: #D1C700 !important;
         }
 
         .btn-outline-warning:hover {
-            background-color: #FFF52E !important;
-            border-color: #FFF52E !important;
+            background-color: #D1C700 !important;
+            border-color: #D1C700 !important;
             color: #000 !important;
         }
 
         .bg-warning-subtle {
-            background-color: rgba(255, 245, 46, 0.1) !important;
+            background-color: rgba(209, 199, 0, 0.1) !important;
             color: #000 !important;
         }
 
         /* Dark mode yellow overrides */
         body.bg-dark .alert-warning {
-            background-color: rgba(255, 245, 46, 0.15) !important;
-            border-color: rgba(255, 245, 46, 0.3) !important;
-            color: #FFF52E !important;
+            background-color: rgba(209, 199, 0, 0.15) !important;
+            border-color: rgba(209, 199, 0, 0.3) !important;
+            color: #D1C700 !important;
         }
 
         body.bg-dark .bg-warning {
-            background-color: #FFF52E !important;
+            background-color: #D1C700 !important;
             color: #000 !important;
         }
 
         body.bg-dark .text-warning {
-            color: #FFF52E !important;
+            color: #D1C700 !important;
         }
 
         body.bg-dark .badge.bg-warning {
@@ -568,7 +568,7 @@
         /* Global Border Utility Overrides */
         .border-primary { border-color: var(--color-primary) !important; }
         .border-success { border-color: #77dd77 !important; }
-        .border-warning { border-color: #FFF52E !important; }
+        .border-warning { border-color: #D1C700 !important; }
         .border-danger { border-color: #F53838 !important; }
         .border-info { border-color: #009fb1 !important; }
 
@@ -1273,8 +1273,8 @@
         }
 
         body.bg-dark .swal2-icon.swal2-warning {
-            border-color: #FFF52E !important;
-            color: #FFF52E !important;
+            border-color: #D1C700 !important;
+            color: #D1C700 !important;
         }
 
         body.bg-dark .swal2-icon.swal2-success {

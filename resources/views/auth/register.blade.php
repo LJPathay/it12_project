@@ -30,7 +30,7 @@
     }
 
     .strength-bar.medium {
-        background-color: #FFF52E;
+        background-color: #D1C700;
     }
 
     .strength-bar.strong {
@@ -42,7 +42,7 @@
     }
 
     #strength-text.medium {
-        color: #FFF52E;
+        color: #D1C700;
     }
 
     #strength-text.strong {

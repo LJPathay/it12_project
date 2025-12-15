@@ -108,7 +108,7 @@
 
         /* Custom status colors */
         .status-badge.bg-warning {
-            background-color: #FFF52E !important;
+            background-color: #D1C700 !important;
             color: #000000 !important;
         }
 

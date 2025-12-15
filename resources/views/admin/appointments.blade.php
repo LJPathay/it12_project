@@ -30,7 +30,7 @@
         }
 
         .status-pending {
-            background-color: #FFF52E;
+            background-color: #D1C700;
             color: #000000;
         }
 
