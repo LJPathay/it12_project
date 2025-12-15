@@ -423,18 +423,18 @@
                     strengthText.textContent = '';
                 } else if (strength === 1) {
                     strengthBar1.classList.add('weak');
-                    strengthText.textContent = 'weak';
+                    strengthText.textContent = 'Weak';
                     strengthText.classList.add('weak');
                 } else if (strength === 2) {
                     strengthBar1.classList.add('medium');
                     strengthBar2.classList.add('medium');
-                    strengthText.textContent = 'medium';
+                    strengthText.textContent = 'Medium';
                     strengthText.classList.add('medium');
                 } else if (strength === 3) {
                     strengthBar1.classList.add('strong');
                     strengthBar2.classList.add('strong');
                     strengthBar3.classList.add('strong');
-                    strengthText.textContent = 'strong';
+                    strengthText.textContent = 'Strong';
                     strengthText.classList.add('strong');
                 }
             };
