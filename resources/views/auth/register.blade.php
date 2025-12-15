@@ -30,7 +30,7 @@
     }
 
     .strength-bar.medium {
-        background-color: #FFF52E;
+        background-color: #D1C700;
     }
 
     .strength-bar.strong {
@@ -42,7 +42,7 @@
     }
 
     #strength-text.medium {
-        color: #FFF52E;
+        color: #D1C700;
     }
 
     #strength-text.strong {
@@ -83,31 +83,7 @@
         padding-top: 2px !important;
     }
 
-    /* Custom scrollbar styling to match theme */
-    ::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
-    }
 
-    ::-webkit-scrollbar-track {
-        background: #1a1a1a;
-        border-radius: 5px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #17a2b8;
-        border-radius: 5px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #138496;
-    }
-
-    /* Firefox scrollbar */
-    * {
-        scrollbar-width: thin;
-        scrollbar-color: #17a2b8 #1a1a1a;
-    }
 </style>
 @endpush
 
@@ -423,18 +399,18 @@
                     strengthText.textContent = '';
                 } else if (strength === 1) {
                     strengthBar1.classList.add('weak');
-                    strengthText.textContent = 'weak';
+                    strengthText.textContent = 'Weak';
                     strengthText.classList.add('weak');
                 } else if (strength === 2) {
                     strengthBar1.classList.add('medium');
                     strengthBar2.classList.add('medium');
-                    strengthText.textContent = 'medium';
+                    strengthText.textContent = 'Medium';
                     strengthText.classList.add('medium');
                 } else if (strength === 3) {
                     strengthBar1.classList.add('strong');
                     strengthBar2.classList.add('strong');
                     strengthBar3.classList.add('strong');
-                    strengthText.textContent = 'strong';
+                    strengthText.textContent = 'Strong';
                     strengthText.classList.add('strong');
                 }
             };

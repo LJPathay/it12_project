@@ -440,11 +440,11 @@
         .text-success { color: #77dd77 !important; }
         
         .alert-warning, .badge.bg-warning, .btn-warning {
-            background-color: #FFF52E !important;
-            border-color: #FFF52E !important;
+            background-color: #D1C700 !important;
+            border-color: #D1C700 !important;
             color: #000 !important;
         }
-        .text-warning { color: #FFF52E !important; }
+        .text-warning { color: #D1C700 !important; }
 
         .alert-danger, .badge.bg-danger, .btn-danger {
             background-color: #F53838 !important;
@@ -463,7 +463,7 @@
         /* Global Border Utility Overrides */
         .border-primary { border-color: #009fb1 !important; }
         .border-success { border-color: #77dd77 !important; }
-        .border-warning { border-color: #FFF52E !important; }
+        .border-warning { border-color: #D1C700 !important; }
         .border-danger { border-color: #F53838 !important; }
         .border-info { border-color: #009fb1 !important; }
     </style>

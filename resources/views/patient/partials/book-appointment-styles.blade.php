@@ -149,9 +149,9 @@
         }
 
         .calendar-day.partially-occupied {
-            background-color: #FFF52E;
+            background-color: #D1C700;
             color: #000;
-            border-color: #FFF52E;
+            border-color: #D1C700;
         }
 
         /* Selected state takes priority over partially-occupied */
@@ -399,8 +399,8 @@
         }
 
         body.bg-dark .calendar-day.partially-occupied {
-            background-color: #FFF52E;
-            border-color: #ffe61f;
+            background-color: #D1C700;
+            border-color: #bfa500;
             color: #000;
         }
 
@@ -549,7 +549,7 @@
         }
 
         .legend-color.partially-occupied {
-            background: #FFF52E;
+            background: #D1C700;
         }
 
         .legend-color.occupied {

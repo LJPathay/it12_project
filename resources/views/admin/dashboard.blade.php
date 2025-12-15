@@ -97,7 +97,7 @@
         </div>
 
         <!-- Low Stock -->
-        <div class="kpi-card" style="{{ ($lowStockItems ?? 0) > 0 ? 'border-left: 4px solid #FFF52E;' : '' }}">
+        <div class="kpi-card" style="{{ ($lowStockItems ?? 0) > 0 ? 'border-left: 4px solid #D1C700;' : '' }}">
             <div class="kpi-label">Inventory Alerts</div>
             <div class="kpi-value">{{ number_format($lowStockItems ?? 0) }}</div>
             <div class="kpi-sub">
@@ -356,7 +356,7 @@
                     data: [], 
                     // Vibrant Palette
                     backgroundColor: [
-                        '#009fb1', '#77dd77', '#FFF52E', '#F53838', '#8b5cf6', '#06b6d4', '#ec4899'
+                        '#009fb1', '#77dd77', '#D1C700', '#F53838', '#8b5cf6', '#06b6d4', '#ec4899'
                     ], 
                     borderRadius: 4 
                 }] 
@@ -403,7 +403,7 @@
                 labels: barangayData.map(i => i.barangay),
                 datasets: [{
                     data: barangayData.map(i => i.count),
-                    backgroundColor: ['#009fb1', '#77dd77', '#FFF52E', '#F53838', '#8b5cf6'],
+                    backgroundColor: ['#009fb1', '#77dd77', '#D1C700', '#F53838', '#8b5cf6'],
                     borderWidth: 0
                 }]
             },

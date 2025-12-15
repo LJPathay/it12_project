@@ -238,7 +238,7 @@
                         {
                             label: 'Pending',
                             data: monthlyTrend.pending,
-                            borderColor: '#FFF52E', // Warning yellow
+                            borderColor: '#D1C700', // Warning yellow
                             backgroundColor: 'transparent',
                             borderDash: [5, 5],
                             tension: 0.4,
@@ -299,7 +299,7 @@
                     labels: labels,
                     datasets: [{
                         data: data,
-                        backgroundColor: ['#009fb1', '#8b5cf6', '#77dd77', '#FFF52E', '#64748b'],
+                        backgroundColor: ['#009fb1', '#8b5cf6', '#77dd77', '#D1C700', '#64748b'],
                         borderWidth: 0,
                     }]
                 },
