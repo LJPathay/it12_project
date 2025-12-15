@@ -41,17 +41,17 @@
 
         .status-completed {
             background-color: #d1ecf1;
-            color: #0c5460;
+            color: #000000;
         }
 
         .status-cancelled {
             background-color: #F53838;
-            color: #ffffff;
+            color: #000000;
         }
 
         .status-no_show {
             background-color: #e2e3e5;
-            color: #383d41;
+            color: #000000;
         }
 
         .table-modern {

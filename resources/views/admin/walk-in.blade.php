@@ -119,12 +119,12 @@
 
         .status-badge.bg-danger {
             background-color: #F53838 !important;
-            color: #ffffff !important;
+            color: #000000 !important;
         }
 
         .status-badge.bg-primary {
             background-color: #17a2b8 !important;
-            color: #ffffff !important;
+            color: #000000 !important;
         }
 
         /* Dark mode support */
@@ -288,10 +288,10 @@
                                     <span
                                         class="status-badge
                                                                                                                 @if ($walkIn->status == 'waiting') bg-warning text-dark
-                                                                                                                @elseif($walkIn->status == 'in_progress') bg-primary text-white
-                                                                                                                @elseif($walkIn->status == 'completed') bg-success text-white
-                                                                                                                @elseif($walkIn->status == 'no_show') bg-danger text-white
-                                                                                                                @else bg-secondary text-white @endif">
+                                                                                                                @elseif($walkIn->status == 'in_progress') bg-primary text-dark
+                                                                                                                @elseif($walkIn->status == 'completed') bg-success text-dark
+                                                                                                                @elseif($walkIn->status == 'cancelled' || $walkIn->status == 'no_show') bg-danger text-dark
+                                                                                                                @else bg-secondary text-dark @endif">
                                         {{ ucfirst(str_replace('_', ' ', $walkIn->status)) }}
                                     </span>
                                 </td>

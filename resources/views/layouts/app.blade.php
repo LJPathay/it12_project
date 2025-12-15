@@ -431,6 +431,29 @@
             scrollbar-color: #c0c0c0 #f0f0f0;
         }
 
+        /* Global Button Overrides */
+        .btn-primary {
+            background-color: #009fb1 !important;
+            border-color: #009fb1 !important;
+            color: #fff !important;
+        }
+
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+            background-color: #008a9a !important;
+            border-color: #008a9a !important;
+            color: #fff !important;
+        }
+
+        .btn-outline-primary {
+            color: #009fb1 !important;
+            border-color: #009fb1 !important;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #009fb1 !important;
+            color: #fff !important;
+        }
+
         /* Unified Alert/Message Colors */
         .alert-success, .badge.bg-success, .btn-success {
             background-color: #77dd77 !important;
@@ -449,14 +472,14 @@
         .alert-danger, .badge.bg-danger, .btn-danger {
             background-color: #F53838 !important;
             border-color: #F53838 !important;
-            color: #fff !important;
+            color: #000 !important;
         }
         .text-danger { color: #F53838 !important; }
 
         .alert-info, .badge.bg-info, .btn-info {
             background-color: #009fb1 !important;
             border-color: #009fb1 !important;
-            color: #fff !important;
+            color: #000 !important;
         }
         .text-info { color: #009fb1 !important; }
 

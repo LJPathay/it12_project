@@ -268,6 +268,8 @@
         
         body.bg-dark .btn-filter:hover { color: #cbd5e1; }
         body.bg-dark .btn-filter.active { color: #f1f5f9; }
+
+        body {
             background-color: var(--bg-light);
             color: var(--text-light);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -511,13 +513,13 @@
         .alert-info {
             background-color: #009fb1 !important;
             border-color: #009fb1 !important;
-            color: #fff !important;
+            color: #000 !important;
         }
 
         .btn-info {
             background-color: #009fb1 !important;
             border-color: #009fb1 !important;
-            color: #fff !important;
+            color: #000 !important;
         }
 
         .text-info {
@@ -529,7 +531,7 @@
         .btn-info:active {
             background-color: #008a9a !important;
             border-color: #008a9a !important;
-            color: #fff !important;
+            color: #000 !important;
         }
 
         .btn-outline-info {
@@ -540,12 +542,12 @@
         .btn-outline-info:hover {
             background-color: #009fb1 !important;
             border-color: #009fb1 !important;
-            color: #fff !important;
+            color: #000 !important;
         }
 
         .bg-info-subtle {
             background-color: rgba(0, 159, 177, 0.1) !important;
-            color: #009fb1 !important;
+            color: #000 !important;
         }
 
         /* Dark mode info overrides */
@@ -557,12 +559,12 @@
         }
 
         body.bg-dark .badge.bg-info {
-            color: #fff !important;
+            color: #000 !important;
             background-color: #009fb1 !important;
         }
 
         body.bg-dark .btn-info {
-            color: #fff !important;
+            color: #000 !important;
         }
         
         /* Global Border Utility Overrides */

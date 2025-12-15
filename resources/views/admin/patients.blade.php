@@ -34,28 +34,24 @@
         }
 
         .status-active {
-            background-color: rgba(16, 185, 129, 0.25);
-            color: #059669;
-            border: 1px solid rgba(16, 185, 129, 0.4);
+            background-color: #77dd77;
+            color: #000000;
         }
 
         .status-inactive {
-            background-color: rgba(239, 68, 68, 0.25);
-            color: #dc2626;
-            border: 1px solid rgba(239, 68, 68, 0.4);
+            background-color: #F53838;
+            color: #000000;
         }
 
-        /* Dark mode status badges */
+        /* Dark mode status badges - keep same consistency */
         body.bg-dark .status-active {
-            background-color: rgba(16, 185, 129, 0.2);
-            color: #6ee7b7;
-            border-color: rgba(16, 185, 129, 0.4);
+            background-color: #77dd77;
+            color: #000000;
         }
 
         body.bg-dark .status-inactive {
-            background-color: rgba(239, 68, 68, 0.2);
-            color: #fca5a5;
-            border-color: rgba(239, 68, 68, 0.4);
+            background-color: #F53838;
+            color: #000000;
         }
 
         .patient-avatar {
@@ -473,7 +469,7 @@
                                 <tr>
                                     <th>Patient</th>
                                     <th>Email</th>
-                                    <th>Status</th>
+                                    <th class="text-center">Status</th>
                                     <th>Registered</th>
                                     <th class="text-center">Appointments</th>
                                     <th>Last Visit</th>
@@ -506,7 +502,7 @@
                                             </div>
                                         </td>
                                         <td>{{ $patient->email }}</td>
-                                        <td>
+                                        <td class="text-center">
                                             <span class="status-badge status-active">
                                                 Active
                                             </span>
