@@ -257,9 +257,6 @@
                     <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
                     <option value="no_show" {{ request('status') == 'no_show' ? 'selected' : '' }}>No Show</option>
                 </select>
-                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#walkInModal">
-                    <i class="fas fa-plus me-1"></i> Add Walk-In
-                </button>
             </div>
         </div>
         <div class="card-body p-0">
