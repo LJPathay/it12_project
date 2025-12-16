@@ -202,6 +202,32 @@
             border-color: #dc3545;
         }
 
+        /* Date/Time layout spacing */
+        .date-time-layout {
+            align-items: flex-start;
+            gap: 1.5rem;
+        }
+
+        .date-time-layout .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+        }
+
+        .date-time-layout .card-body {
+            padding: 1rem;
+        }
+
+        .calendar-card .month-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .calendar-card .calendar-grid {
+            gap: 4px;
+        }
+
         .calendar-day.partially-occupied {
             background-color: #ffc107;
             color: #212529;
@@ -1500,25 +1526,29 @@
                         </div>
                         <div class="mb-4">
                             <label class="form-label">Appointment Date & Time <span class="text-danger">*</span></label>
-                            <div class="row g-3">
+                            <div class="row g-4 date-time-layout">
                                 <div class="col-md-5">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <button type="button" class="btn btn-sm btn-outline-primary" id="prevMonth">
-                                            <i class="fas fa-chevron-left"></i>
-                                        </button>
-                                        <h6 class="mb-0" id="currentMonth">Loading...</h6>
-                                        <button type="button" class="btn btn-sm btn-outline-primary" id="nextMonth">
-                                            <i class="fas fa-chevron-right"></i>
-                                        </button>
-                                    </div>
-                                    <div id="calendarGrid" class="calendar-grid">
-                                        <div class="col-12">
-                                            <div class="skeleton calendar-skeleton"></div>
+                                    <div class="card h-100 shadow-sm calendar-card">
+                                        <div class="card-body">
+                                            <div class="month-nav">
+                                                <button type="button" class="btn btn-sm btn-outline-primary" id="prevMonth">
+                                                    <i class="fas fa-chevron-left"></i>
+                                                </button>
+                                                <h6 class="mb-0" id="currentMonth">Loading...</h6>
+                                                <button type="button" class="btn btn-sm btn-outline-primary" id="nextMonth">
+                                                    <i class="fas fa-chevron-right"></i>
+                                                </button>
+                                            </div>
+                                            <div id="calendarGrid" class="calendar-grid">
+                                                <div class="col-12">
+                                                    <div class="skeleton calendar-skeleton"></div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-7">
-                                    <div class="card h-100">
+                                    <div class="card h-100 shadow-sm time-card">
                                         <div class="card-header">
                                             <h6 class="mb-0">Time Slots</h6>
                                         </div>
@@ -1567,25 +1597,29 @@
                     <div class="modal-body">
                         <div class="mb-4">
                             <label class="form-label">New Appointment Date & Time <span class="text-danger">*</span></label>
-                            <div class="row g-3">
+                            <div class="row g-4 date-time-layout">
                                 <div class="col-md-5">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <button type="button" class="btn btn-sm btn-outline-primary" id="reschedPrevMonth">
-                                            <i class="fas fa-chevron-left"></i>
-                                        </button>
-                                        <h6 class="mb-0" id="reschedCurrentMonth">Loading...</h6>
-                                        <button type="button" class="btn btn-sm btn-outline-primary" id="reschedNextMonth">
-                                            <i class="fas fa-chevron-right"></i>
-                                        </button>
-                                    </div>
-                                    <div id="reschedCalendarGrid" class="calendar-grid">
-                                        <div class="col-12">
-                                            <div class="skeleton calendar-skeleton"></div>
+                                    <div class="card h-100 shadow-sm calendar-card">
+                                        <div class="card-body">
+                                            <div class="month-nav">
+                                                <button type="button" class="btn btn-sm btn-outline-primary" id="reschedPrevMonth">
+                                                    <i class="fas fa-chevron-left"></i>
+                                                </button>
+                                                <h6 class="mb-0" id="reschedCurrentMonth">Loading...</h6>
+                                                <button type="button" class="btn btn-sm btn-outline-primary" id="reschedNextMonth">
+                                                    <i class="fas fa-chevron-right"></i>
+                                                </button>
+                                            </div>
+                                            <div id="reschedCalendarGrid" class="calendar-grid">
+                                                <div class="col-12">
+                                                    <div class="skeleton calendar-skeleton"></div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-7">
-                                    <div class="card h-100">
+                                    <div class="card h-100 shadow-sm time-card">
                                         <div class="card-header">
                                             <h6 class="mb-0">Time Slots</h6>
                                         </div>
