@@ -20,18 +20,34 @@
                     <input type="date" name="end_date" class="form-control" required
                         value="{{ request('end_date', $filterEndDate) }}">
                 </div>
-                <div class="col-md-6 d-flex flex-wrap gap-2">
-                    <button type="submit" class="btn btn-primary flex-grow-1">
+                <!-- Barangay Filter -->
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Barangay</label>
+                    <select class="form-select" name="barangay">
+                        <option value="">All Barangays</option>
+                        <option value="Barangay 11" {{ request('barangay') == 'Barangay 11' ? 'selected' : '' }}>Barangay 11</option>
+                        <option value="Barangay 12" {{ request('barangay') == 'Barangay 12' ? 'selected' : '' }}>Barangay 12</option>
+                        <option value="Other" {{ request('barangay') == 'Other' ? 'selected' : '' }}>Other</option>
+                    </select>
+                </div> <!-- End Barangay Filter -->
+
+                <div class="col-md-3">
+                     <button type="submit" class="btn btn-primary w-100">
                         <i class="fas fa-filter me-2"></i>Apply Filter
                     </button>
-                    <button type="submit" formaction="{{ route('admin.reports.export.patients') }}"
-                        class="btn btn-success flex-grow-1">
-                        <i class="fas fa-file-excel me-2"></i>Export Excel (Report)
-                    </button>
-                    <button type="submit" formaction="{{ route('admin.reports.export.patients.pdf') }}"
-                        class="btn btn-danger flex-grow-1">
-                        <i class="fas fa-file-pdf me-2"></i>Export PDF
-                    </button>
+                </div>
+
+                <div class="col-md-12 border-top pt-3 mt-3">
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="submit" formaction="{{ route('admin.reports.export.patients') }}"
+                            class="btn btn-success">
+                            <i class="fas fa-file-excel me-2"></i>Export Excel
+                        </button>
+                        <button type="submit" formaction="{{ route('admin.reports.export.patients.pdf') }}"
+                            class="btn btn-danger">
+                            <i class="fas fa-file-pdf me-2"></i>Export PDF
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -39,10 +55,13 @@
         <p class="text-muted small mb-3">
             Showing results from <strong>{{ \Carbon\Carbon::parse($filterStartDate)->format('M d, Y') }}</strong>
             to <strong>{{ \Carbon\Carbon::parse($filterEndDate)->format('M d, Y') }}</strong>
+            @if(request('barangay'))
+                for <strong>{{ request('barangay') }}</strong>
+            @endif
         </p>
 
         <!-- Overview Cards -->
-        <div class="row g-3 mb-4">
+         <div class="row g-3 mb-4">
             <div class="col-md-3">
                 <div class="card-surface p-3 h-100">
                     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -147,59 +166,37 @@
             </div>
         </div>
 
-        <!-- Top Patients by Appointments -->
+        <!-- Detailed Patient List (Replaces Top Patients) -->
         <div class="row g-3 mb-4">
-            <div class="col-md-6">
+             <div class="col-12">
                 <div class="card-surface p-3 h-100">
-                    <h5 class="mb-3">Top Patients by Appointments</h5>
-                    <div class="table-responsive">
-                        <table class="table table-sm mb-0">
+                    <h5 class="mb-3">
+                        Patient List 
+                        @if(request('barangay'))
+                            <span class="badge bg-primary ms-2">{{ request('barangay') }}</span>
+                        @endif
+                    </h5>
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-sm table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th>Patient Name</th>
-                                    <th class="text-end">Appointments</th>
+                                    <th>Name</th>
+                                    <th>Age/Gender</th>
+                                    <th>Barangay</th>
+                                    <th>Registered</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($topPatients as $patient)
+                                @forelse($patients as $patient)
                                     <tr>
                                         <td>{{ $patient->name }}</td>
-                                        <td class="text-end"><span
-                                                class="badge bg-primary">{{ $patient->appointments_count }}</span></td>
+                                        <td>{{ $patient->age }} / {{ ucfirst($patient->gender) }}</td>
+                                        <td>{{ $patient->barangay === 'Other' ? $patient->barangay_other : $patient->barangay }}</td>
+                                        <td>{{ $patient->created_at->format('M d, Y') }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="2" class="text-center text-muted">No data available</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Registrations -->
-            <div class="col-md-6">
-                <div class="card-surface p-3 h-100">
-                    <h5 class="mb-3">Recent Registrations</h5>
-                    <div class="table-responsive">
-                        <table class="table table-sm mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Patient Name</th>
-                                    <th class="text-end">Registered</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($recentPatients as $patient)
-                                    <tr>
-                                        <td>{{ $patient->name }}</td>
-                                        <td class="text-end"><small
-                                                class="text-muted">{{ $patient->created_at->diffForHumans() }}</small></td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="2" class="text-center text-muted">No recent registrations</td>
+                                        <td colspan="4" class="text-center text-muted py-3">No patients found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -208,5 +205,13 @@
                 </div>
             </div>
         </div>
+
+        <!-- Recent Registrations (Keep or Move?) - Moving to bottom or removing if redundant with list? 
+             Let's keep it as a widget or remove since we detailed list. 
+             If list has all patients in range "new patients in range", then Recent Registrations is redundant subset.
+             But Recent Registrations usually shows globally recent?
+             The query for recentPatients IS range bounded. So it IS a subset of $patients.
+             I will remove it to de-clutter since we have the full list now.
+        -->
     </div>
 @endsection

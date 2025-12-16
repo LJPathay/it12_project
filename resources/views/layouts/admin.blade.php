@@ -2013,6 +2013,24 @@
 
         <!-- Page Content -->
         <main class="p-4">
+            {{-- Global Announcements (Patient Portal Only) --}}
+            @if(request()->is('patient*'))
+                @php
+                    $activeAnnouncements = \App\Models\Announcement::where('is_active', true)
+                        ->where('start_date', '<=', now())
+                        ->where('end_date', '>=', now())
+                        ->get();
+                @endphp
+
+                @foreach($activeAnnouncements as $announcement)
+                    <div class="alert alert-{{ $announcement->type }} alert-dismissible fade show shadow-sm mb-4" role="alert">
+                        <i class="fas fa-bullhorn me-2"></i>
+                        <strong>{{ $announcement->title }}</strong>: {{ $announcement->message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endforeach
+            @endif
+
             @yield('content')
         </main>
     </div>

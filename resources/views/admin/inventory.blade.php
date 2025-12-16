@@ -496,7 +496,8 @@
                                             <tr>
                                                 <th>Date</th>
                                                 <th>Type</th>
-                                                <th>Quantity</th>
+                                                <th>Qty</th>
+                                                <th>Prev. Expiry</th>
                                                 <th>Notes</th>
                                                 <th>User</th>
                                             </tr>
@@ -515,6 +516,13 @@
                                                     <td
                                                         class="{{ $transaction->transaction_type === 'restock' ? 'text-success' : 'text-danger' }} fw-bold">
                                                         {{ $transaction->transaction_type === 'restock' ? '+' : '-' }}{{ $transaction->quantity }}
+                                                    </td>
+                                                    <td class="small">
+                                                        @if($transaction->previous_expiry_date)
+                                                            {{ \Carbon\Carbon::parse($transaction->previous_expiry_date)->format('M d, Y') }}
+                                                        @else
+                                                            <span class="text-muted">-</span>
+                                                        @endif
                                                     </td>
                                                     <td class="small text-muted">{{ $transaction->notes ?? '-' }}</td>
                                                     <td class="small">{{ $transaction->user->name ?? 'System' }}</td>
@@ -560,7 +568,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">New Expiry Date</label>
-                                        <input type="date" class="form-control" name="expiry_date">
+                                        <input type="date" class="form-control" name="expiry_date" min="{{ date('Y-m-d') }}">
                                         <small class="text-muted">Leave blank to keep the current expiry date.</small>
                                     </div>
                                     <div class="mb-3">
@@ -721,9 +729,28 @@
                 paginationContainerId: 'inventoryPagination',
                 searchId: 'inventorySearchInput',
                 rowsPerPage: 10,
-                filterInputs: {
                     'inventoryCategorySelect': 'data-category'
                 }
+            });
+
+            // Prevent double submission
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    if (this.checkValidity()) {
+                        const btn = this.querySelector('button[type="submit"]');
+                        if (btn && !btn.disabled) {
+                            btn.disabled = true;
+                            const originalText = btn.innerHTML;
+                            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Processing...';
+                            
+                            // Safety timeout in case of error/no-redirect
+                            setTimeout(() => {
+                                btn.disabled = false;
+                                btn.innerHTML = originalText;
+                            }, 5000);
+                        }
+                    }
+                });
             });
         });
     </script>

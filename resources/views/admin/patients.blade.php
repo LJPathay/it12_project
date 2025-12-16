@@ -467,12 +467,11 @@
                         <table class="table table-hover mb-0 align-middle">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Patient</th>
-                                    <th>Email</th>
+                                    <th>Name</th>
+                                    <th>Address</th>
+                                    <th>Contact #</th>
+                                    <th>Gender</th>
                                     <th class="text-center">Status</th>
-                                    <th>Registered</th>
-                                    <th class="text-center">Appointments</th>
-                                    <th>Last Visit</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -485,38 +484,25 @@
                                                     style="width: 40px; height: 40px; font-size: 0.9rem;">
                                                     {{ substr($patient->name, 0, 2) }}
                                                 </div>
-                                                <div>
-                                                    <div class="fw-bold">{{ $patient->name }}</div>
-                                                    @php
-                                                        $listBarangayLabel = $patient->barangay === 'Other'
-                                                            ? ($patient->barangay_other ?? 'Other Barangay')
-                                                            : ($patient->barangay ?? 'N/A');
-                                                    @endphp
-                                                    <small class="text-muted">
-                                                        {{ $listBarangayLabel }}
-                                                        @if($patient->purok)
-                                                            · {{ $patient->purok }}
-                                                        @endif
-                                                    </small>
-                                                </div>
+                                                <div class="fw-bold">{{ $patient->name }}</div>
                                             </div>
                                         </td>
-                                        <td>{{ $patient->email }}</td>
+                                        <td>
+                                            @php
+                                                $listBarangayLabel = $patient->barangay === 'Other'
+                                                    ? ($patient->barangay_other ?? 'Other')
+                                                    : ($patient->barangay ?? 'N/A');
+                                                $purok = $patient->purok ? ', ' . $patient->purok : '';
+                                            @endphp
+                                            {{ $listBarangayLabel }}{{ $purok }}
+                                            <div class="small text-muted">{{ Str::limit($patient->address, 30) }}</div>
+                                        </td>
+                                        <td>{{ $patient->phone ?? 'N/A' }}</td>
+                                        <td>{{ ucfirst($patient->gender ?? 'N/A') }}</td>
                                         <td class="text-center">
                                             <span class="status-badge status-active">
                                                 Active
                                             </span>
-                                        </td>
-                                        <td>{{ $patient->created_at->format('M d, Y') }}</td>
-                                        <td class="text-center">
-                                            <span class="badge bg-primary">{{ $patient->appointments->count() }}</span>
-                                        </td>
-                                        <td>
-                                            @if($patient->appointments->count() > 0)
-                                                {{ $patient->appointments->sortByDesc('appointment_date')->first()->appointment_date->format('M d, Y') }}
-                                            @else
-                                                <span class="text-muted">Never</span>
-                                            @endif
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group" role="group">
@@ -747,7 +733,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Patient Details - {{ $patient->name }}</h5>
+                    <h5 class="modal-title">Patient Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">

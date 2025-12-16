@@ -632,7 +632,9 @@
             </nav>
         </header>
 
-        <main>@yield('content')</main>
+        <main>
+            @yield('content')
+        </main>
     @endif
 
     @unless(isset($adminLayout) && $adminLayout)

@@ -202,6 +202,11 @@ class AuthController extends Controller
             'password' => bcrypt($validated['password']),
         ]);
 
+        // Create empty Immunization Record (ITR)
+        \App\Models\PatientImmunization::create([
+            'patient_id' => $patient->id,
+        ]);
+
         Auth::guard('patient')->login($patient);
         return redirect()->route('patient.dashboard');
     }

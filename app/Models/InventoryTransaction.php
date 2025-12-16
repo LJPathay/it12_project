@@ -15,6 +15,7 @@ class InventoryTransaction extends Model
         'performable_id',
         'transaction_type',
         'quantity',
+        'previous_expiry_date',
         'notes'
     ];
 
