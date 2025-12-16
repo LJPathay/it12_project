@@ -1079,7 +1079,7 @@
             .info-value {
                 font-size: 0.875rem;
             }
-        }
+
 
         /* Modal full screen on very small devices */
         .modal-dialog {
