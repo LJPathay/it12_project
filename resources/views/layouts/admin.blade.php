@@ -2013,6 +2013,33 @@
 
         <!-- Page Content -->
         <main class="p-4">
+            {{-- Global Announcements (Patient Portal Only) --}}
+            @if(request()->is('patient*'))
+                @php
+                    $activeAnnouncements = \App\Models\Announcement::where('is_active', true)
+                        ->where('start_date', '<=', now())
+                        ->where('end_date', '>=', now())
+                        ->get();
+                @endphp
+
+                @foreach($activeAnnouncements as $announcement)
+                    <div class="alert alert-{{ $announcement->type }} alert-dismissible fade show shadow-sm mb-4 d-flex align-items-center justify-content-between" role="alert">
+                        <div>
+                            <i class="fas fa-bullhorn me-2"></i>
+                            <strong>{{ $announcement->title }}</strong>: {{ $announcement->message }}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            @if(request()->routeIs('patient.dashboard'))
+                                <a href="{{ route('patient.appointments') }}" class="btn btn-sm btn-light text-{{ $announcement->type }} fw-bold me-3" style="white-space: nowrap;">
+                                    View Appointments
+                                </a>
+                            @endif
+                            <button type="button" class="btn-close position-relative p-0" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+                @endforeach
+            @endif
+
             @yield('content')
         </main>
     </div>

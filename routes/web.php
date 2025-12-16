@@ -97,6 +97,7 @@ Route::middleware(['admin'])->group(function () {
         Route::delete('/patient/{id}/force-delete', [AdminController::class, 'forceDeletePatient'])->name('patient.force-delete');
         Route::get('/appointments', [AdminController::class, 'appointments'])->name('appointments');
         Route::post('/appointment/create', [AdminController::class, 'createAppointment'])->name('appointment.create');
+        Route::post('/appointment/block', [AdminController::class, 'blockDate'])->name('appointment.block');
         Route::post('/appointment/{appointment}/update', [AdminController::class, 'updateAppointmentStatus'])->name('appointment.update');
         Route::get('/appointments/slots', [AdminController::class, 'getAvailableSlots'])->name('appointments.slots');
         Route::get('/appointments/calendar', [AdminController::class, 'getCalendarData'])->name('appointments.calendar');

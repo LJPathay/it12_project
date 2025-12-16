@@ -13,17 +13,64 @@ class AppointmentHelper
      * @param string $date
      * @return array
      */
-    public static function getAvailableSlots($date)
+    public static function getAvailableSlots($date, $serviceType = null)
     {
         $timeSlots = self::getAllTimeSlots();
         $selectedDate = Carbon::parse($date);
-        $now = Carbon::now();
         $isToday = $selectedDate->isToday();
 
-        // Optimize: Use DB aggregation instead of fetching all records
-        $counts = Appointment::whereDate('appointment_date', $date)
-            ->whereIn('status', ['approved', 'completed'])
-            ->selectRaw('appointment_time, count(*) as total')
+        // Define limits per service
+        $limits = [
+            'Immunization' => ['daily' => 25, 'slot' => 4],
+            'Medical Checkup' => ['daily' => 15, 'slot' => 2],
+            'def' => ['daily' => 10, 'slot' => 1] // Default
+        ];
+        
+        $limitConfig = $limits[$serviceType] ?? $limits['def'];
+        $dailyLimit = $limitConfig['daily'];
+        $slotLimit = $limitConfig['slot'];
+
+        // Check if date is blocked (Doctor Unavailable)
+        $isBlocked = Appointment::whereDate('appointment_date', $date)
+            ->where('status', 'blocked')
+            ->exists();
+            
+        if ($isBlocked) {
+            // Return all slots as unavailable
+            $availableSlots = [];
+            foreach ($timeSlots as $slot) {
+                $availableSlots[] = [
+                    'time' => $slot['time'],
+                    'display' => $slot['display'],
+                    'available' => false,
+                    'occupied_count' => 0,
+                    'is_past' => false,
+                    'capacity' => 0,
+                    'is_blocked' => true
+                ];
+            }
+            return $availableSlots;
+        }
+
+        // Get daily total for this service
+        $dailyTotalQuery = Appointment::whereDate('appointment_date', $date)
+            ->whereIn('status', ['approved', 'completed', 'waiting']);
+            
+        if ($serviceType) {
+            $dailyTotalQuery->where('service_type', $serviceType);
+        }
+        $currentDailyTotal = $dailyTotalQuery->count();
+        $isDailyFull = $currentDailyTotal >= $dailyLimit;
+
+        // Get slot counts for this service
+        $countsQuery = Appointment::whereDate('appointment_date', $date)
+            ->whereIn('status', ['approved', 'completed', 'waiting']);
+            
+        if ($serviceType) {
+            $countsQuery->where('service_type', $serviceType);
+        }
+
+        $counts = $countsQuery->selectRaw('appointment_time, count(*) as total')
             ->groupBy('appointment_time')
             ->pluck('total', 'appointment_time');
 
@@ -38,19 +85,23 @@ class AppointmentHelper
         foreach ($timeSlots as $slot) {
             $count = $normalizedCounts[$slot['time']] ?? 0;
             
-            // Check if the time slot has passed (only for today)
+            // Check if time passed
             $isPast = false;
             if ($isToday) {
                 $slotTime = Carbon::parse($date . ' ' . $slot['time']);
                 $isPast = $slotTime->isPast();
             }
 
+            // Available if: Not Past AND Daily Not Full AND Slot Not Full
+            $available = !$isPast && !$isDailyFull && ($count < $slotLimit);
+
             $availableSlots[] = [
                 'time' => $slot['time'],
                 'display' => $slot['display'],
-                'available' => $count === 0 && !$isPast, // Not available if occupied or time has passed
+                'available' => $available,
                 'occupied_count' => $count,
-                'is_past' => $isPast
+                'is_past' => $isPast,
+                'capacity' => $slotLimit
             ];
         }
 
@@ -58,7 +109,7 @@ class AppointmentHelper
     }
 
     /**
-     * Get all predefined time slots (15 slots per day)
+     * Get all predefined time slots (1-hour intervals)
      * 
      * @return array
      */
@@ -66,19 +117,13 @@ class AppointmentHelper
     {
         return [
             ['time' => '08:00', 'display' => '8:00 AM'],
-            ['time' => '08:30', 'display' => '8:30 AM'],
             ['time' => '09:00', 'display' => '9:00 AM'],
-            ['time' => '09:30', 'display' => '9:30 AM'],
             ['time' => '10:00', 'display' => '10:00 AM'],
-            ['time' => '10:30', 'display' => '10:30 AM'],
             ['time' => '11:00', 'display' => '11:00 AM'],
-            ['time' => '11:30', 'display' => '11:30 AM'],
+            // Lunch Break 12-1
             ['time' => '13:00', 'display' => '1:00 PM'],
-            ['time' => '13:30', 'display' => '1:30 PM'],
             ['time' => '14:00', 'display' => '2:00 PM'],
-            ['time' => '14:30', 'display' => '2:30 PM'],
             ['time' => '15:00', 'display' => '3:00 PM'],
-            ['time' => '15:30', 'display' => '3:30 PM'],
             ['time' => '16:00', 'display' => '4:00 PM'],
         ];
     }
@@ -111,7 +156,17 @@ class AppointmentHelper
             $dateString = $currentDate->format('Y-m-d');
 
             $occupiedCount = $dailyCounts[$dateString] ?? 0;
-            $availableSlots = $totalSlotsPerDay - $occupiedCount;
+            
+            // Check if day is blocked
+            $isBlocked = Appointment::whereDate('appointment_date', $dateString)
+                ->where('status', 'blocked')
+                ->exists();
+
+            if ($isBlocked) {
+                 $availableSlots = 0;
+            } else {
+                 $availableSlots = $totalSlotsPerDay - $occupiedCount;
+            }
 
             $calendar[] = [
                 'date' => $dateString,
@@ -120,6 +175,7 @@ class AppointmentHelper
                 'occupied_slots' => $occupiedCount,
                 'available_slots' => $availableSlots,
                 'is_fully_occupied' => $availableSlots <= 0,
+                'is_blocked' => $isBlocked,
                 'is_weekend' => $currentDate->isWeekend(),
                 'is_past' => $currentDate->isPast() && !$currentDate->isToday(),
             ];

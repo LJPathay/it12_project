@@ -54,6 +54,21 @@
             color: #000000;
         }
 
+        .status-rescheduled {
+            background-color: #ffc107;
+            color: #000000;
+        }
+
+        .status-blocked {
+            background-color: #343a40;
+            color: #ffffff;
+        }
+
+        .status-in_progress {
+            background-color: #0d6efd;
+            color: #ffffff;
+        }
+
         .table-modern {
             border-collapse: separate;
             border-spacing: 0;
@@ -1255,6 +1270,9 @@
             </div>
         </div>
         <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#blockDateModal">
+                <i class="fas fa-ban me-2"></i> Block Date
+            </button>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
                 <i class="fas fa-plus me-2"></i> Add New Appointment
             </button>
@@ -1359,8 +1377,10 @@
                                         'rescheduled' => 'Rescheduled',
                                         'cancelled' => 'Cancelled',
                                         'completed' => 'Completed',
-                                        'no_show' => 'No Show'
-                                    ][$appointment->status] ?? ucfirst($appointment->status);
+                                        'no_show' => 'No Show',
+                                        'blocked' => 'Blocked',
+                                        'in_progress' => 'In Progress'
+                                    ][$appointment->status] ?? ucfirst(str_replace('_', ' ', $appointment->status));
                                 @endphp
                                 <span class="status-badge status-{{ $appointment->status }}">{{ $statusDisplay }}</span>
                             </td>
@@ -1409,8 +1429,10 @@
                                 'rescheduled' => 'Rescheduled',
                                 'cancelled' => 'Cancelled',
                                 'completed' => 'Completed',
-                                'no_show' => 'No Show'
-                            ][$appointment->status] ?? ucfirst($appointment->status);
+                                'no_show' => 'No Show',
+                                'blocked' => 'Blocked',
+                                'in_progress' => 'In Progress'
+                            ][$appointment->status] ?? ucfirst(str_replace('_', ' ', $appointment->status));
                         @endphp
                         <span class="status-badge status-{{ $appointment->status }}">{{ $statusDisplay }}</span>
                     </div>
@@ -1577,6 +1599,44 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Add Appointment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Block Date Modal -->
+    <div class="modal fade" id="blockDateModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">Block Date (Doctor Unavailable)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="{{ route('admin.appointment.block') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Warning:</strong> Blocking this date will:
+                            <ul class="mb-0 mt-1">
+                                <li>Prevent any new bookings for this date.</li>
+                                <li>Mark existing appointments as "Needs Reschedule".</li>
+                                <li>Automatically notify affected patients via email.</li>
+                            </ul>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date to Block</label>
+                            <input type="date" class="form-control" name="date" min="{{ date('Y-m-d') }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Reason (Optional)</label>
+                            <input type="text" class="form-control" name="reason" placeholder="e.g. Doctor on Leave, Maintenance">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Confirm Block</button>
                     </div>
                 </form>
             </div>

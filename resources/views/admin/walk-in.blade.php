@@ -252,10 +252,9 @@
                  <input type="text" id="walkInSearch" class="form-control form-control-sm" placeholder="Search walk-ins..." style="width: 200px;">
                 <select id="statusFilter" class="form-select form-select-sm" style="width: 150px;">
                     <option value="">All Statuses</option>
-                    <option value="waiting" {{ request('status') == 'waiting' ? 'selected' : '' }}>Waiting</option>
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
                     <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
                     <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                    <option value="no_show" {{ request('status') == 'no_show' ? 'selected' : '' }}>No Show</option>
                 </select>
             </div>
         </div>
@@ -287,7 +286,7 @@
                                 <td class="text-center">
                                     <span
                                         class="status-badge
-                                                                                                                @if ($walkIn->status == 'waiting') bg-warning text-dark
+                                                                                                                @if ($walkIn->status == 'pending') bg-warning text-dark
                                                                                                                 @elseif($walkIn->status == 'in_progress') bg-primary text-dark
                                                                                                                 @elseif($walkIn->status == 'completed') bg-success text-dark
                                                                                                                 @elseif($walkIn->status == 'cancelled' || $walkIn->status == 'no_show') bg-danger text-dark
@@ -323,10 +322,9 @@
                                                         <div class="mb-3">
                                                             <label class="form-label">Status</label>
                                                             <select name="status" class="form-select" required>
-                                                                <option value="waiting" {{ $walkIn->status == 'waiting' ? 'selected' : '' }}>Waiting</option>
+                                                                <option value="pending" {{ $walkIn->status == 'pending' ? 'selected' : '' }}>Pending</option>
                                                                 <option value="in_progress" {{ $walkIn->status == 'in_progress' ? 'selected' : '' }}>In Progress</option>
                                                                 <option value="completed" {{ $walkIn->status == 'completed' ? 'selected' : '' }}>Completed</option>
-                                                                <option value="no_show" {{ $walkIn->status == 'no_show' ? 'selected' : '' }}>No Show</option>
                                                             </select>
                                                         </div>
                                                         <div class="mb-3">
@@ -353,58 +351,95 @@
                                                     <h5 class="modal-title">Walk-In Details</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                 </div>
-                                                <div class="modal-body">
-                                                    <table class="table table-borderless">
-                                                        <tr>
-                                                            <th>Patient Name:</th>
-                                                            <td>{{ $walkIn->patient_name }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Phone:</th>
-                                                            <td>{{ $walkIn->patient_phone }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Address:</th>
-                                                            <td>{{ $walkIn->patient_address }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Service:</th>
-                                                            <td>{{ $walkIn->service_type }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Date:</th>
-                                                            <td>{{ $walkIn->appointment_date->format('M d, Y') }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Time:</th>
-                                                            <td>{{ \Carbon\Carbon::parse($walkIn->appointment_time)->format('h:i A') }}
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Status:</th>
-                                                            <td>
-                                                                <span
-                                                                    class="status-badge
-                                                                                                                                            @if ($walkIn->status == 'waiting') bg-warning text-dark
-                                                                                                                                            @elseif($walkIn->status == 'in_progress') bg-primary text-white
-                                                                                                                                            @elseif($walkIn->status == 'completed') bg-success text-white
-                                                                                                                                            @elseif($walkIn->status == 'no_show') bg-danger text-white
-                                                                                                                                            @else bg-secondary text-white @endif">
-                                                                    {{ ucfirst(str_replace('_', ' ', $walkIn->status)) }}
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                        @if ($walkIn->notes)
-                                                            <tr>
-                                                                <th>Notes:</th>
-                                                                <td>{{ $walkIn->notes }}</td>
-                                                            </tr>
-                                                        @endif
-                                                    </table>
+                                                <div class="modal-body p-4">
+                                                    <!-- Header: Name & Status -->
+                                                    <div class="d-flex align-items-start justify-content-between mb-4 pb-3 border-bottom">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="avatar-circle me-3 bg-primary text-white d-flex align-items-center justify-content-center rounded-circle shadow-sm" style="width: 64px; height: 64px; font-size: 1.5rem;">
+                                                                {{ substr($walkIn->patient_name, 0, 1) }}
+                                                            </div>
+                                                            <div>
+                                                                <h4 class="fw-bold mb-1">{{ $walkIn->patient_name }}</h4>
+                                                                <div class="d-flex align-items-center gap-2">
+                                                                    <span class="badge rounded-pill px-2 py-1 fw-normal d-flex align-items-center gap-1
+                                                                        @if ($walkIn->status == 'pending') bg-warning text-dark
+                                                                        @elseif($walkIn->status == 'in_progress') bg-primary text-white
+                                                                        @elseif($walkIn->status == 'completed') bg-success text-white
+                                                                        @elseif($walkIn->status == 'no_show') bg-danger text-white
+                                                                        @else bg-secondary text-white @endif">
+                                                                        @if($walkIn->status == 'pending') <i class="fas fa-clock fa-xs"></i>
+                                                                        @elseif($walkIn->status == 'in_progress') <i class="fas fa-spinner fa-xs"></i>
+                                                                        @elseif($walkIn->status == 'completed') <i class="fas fa-check fa-xs"></i>
+                                                                        @elseif($walkIn->status == 'no_show') <i class="fas fa-times fa-xs"></i>
+                                                                        @endif
+                                                                        {{ ucfirst(str_replace('_', ' ', $walkIn->status)) }}
+                                                                    </span>
+                                                                    <span class="text-muted small border-start ps-2 ms-1">Walk-In Patient</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Details Grid -->
+                                                    <div class="row g-4 mb-4">
+                                                        <!-- Contact Information -->
+                                                        <div class="col-md-6 border-end">
+                                                            <h6 class="text-uppercase text-secondary small fw-bold mb-3 border-bottom pb-2">Contact Information</h6>
+                                                            <div class="row mb-2">
+                                                                <div class="col-4 text-muted small">Phone</div>
+                                                                <div class="col-8 fw-medium">{{ $walkIn->patient_phone }}</div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-4 text-muted small">Address</div>
+                                                                <div class="col-8 fw-medium">{{ $walkIn->patient_address }}</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Visit Details -->
+                                                        <div class="col-md-6">
+                                                            <h6 class="text-uppercase text-secondary small fw-bold mb-3 border-bottom pb-2">Visit Details</h6>
+                                                            <div class="row mb-2">
+                                                                <div class="col-4 text-muted small">Service</div>
+                                                                <div class="col-8 fw-medium text-primary">{{ $walkIn->service_type }}</div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-4 text-muted small">Date & Time</div>
+                                                                <div class="col-8 fw-medium">
+                                                                    {{ $walkIn->appointment_date->format('M d, Y') }}
+                                                                    <div class="small text-muted">{{ \Carbon\Carbon::parse($walkIn->appointment_time)->format('h:i A') }}</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Notes Section -->
+                                                    @if ($walkIn->notes)
+                                                        <div class="bg-light rounded-3 p-3 border">
+                                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                                <label class="text-uppercase text-secondary small fw-bold mb-0">Visit Notes</label>
+                                                                <span class="badge bg-secondary opacity-50 text-white" style="font-size: 0.65rem;">READ ONLY</span>
+                                                            </div>
+                                                            <div class="text-dark fst-italic">"{{ $walkIn->notes }}"</div>
+                                                        </div>
+                                                    @else
+                                                        <div class="bg-light rounded-3 p-3 border text-center text-muted small">
+                                                            No notes recorded for this visit.
+                                                        </div>
+                                                    @endif
                                                 </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-bs-dismiss="modal">Close</button>
+                                                
+                                                <!-- Actions Footer -->
+                                                <div class="modal-footer bg-light px-4 py-3 d-flex justify-content-between">
+                                                    <button type="button" class="btn btn-outline-secondary border-0" data-bs-dismiss="modal">Close</button>
+                                                    @if ($walkIn->status !== 'completed')
+                                                        <button type="button" class="btn btn-primary px-4" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#updateStatusModal{{ $walkIn->id }}"
+                                                            onclick="$('#viewModal{{ $walkIn->id }}').modal('hide')" 
+                                                        >
+                                                            <i class="fas fa-edit me-2"></i> Edit Record
+                                                        </button>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -482,6 +517,14 @@
                                 @foreach ($services as $service)
                                     <option value="{{ $service }}">{{ $service }}</option>
                                 @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="priority" class="form-label">Priority Level *</label>
+                            <select class="form-select" id="priority" name="priority" required>
+                                <option value="regular" selected>Regular</option>
+                                <option value="priority">Priority (Senior/PWD)</option>
+                                <option value="emergency">Emergency</option>
                             </select>
                         </div>
                         <div class="mb-3">

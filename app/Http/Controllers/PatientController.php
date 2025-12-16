@@ -49,24 +49,21 @@ class PatientController extends Controller
             'medical_history' => 'nullable|string|max:2000'
         ];
 
-        // Add validation for treatment record if patient is eligible
-        if ($patient->age >= 6) {
-            $rules = array_merge($rules, [
-                'mother_name' => 'nullable|string|max:255',
-                'father_name' => 'nullable|string|max:255',
-                'religion' => 'nullable|string|max:255',
-                'marital_status' => 'nullable|string|in:single,married,widowed,separated,co-habitation',
-                'educational_attainment' => 'nullable|string|max:255',
-                'occupation' => 'nullable|string|max:255',
-                'accompanying_person' => 'nullable|string|max:255',
-                'accompanying_relationship' => 'nullable|string|max:255',
-                'consent_signed' => 'required|accepted',
-            ]);
-        }
+        // REMOVED ITR Validation as per request to remove requirement
 
         $request->validate($rules);
 
         $service = Service::find($request->service_id);
+        
+        // Validate Slot Availability/Quota
+        $slots = AppointmentHelper::getAvailableSlots($request->appointment_date, $service->name);
+        $normalizedTime = substr($request->appointment_time, 0, 5); // Ensure H:i format
+        
+        $selectedSlot = collect($slots)->firstWhere('time', $normalizedTime);
+        
+        if (!$selectedSlot || !$selectedSlot['available']) {
+             return redirect()->back()->with('error', 'Selected time slot is full or no longer available for this service type.');
+        }
 
         $appointment = Appointment::create([
             'patient_id' => Auth::guard('patient')->id(),
@@ -90,91 +87,7 @@ class PatientController extends Controller
         
         $appointment->services()->attach($service->id);
         
-        // Verify the attachment
-        $attachedServices = $appointment->services()->pluck('services.id')->toArray();
-        \Log::info('Services after attachment', [
-            'appointment_id' => $appointment->id,
-            'attached_service_ids' => $attachedServices
-        ]);
-
-        // Save treatment record data if eligible
-        if ($patient->age >= 6) {
-            // Update Patient Record
-            $patient->update([
-                'mother_name' => $request->mother_name,
-                'father_name' => $request->father_name,
-                'religion' => $request->religion,
-                'marital_status' => $request->marital_status,
-                'educational_attainment' => $request->educational_attainment,
-                'occupation' => $request->occupation,
-                'accompanying_person' => $request->accompanying_person,
-                'accompanying_relationship' => $request->accompanying_relationship,
-                'spouse_name' => $request->spouse_name,
-                'spouse_age' => $request->spouse_age,
-                'spouse_occupation' => $request->spouse_occupation,
-                'maiden_name' => $request->maiden_name,
-                'smoker' => $request->has('smoker'),
-                'smoker_packs_per_year' => $request->smoker_packs_per_year,
-                'drinks_alcohol' => $request->has('drinks_alcohol'),
-                'alcohol_specify' => $request->alcohol_specify,
-                'illicit_drug_use' => $request->has('illicit_drug_use'),
-                'multiple_sexual_partners' => $request->has('multiple_sexual_partners'),
-                'is_pwd' => $request->has('is_pwd'),
-                'pwd_specify' => $request->pwd_specify,
-                'has_sti' => $request->has('has_sti'),
-                'has_allergies' => $request->has('has_allergies'),
-                'allergies_specify' => $request->allergies_specify,
-                'social_history_others' => $request->social_history_others,
-                'family_hypertension' => $request->has('family_hypertension'),
-                'family_diabetes' => $request->has('family_diabetes'),
-                'family_goiter' => $request->has('family_goiter'),
-                'family_cancer' => $request->has('family_cancer'),
-                'family_history_others' => $request->family_history_others,
-                'history_uti' => $request->has('history_uti'),
-                'history_hypertension' => $request->has('history_hypertension'),
-                'history_diabetes' => $request->has('history_diabetes'),
-                'history_goiter' => $request->has('history_goiter'),
-                'history_cancer' => $request->has('history_cancer'),
-                'history_tuberculosis' => $request->has('history_tuberculosis'),
-                'medical_history_others' => $request->medical_history_others,
-                'previous_surgeries' => $request->previous_surgeries,
-                'maintenance_medicine' => $request->maintenance_medicine,
-                'consent_signed' => true,
-                'consent_signed_at' => now(),
-            ]);
-
-            // Update Immunization Record
-            $immunizationData = [
-                'bcg' => $request->has('imm_bcg'),
-                'dpt1' => $request->has('imm_dpt1'),
-                'dpt2' => $request->has('imm_dpt2'),
-                'dpt3' => $request->has('imm_dpt3'),
-                'opv1' => $request->has('imm_opv1'),
-                'opv2' => $request->has('imm_opv2'),
-                'opv3' => $request->has('imm_opv3'),
-                'measles' => $request->has('imm_measles'),
-                'hepatitis_b1' => $request->has('imm_hepatitis_b1'),
-                'hepatitis_b2' => $request->has('imm_hepatitis_b2'),
-                'hepatitis_b3' => $request->has('imm_hepatitis_b3'),
-                'hepatitis_a' => $request->has('imm_hepatitis_a'),
-                'varicella' => $request->has('imm_varicella'),
-                'hpv' => $request->has('imm_hpv'),
-                'pneumococcal' => $request->has('imm_pneumococcal'),
-                'mmr' => $request->has('imm_mmr'),
-                'flu_vaccine' => $request->has('imm_flu_vaccine'),
-                'none' => $request->has('imm_none'),
-                'covid_vaccine_name' => $request->covid_vaccine_name,
-                'covid_first_dose' => $request->covid_first_dose,
-                'covid_second_dose' => $request->covid_second_dose,
-                'covid_booster1' => $request->covid_booster1,
-                'covid_booster2' => $request->covid_booster2,
-            ];
-
-            $patient->immunization()->updateOrCreate(
-                ['patient_id' => $patient->id],
-                $immunizationData
-            );
-        }
+        // REMOVED Forced ITR Update Block as per request
 
         return redirect()->route('patient.dashboard')->with('success', 'Appointment booked successfully! We will contact you soon for confirmation.');
     }
@@ -210,10 +123,13 @@ class PatientController extends Controller
     {
         $request->validate([
             'date' => 'required|date|after_or_equal:today',
+            'service_type' => 'nullable|string', // Optional but recommended
         ]);
 
         $date = $request->date;
-        $slots = AppointmentHelper::getAvailableSlots($date);
+        $serviceType = $request->input('service_type');
+        
+        $slots = AppointmentHelper::getAvailableSlots($date, $serviceType);
 
         return response()->json([
             'date' => $date,

@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\AppointmentRangeExport;
+use Illuminate\Support\Str;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
@@ -510,10 +511,79 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Appointment created successfully.');
     }
 
+    public function blockDate(Request $request)
+    {
+        $request->validate([
+            'date' => 'required|date|after_or_equal:today',
+            'reason' => 'nullable|string|max:255'
+        ]);
+
+        // Check if already blocked
+        $existing = Appointment::whereDate('appointment_date', $request->date)
+            ->where('status', 'blocked')
+            ->exists();
+            
+        if ($existing) {
+            return redirect()->back()->with('error', 'Date is already blocked.');
+        }
+
+        // 1. Create blocked record
+        Appointment::create([
+            'patient_id' => null,
+            'patient_name' => 'Doctor Unavailable',
+            'patient_phone' => 'N/A',
+            'patient_address' => 'N/A',
+            'appointment_date' => $request->date,
+            'appointment_time' => '08:00',
+            'service_type' => 'Blocked',
+            'notes' => $request->reason ?? 'Doctor Unavailable',
+            'status' => 'blocked',
+            'is_walk_in' => false
+        ]);
+
+        // 2. Handle existing appointments (Emergency Reschedule)
+        $affectedAppointments = Appointment::whereDate('appointment_date', $request->date)
+            ->whereIn('status', ['pending', 'approved'])
+            ->with('user')
+            ->get();
+
+        $count = 0;
+        foreach ($affectedAppointments as $appointment) {
+            $appointment->update([
+                'status' => 'rescheduled',
+                'notes' => 'Reschedule required: ' . ($request->reason ?? 'Doctor Unavailable'),
+            ]);
+
+            // 3. Send Notification
+            $targetEmail = $appointment->user->email ?? null;
+            if ($targetEmail) {
+                try {
+                    Mail::to($targetEmail)->send(new \App\Mail\AppointmentRescheduled($appointment));
+                    Log::info('Sent emergency reschedule email', ['id' => $appointment->id, 'email' => $targetEmail]);
+                } catch (\Exception $e) {
+                    Log::error('Failed to send emergency mail', ['id' => $appointment->id, 'error' => $e->getMessage()]);
+                }
+            }
+            $count++;
+        }
+
+        // 4. Create Global Announcement
+        \App\Models\Announcement::create([
+            'title' => 'Doctor Unavailable: ' . \Carbon\Carbon::parse($request->date)->format('F d, Y'),
+            'message' => 'Please note that the doctor is unavailable on ' . \Carbon\Carbon::parse($request->date)->format('F d, Y') . '. ' . ($request->reason ? "Reason: $request->reason." : ''),
+            'type' => 'danger',
+            'start_date' => now(), // Start showing immediately
+            'end_date' => \Carbon\Carbon::parse($request->date)->endOfDay(), // Show until the end of the blocked day
+            'is_active' => true
+        ]);
+
+        return redirect()->back()->with('success', "Date blocked successfully. $count appointments marked for rescheduling and notified.");
+    }
+
     public function updateAppointmentStatus(Request $request, Appointment $appointment)
     {
         $request->validate([
-            'status' => 'required|in:pending,approved,rescheduled,cancelled,completed,no_show',
+            'status' => 'required|in:pending,approved,rescheduled,cancelled,completed,no_show,blocked,in_progress',
             'notes' => 'nullable|string|max:1000',
             'new_date' => 'nullable|date|after_or_equal:today',
             'new_time' => 'nullable'
@@ -727,6 +797,9 @@ class AdminController extends Controller
         ]);
 
         $inventory->current_stock += (int) $request->quantity;
+        
+        $previousExpiry = $inventory->expiry_date;
+        
         if ($request->filled('expiry_date')) {
             $inventory->expiry_date = $request->expiry_date;
         }
@@ -739,6 +812,7 @@ class AdminController extends Controller
             'performable_id' => Auth::guard('admin')->id(),
             'transaction_type' => 'restock',
             'quantity' => (int) $request->quantity,
+            'previous_expiry_date' => $previousExpiry,
             'notes' => $request->notes,
         ]);
 
@@ -884,6 +958,7 @@ class AdminController extends Controller
                 return redirect()->back()->with('error', 'Invalid service selected.');
             }
 
+            // Create appointment
             $appointment = Appointment::create([
                 'patient_id' => $patient->id,
                 'patient_name' => $patient->name,
@@ -895,6 +970,7 @@ class AdminController extends Controller
                 'notes' => $request->notes,
                 'is_walk_in' => true,
                 'status' => 'waiting',
+                'priority' => $request->input('priority', 'regular'), // Default to regular if not specified
                 'approved_by_admin_id' => Auth::guard('admin')->id(),
                 'approved_at' => now()
             ]);
@@ -905,13 +981,15 @@ class AdminController extends Controller
             return redirect()->back()->with('success', 'Walk-in patient added successfully.');
         }
 
-        // Otherwise, create new walk-in with manual entry
+        // Otherwise, create new walk-in by REGISTERING a new patient
         $request->validate([
             'patient_name' => 'required|string|max:255',
             'patient_phone' => 'required|string|max:20',
             'patient_address' => 'required|string|max:500',
             'service_type' => 'required|string',
-            'notes' => 'nullable|string|max:1000'
+            'notes' => 'nullable|string|max:1000',
+            // Optional fields for registration if we wanted to ask for them, 
+            // but for now we'll generate placeholders to minimize friction
         ]);
         
         // Find the service by name
@@ -920,8 +998,35 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Invalid service selected.');
         }
 
+        // Auto-register the patient
+        // Generate a unique placeholder email
+        $timestamp = now()->timestamp;
+        $random = Str::random(6);
+        $placeholderEmail = "walkin_{$timestamp}_{$random}@system.local";
+        $placeholderPassword = bcrypt('WalkIn@123'); // Default password for walk-ins
+
+        $patient = Patient::create([
+            'name' => $request->patient_name,
+            'email' => $placeholderEmail,
+            'password' => $placeholderPassword,
+            'phone' => $request->patient_phone,
+            'address' => $request->patient_address,
+            // Required fields with defaults
+            'gender' => 'other', // Default to other if not asked
+            'barangay' => 'Other', 
+            'barangay_other' => 'Walk-In', // Mark as Walk-In location
+            'birth_date' => now()->subYears(18)->toDateString(), // Default to 18 years old to avoid age restrictions
+            'age' => 18,
+            'email_verified_at' => now(),
+        ]);
+
+        // Create empty Immunization Record (ITR)
+        \App\Models\PatientImmunization::create([
+            'patient_id' => $patient->id,
+        ]);
+
         $appointment = Appointment::create([
-            'patient_id' => Auth::guard('admin')->id(), // link to admin user to satisfy NOT NULL constraint
+            'patient_id' => $patient->id, // Linked to the newly created patient
             'patient_name' => $request->patient_name,
             'patient_phone' => $request->patient_phone,
             'patient_address' => $request->patient_address,
@@ -930,15 +1035,16 @@ class AdminController extends Controller
             'service_type' => $request->service_type,
             'notes' => $request->notes,
             'is_walk_in' => true,
-            'status' => 'waiting',
-           'approved_by_admin_id' => Auth::guard('admin')->id(),
+            'status' => 'pending', // Default status for new appointments
+            'priority' => $request->input('priority', 'regular'),
+            'approved_by_admin_id' => Auth::guard('admin')->id(),
             'approved_at' => now()
         ]);
         
         // Attach service
         $appointment->services()->attach($service->id);
 
-        return redirect()->back()->with('success', 'Walk-in patient added successfully.');
+        return redirect()->back()->with('success', 'Walk-in patient registered and added to queue successfully.');
     }
 
     public function reports()
@@ -1041,6 +1147,13 @@ class AdminController extends Controller
 
         $patientRangeQuery = Patient::query()->whereBetween('created_at', [$startDate, $endDate]);
 
+        if ($request->filled('barangay')) {
+            $patientRangeQuery->where('barangay', $request->barangay);
+            if ($request->barangay === 'Other' && $request->filled('barangay_other')) {
+                $patientRangeQuery->where('barangay_other', 'like', '%' . $request->barangay_other . '%');
+            }
+        }
+
         // Patient statistics
         $totalPatients = (clone $patientRangeQuery)->count();
         $maleCount = (clone $patientRangeQuery)->where('gender', 'male')->count();
@@ -1056,22 +1169,25 @@ class AdminController extends Controller
             '71+' => (clone $patientRangeQuery)->where('age', '>', 70)->count(),
         ];
 
-        // Barangay distribution
-        $barangayDistribution = (clone $patientRangeQuery)
+        // Barangay distribution (Get all barangays context regardless of filter? Or just filtered?)
+        // Usually distribution helps see "all". If I filter, I only see one.
+        // Let's keep distribution based on DATE only (unfiltered by barangay) so user can see comparison?
+        // OR if filter is active, show only that? Usually charts show distribution of the selection.
+        // But if I select "Barangay 11", distribution is 100% Barangay 11.
+        // Let's create a separate query for distribution if we want "All" context. 
+        // But for "Show which patient belongs to specific barangay", the $patients list is key.
+        // I will keep $barangayDistribution based on the filtered query for consistency, or unfiltered?
+        // Let's use UNFILTERED for the chart so they can see "Oh 12 is minimal compared to 11".
+        $barangayDistribution = Patient::query()
+             ->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('barangay, count(*) as count')
             ->groupBy('barangay')
             ->get();
 
-        // Patients with most appointments within range
-        $topPatients = Patient::query()
-            ->withCount(['appointments' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('appointment_date', [$startDate, $endDate]);
-            }])
-            ->whereHas('appointments', function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('appointment_date', [$startDate, $endDate]);
-            })
-            ->orderByDesc('appointments_count')
-            ->limit(5)
+        // Lists of patients (Filtered)
+        $patients = (clone $patientRangeQuery)
+            ->orderBy('barangay') // Sort by barangay to group them in the list
+            ->orderBy('name')
             ->get();
 
         // Recent registrations in range
@@ -1083,6 +1199,7 @@ class AdminController extends Controller
 
         $filterStartDate = $startDate->toDateString();
         $filterEndDate = $endDate->toDateString();
+        $selectedBarangay = $request->barangay;
 
         return view('admin.reports.patients', compact(
             'totalPatients',
@@ -1091,10 +1208,11 @@ class AdminController extends Controller
             'newPatientsInRange',
             'ageGroups',
             'barangayDistribution',
-            'topPatients',
+            'patients', // New list
             'recentPatients',
             'filterStartDate',
-            'filterEndDate'
+            'filterEndDate',
+            'selectedBarangay'
         ));
     }
 
