@@ -197,9 +197,9 @@
         }
 
         .calendar-day.occupied {
-            background-color: #F53838;
-            color: #000;
-            border-color: #F53838;
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
         }
 
         /* Date/Time layout spacing */
@@ -229,9 +229,9 @@
         }
 
         .calendar-day.partially-occupied {
-            background-color: #D1C700;
-            color: #000;
-            border-color: #D1C700;
+            background-color: #ffc107;
+            color: #212529;
+            border-color: #ffc107;
         }
 
         .calendar-day.weekend {
@@ -289,28 +289,20 @@
         }
 
         .time-slot.available {
-            background-color: #77dd77;
-            border-color: #66cc66;
-            color: #000;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
         }
 
         .time-slot.available:hover {
-            background-color: #66cc66;
+            background-color: #c3e6cb;
         }
 
         .time-slot.occupied {
-            background-color: #F53838;
-            border-color: #e62929;
-            color: #000;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
             cursor: not-allowed;
-        }
-
-        .time-slot.past {
-            background-color: #e9ecef;
-            border-color: #dee2e6;
-            color: #6c757d;
-            cursor: not-allowed;
-            opacity: 0.6;
         }
 
         .time-slot.selected {
@@ -359,22 +351,15 @@
         }
 
         body.bg-dark .time-slot.available {
-            background-color: #77dd77;
-            border-color: #66cc66;
-            color: #000;
+            background-color: #1e3a1f;
+            border-color: #2a5f2e;
+            color: #90ee90;
         }
 
         body.bg-dark .time-slot.occupied {
-            background-color: #F53838;
-            border-color: #e62929;
-            color: #000;
-        }
-
-        body.bg-dark .time-slot.past {
-            background-color: #1e2124;
-            border-color: #2a2f35;
-            color: #6c757d;
-            opacity: 0.5;
+            background-color: #3d1a1a;
+            border-color: #5c2a2a;
+            color: #ff6b6b;
         }
 
         /* Skeleton Loading */
@@ -555,15 +540,15 @@
         }
 
         body.bg-dark .time-slot.available {
-            background-color: #77dd77;
-            border-color: #66cc66;
-            color: #000;
+            background-color: #1e3a1f;
+            border-color: #2a5f2e;
+            color: #90ee90;
         }
 
         body.bg-dark .time-slot.occupied {
-            background-color: #F53838;
-            border-color: #e62929;
-            color: #000;
+            background-color: #3d1a1a;
+            border-color: #5c2a2a;
+            color: #ff6b6b;
         }
 
         body.bg-dark .time-slot.selected {
@@ -1541,7 +1526,7 @@
                         </div>
                         <div class="mb-4">
                             <label class="form-label">Appointment Date & Time <span class="text-danger">*</span></label>
-                            <div class="row g-4 date-time-layout">
+                            <div class="row date-time-layout d-flex flex-wrap date-time-container align-items-start">
                                 <div class="col-md-5">
                                     <div class="card h-100 shadow-sm calendar-card">
                                         <div class="card-body">
@@ -2451,28 +2436,9 @@
 
                     slots.forEach(slot => {
                         const slotElement = document.createElement('div');
-                        
-                        // Determine slot class and status text based on availability
-                        let slotClass = 'time-slot';
-                        let statusText = '';
-                        
-                        if (slot.is_past) {
-                            // Past slots are unavailable (gray)
-                            slotClass += ' past';
-                            statusText = 'Unavailable';
-                        } else if (slot.available) {
-                            // Available slots (green)
-                            slotClass += ' available';
-                            statusText = 'Available';
-                        } else {
-                            // Occupied slots (red) - show count
-                            slotClass += ' occupied';
-                            statusText = `Occupied (${slot.occupied_count})`;
-                        }
-                        
-                        slotElement.className = slotClass;
+                        slotElement.className = `time-slot ${slot.available ? 'available' : 'occupied'}`;
 
-                        if (slot.available && !slot.is_past) {
+                        if (slot.available) {
                             slotElement.addEventListener('click', () => {
                                 this.selectTimeSlot(slot.time, slot.display);
                             });
@@ -2484,7 +2450,7 @@
 
                         const statusElement = document.createElement('div');
                         statusElement.className = 'status';
-                        statusElement.textContent = statusText;
+                        statusElement.textContent = slot.available ? 'Available' : `Occupied (${slot.occupied_count})`;
 
                         slotElement.appendChild(timeElement);
                         slotElement.appendChild(statusElement);
