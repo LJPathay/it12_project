@@ -49,25 +49,40 @@
                                                                     @elseif($appointment->status == 'completed') bg-info
                                                                     @elseif($appointment->status == 'cancelled') bg-danger
                                                                     @else bg-secondary
-                                                                    @endif">
+                                                                    @endif"
+                                                @if($appointment->status == 'cancelled')
+                                                    data-bs-toggle="tooltip" 
+                                                    data-bs-placement="top" 
+                                                    title="{{ $appointment->notes ?? 'Appointment cancelled.' }}"
+                                                    style="cursor: help;"
+                                                @endif
+                                            >
                                                 {{ ucfirst($appointment->status) }}
                                             </span>
                                         </td>
                                         <td>
-                                            <a href="{{ route('patient.appointment.show', $appointment) }}"
-                                                class="btn btn-sm btn-primary me-2">
-                                                <i class="fas fa-eye me-1"></i> View
-                                            </a>
-                                            @if($appointment->status !== 'cancelled' && $appointment->status !== 'completed' && $appointment->status !== 'approved')
-                                                <button type="button" class="btn btn-sm btn-danger cancel-appointment-btn"
-                                                    data-appointment-id="{{ $appointment->id }}"
-                                                    data-cancel-url="{{ route('patient.cancel-appointment', $appointment) }}"
-                                                    data-appointment-date="{{ $appointment->appointment_date }}"
-                                                    data-appointment-time="{{ $appointment->appointment_time }}"
-                                                    data-service-type="{{ $appointment->service_type }}">
-                                                    <i class="fas fa-times"></i> Cancel
-                                                </button>
-                                            @endif
+                                            <div class="d-flex align-items-center">
+                                                <a href="{{ route('patient.appointment.show', $appointment) }}"
+                                                    class="btn btn-sm btn-primary me-2">
+                                                    <i class="fas fa-eye me-1"></i> View
+                                                </a>
+                                                @if($appointment->status == 'cancelled')
+                                                    <a href="{{ route('patient.book-appointment') }}" 
+                                                       class="btn btn-sm btn-outline-secondary me-2">
+                                                        <i class="fas fa-redo me-1"></i> Reschedule
+                                                    </a>
+                                                @endif
+                                                @if($appointment->status !== 'cancelled' && $appointment->status !== 'completed' && $appointment->status !== 'approved')
+                                                    <button type="button" class="btn btn-sm btn-danger cancel-appointment-btn"
+                                                        data-appointment-id="{{ $appointment->id }}"
+                                                        data-cancel-url="{{ route('patient.cancel-appointment', $appointment) }}"
+                                                        data-appointment-date="{{ $appointment->appointment_date }}"
+                                                        data-appointment-time="{{ $appointment->appointment_time }}"
+                                                        data-service-type="{{ $appointment->service_type }}">
+                                                        <i class="fas fa-times"></i> Cancel
+                                                    </button>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach

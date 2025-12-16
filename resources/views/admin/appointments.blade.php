@@ -54,6 +54,21 @@
             color: #000000;
         }
 
+        .status-rescheduled {
+            background-color: #ffc107;
+            color: #000000;
+        }
+
+        .status-blocked {
+            background-color: #343a40;
+            color: #ffffff;
+        }
+
+        .status-in_progress {
+            background-color: #0d6efd;
+            color: #ffffff;
+        }
+
         .table-modern {
             border-collapse: separate;
             border-spacing: 0;
@@ -1351,8 +1366,10 @@
                                         'rescheduled' => 'Rescheduled',
                                         'cancelled' => 'Cancelled',
                                         'completed' => 'Completed',
-                                        'no_show' => 'No Show'
-                                    ][$appointment->status] ?? ucfirst($appointment->status);
+                                        'no_show' => 'No Show',
+                                        'blocked' => 'Blocked',
+                                        'in_progress' => 'In Progress'
+                                    ][$appointment->status] ?? ucfirst(str_replace('_', ' ', $appointment->status));
                                 @endphp
                                 <span class="status-badge status-{{ $appointment->status }}">{{ $statusDisplay }}</span>
                             </td>
@@ -1401,8 +1418,10 @@
                                 'rescheduled' => 'Rescheduled',
                                 'cancelled' => 'Cancelled',
                                 'completed' => 'Completed',
-                                'no_show' => 'No Show'
-                            ][$appointment->status] ?? ucfirst($appointment->status);
+                                'no_show' => 'No Show',
+                                'blocked' => 'Blocked',
+                                'in_progress' => 'In Progress'
+                            ][$appointment->status] ?? ucfirst(str_replace('_', ' ', $appointment->status));
                         @endphp
                         <span class="status-badge status-{{ $appointment->status }}">{{ $statusDisplay }}</span>
                     </div>
@@ -1586,9 +1605,9 @@
                             <i class="fas fa-exclamation-triangle me-2"></i>
                             <strong>Warning:</strong> Blocking this date will:
                             <ul class="mb-0 mt-1">
-                                <li>Prevent new bookings for this date.</li>
-                                <li>Automatically reschedule any existing appointments.</li>
-                                <li>Send email notifications to affected patients.</li>
+                                <li>Prevent any new bookings for this date.</li>
+                                <li>Mark existing appointments as "Needs Reschedule".</li>
+                                <li>Automatically notify affected patients via email.</li>
                             </ul>
                         </div>
                         <div class="mb-3">

@@ -556,7 +556,7 @@
         <div id="patientsPaginationContainer" class="mt-4"></div>
     </div>
     </div>
-@endsection
+
 
 <!-- Add Patient Modal -->
 <div class="modal fade" id="addPatientModal" tabindex="-1">
@@ -1205,6 +1205,8 @@
         </div>
     </div>
 </div>
+
+@endsection
 
 @push('scripts')
     <script>
