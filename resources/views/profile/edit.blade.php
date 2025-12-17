@@ -88,6 +88,27 @@
             width: 100% !important;
         }
 
+        /* Position header all the way to the left */
+        .header {
+            left: 0 !important;
+        }
+
+        /* Close button styling */
+        .btn-close {
+            opacity: 0.5;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* Dark mode close button */
+        body.bg-dark .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
 
         /* Dark mode support for profile page */
         body.bg-dark .card {
@@ -191,7 +212,10 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <x-card class="shadow-sm border-0" noPadding>
-                <div class="card-body p-4">
+                <div class="card-body p-4 position-relative">
+                    <!-- Close Button -->
+                    <a href="{{ url()->previous() }}" class="btn-close position-absolute top-0 end-0 m-3" aria-label="Close" style="z-index: 10;"></a>
+                    
                     <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
                         @csrf
 
