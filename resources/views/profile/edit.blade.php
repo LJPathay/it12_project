@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'My Profile')
+@section('title', 'Malasakit | Profile')
 @section('page-title', 'My Profile')
 
 @section('sidebar-menu')

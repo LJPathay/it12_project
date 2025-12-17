@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'Inventory Reports - Barangay Health Center')
+@section('title', 'Malasakit | Inventory Reports')
 @section('page-title', 'Inventory Reports')
 @section('page-description', 'Comprehensive inventory analytics and statistics')
 

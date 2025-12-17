@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'Analytics & Reports - Barangay Health Center')
+@section('title', 'Malasakit | Analytics')
 @section('page-title', 'Clinic Analytics')
 @section('page-description', 'Performance metrics, efficiency analysis, and long-term trends.')
 

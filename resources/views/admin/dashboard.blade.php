@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'MALASAKIT - Admin Dashboard')
+@section('title', 'Malasakit | Dashboard')
 @section('page-title', 'Dashboard Overview')
 @section('page-description', "Welcome back! Here's what's happening today.")
 

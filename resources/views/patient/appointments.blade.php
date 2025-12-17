@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'My Appointments - Patient Portal')
+@section('title', 'Malasakit | My Appointments')
 @section('page-title', 'My Appointments')
 @section('page-description', 'Manage your healthcare appointments.')
 

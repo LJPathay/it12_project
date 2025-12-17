@@ -1,6 +1,6 @@
 @extends('superadmin.layout')
 
-@section('title', 'Analytics - Barangay Health Center')
+@section('title', 'Malasakit | Analytics')
 @section('page-title', 'Analytics')
 @section('page-description', 'System usage and performance metrics')
 

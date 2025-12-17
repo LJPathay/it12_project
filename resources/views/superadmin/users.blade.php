@@ -1,6 +1,6 @@
 @extends('superadmin.layout')
 
-@section('title', 'User Management - Barangay Health Center')
+@section('title', 'Malasakit | User Management')
 @section('page-title', 'User Management')
 @section('page-description', 'View and manage all registered users')
 

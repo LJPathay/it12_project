@@ -1,6 +1,6 @@
 @extends('superadmin.layout')
 
-@section('title', 'System Logs - Barangay Health Center')
+@section('title', 'Malasakit | System Logs')
 @section('page-title', 'System Logs')
 @section('page-description', 'View system activity and audit logs')
 

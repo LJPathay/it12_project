@@ -1,6 +1,6 @@
 @extends('superadmin.layout')
 
-@section('title', 'Dashboard - Barangay Health Center')
+@section('title', 'Malasakit | Dashboard')
 @section('page-title', 'System Overview')
 @section('page-description', 'Strategic insights and system-wide analytics')
 

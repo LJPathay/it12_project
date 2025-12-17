@@ -1,6 +1,6 @@
 @extends('superadmin.layout')
 
-@section('title', 'Backup - Barangay Health Center')
+@section('title', 'Malasakit | Backup')
 @section('page-title', 'Backup & Restore')
 @section('page-description', 'Manage system backups and data restoration')
 

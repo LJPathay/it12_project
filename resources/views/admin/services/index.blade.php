@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'Services - Barangay Health Center')
+@section('title', 'Malasakit | Services Management')
 @section('page-title', 'Services Management')
 @section('page-description', 'Manage health center services')
 

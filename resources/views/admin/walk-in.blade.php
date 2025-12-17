@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'Walk-In Queue - Admin Panel')
+@section('title', 'Malasakit | Walk-In Queue')
 @section('page-title', 'Walk-In Queue')
 @section('page-description', 'Manage walk-in patients and queue')
 

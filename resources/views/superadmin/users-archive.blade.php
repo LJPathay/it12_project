@@ -1,6 +1,6 @@
 @extends('superadmin.layout')
 
-@section('title', 'Archived Users - Barangay Health Center')
+@section('title', 'Malasakit | Archived Users')
 @section('page-title', 'Archived Users')
 @section('page-description', 'View and manage archived user accounts')
 

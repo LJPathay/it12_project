@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Dashboard - Patient Portal')
+@section('title', 'Malasakit | Dashboard')
 @section('page-title', 'Dashboard')
 
 
