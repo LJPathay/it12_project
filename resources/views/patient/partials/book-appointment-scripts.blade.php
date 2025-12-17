@@ -56,7 +56,7 @@
                     console.log('Loading calendar for:', year, month);
 
                     try {
-                        const response = await fetch(`/patient/appointments/calendar?year=${year}&month=${month}`, {
+                        const response = await fetch(`/appointments/calendar?year=${year}&month=${month}`, {
                             headers: {
                                 'X-Requested-With': 'XMLHttpRequest'
                             }
@@ -214,7 +214,7 @@
                         const serviceSelect = document.getElementById('service_id');
                         const serviceType = serviceSelect ? serviceSelect.options[serviceSelect.selectedIndex]?.text : null;
                         
-                        let url = `/patient/appointments/slots?date=${date}`;
+                        let url = `/appointments/slots?date=${date}`;
                         if (serviceType && serviceType !== 'Select a service') {
                             url += `&service_type=${encodeURIComponent(serviceType)}`;
                         }

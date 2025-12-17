@@ -145,7 +145,7 @@ Route::post('/check-email', [App\Http\Controllers\AuthController::class, 'checkE
 
 // Patient Routes
 Route::middleware(['patient'])->group(function () {
-    Route::prefix('patient')->name('patient.')->group(function () {
+    Route::name('patient.')->group(function () {
         Route::get('/dashboard', [PatientController::class, 'dashboard'])->name('dashboard');
         Route::get('/appointments', [PatientController::class, 'appointments'])->name('appointments');
         Route::get('/book-appointment', [PatientController::class, 'bookAppointment'])->name('book-appointment');
