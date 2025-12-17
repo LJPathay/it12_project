@@ -175,7 +175,7 @@
             <div class="chart-section">
                 <div class="section-header">
                     <div class="header-title">Today's Schedule</div>
-                     <span class="badge bg-light text-dark">{{ \Carbon\Carbon::today()->format('M d, Y') }}</span>
+                     <span class="header-title" style="font-size: 0.9rem;">{{ \Carbon\Carbon::today()->format('M d, Y') }}</span>
                 </div>
                 
                 @if(($todaysAppointments ?? collect([]))->count() > 0)
