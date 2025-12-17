@@ -13,6 +13,7 @@
                     this.selectedDate = null;
                     this.selectedTime = null;
                     this.calendarData = [];
+                    this.isLoadingSlots = false;
                     this.init();
                 }
 
@@ -130,6 +131,11 @@
                             dayElement.appendChild(indicator);
                         }
 
+                        // Check if date is selectable
+                        // A date is NOT selectable if:
+                        // - It's in the past (including today with all past time slots)
+                        // - It's fully occupied
+                        // - It's a weekend
                         if (!dayData.is_past && !dayData.is_fully_occupied && !dayData.is_weekend) {
                             dayElement.addEventListener('click', () => {
                                 this.selectDate(dayData.date);
@@ -148,6 +154,32 @@
                 }
 
                 async selectDate(date) {
+                    // Check if clicking on already selected date
+                    if (this.selectedDate === date) {
+                        // Deselect the date
+                        this.selectedDate = null;
+                        
+                        // Remove selected state from calendar
+                        document.querySelectorAll('.calendar-day').forEach(day => {
+                            day.classList.remove('selected');
+                        });
+                        
+                        // Clear selected date display
+                        document.getElementById('selectedDateDisplay').textContent = 'Select a date to view available time slots';
+                        
+                        // Clear hidden input
+                        document.getElementById('appointment_date').value = '';
+                        
+                        // Clear time slots
+                        document.getElementById('timeSlotsGrid').innerHTML = '';
+                        
+                        // Clear selected time
+                        this.selectedTime = null;
+                        document.getElementById('appointment_time').value = '';
+                        
+                        return;
+                    }
+                    
                     this.selectedDate = date;
 
                     // Update selected state in calendar
@@ -174,6 +206,9 @@
                 }
 
                 async loadTimeSlots(date) {
+                    // Set loading flag
+                    this.isLoadingSlots = true;
+                    
                     try {
                         // Get selected service type if available
                         const serviceSelect = document.getElementById('service_id');
@@ -193,10 +228,20 @@
                         if (!response.ok) throw new Error('Failed to load time slots');
 
                         const data = await response.json();
-                        this.renderTimeSlots(data.slots);
+                        
+                        // Check if the date is still selected before rendering
+                        // This prevents rendering slots if user deselected the date while loading
+                        if (this.selectedDate === date) {
+                            this.renderTimeSlots(data.slots);
+                        }
                     } catch (error) {
                         console.error('Error loading time slots:', error);
-                        document.getElementById('timeSlotsGrid').innerHTML = '<div class="col-12 text-center text-danger">Error loading time slots</div>';
+                        // Only show error if date is still selected
+                        if (this.selectedDate === date) {
+                            document.getElementById('timeSlotsGrid').innerHTML = '<div class="col-12 text-center text-danger">Error loading time slots</div>';
+                        }
+                    } finally {
+                        this.isLoadingSlots = false;
                     }
                 }
 
@@ -253,6 +298,22 @@
                 }
 
                 selectTimeSlot(slot) {
+                    // Check if clicking on already selected time slot
+                    if (this.selectedTime === slot.time) {
+                        // Deselect the time slot
+                        this.selectedTime = null;
+                        
+                        // Remove selection from all slots
+                        document.querySelectorAll('.time-slot').forEach(s => {
+                            s.classList.remove('selected');
+                        });
+                        
+                        // Clear hidden input
+                        document.getElementById('appointment_time').value = '';
+                        
+                        return;
+                    }
+                    
                     // Remove previous selection
                     document.querySelectorAll('.time-slot').forEach(s => {
                         s.classList.remove('selected');

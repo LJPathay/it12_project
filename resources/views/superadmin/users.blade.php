@@ -36,7 +36,7 @@
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 600;
-            color: #000 !important;
+            color: #fff !important;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -46,28 +46,28 @@
         }
 
         .status-active {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: #00D100;
+            color: #fff;
         }
 
         .status-inactive {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: #D10000;
+            color: #fff;
         }
 
         .status-user {
-            background-color: #cce5ff;
-            color: #000;
+            background-color: #009fb1;
+            color: #fff;
         }
 
         .status-admin {
-            background-color: #fff3cd;
-            color: #000;
+            background-color: #D1D100;
+            color: #fff;
         }
 
         .status-superadmin {
-            background-color: #f8d7da;
-            color: #000;
+            background-color: #D10000;
+            color: #fff;
         }
 
         /* Patient avatar */

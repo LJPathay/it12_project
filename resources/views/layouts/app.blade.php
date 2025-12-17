@@ -456,38 +456,38 @@
 
         /* Unified Alert/Message Colors */
         .alert-success, .badge.bg-success, .btn-success {
-            background-color: #77dd77 !important;
-            border-color: #77dd77 !important;
-            color: #000 !important;
+            background-color: #00D100 !important;
+            border-color: #00D100 !important;
+            color: #fff !important;
         }
-        .text-success { color: #77dd77 !important; }
+        .text-success { color: #00D100 !important; }
         
         .alert-warning, .badge.bg-warning, .btn-warning {
-            background-color: #D1C700 !important;
-            border-color: #D1C700 !important;
-            color: #000 !important;
+            background-color: #D1D100 !important;
+            border-color: #D1D100 !important;
+            color: #fff !important;
         }
-        .text-warning { color: #D1C700 !important; }
+        .text-warning { color: #D1D100 !important; }
 
         .alert-danger, .badge.bg-danger, .btn-danger {
-            background-color: #F53838 !important;
-            border-color: #F53838 !important;
-            color: #000 !important;
+            background-color: #D10000 !important;
+            border-color: #D10000 !important;
+            color: #fff !important;
         }
-        .text-danger { color: #F53838 !important; }
+        .text-danger { color: #D10000 !important; }
 
         .alert-info, .badge.bg-info, .btn-info {
             background-color: #009fb1 !important;
             border-color: #009fb1 !important;
-            color: #000 !important;
+            color: #fff !important;
         }
         .text-info { color: #009fb1 !important; }
 
         /* Global Border Utility Overrides */
         .border-primary { border-color: #009fb1 !important; }
-        .border-success { border-color: #77dd77 !important; }
-        .border-warning { border-color: #D1C700 !important; }
-        .border-danger { border-color: #F53838 !important; }
+        .border-success { border-color: #00D100 !important; }
+        .border-warning { border-color: #D1D100 !important; }
+        .border-danger { border-color: #D10000 !important; }
         .border-info { border-color: #009fb1 !important; }
     </style>
 

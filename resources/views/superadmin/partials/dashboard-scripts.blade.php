@@ -78,7 +78,7 @@
             labels: roleData.map(item => item.role),
             datasets: [{
                 data: roleData.map(item => item.count),
-                backgroundColor: ['#77dd77', '#D1C700', '#F53838'],
+                backgroundColor: ['#00D100', '#D1D100', '#D10000'],
                 borderWidth: 0
             }]
         },

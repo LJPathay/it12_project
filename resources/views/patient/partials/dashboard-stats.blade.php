@@ -8,7 +8,7 @@
                     <div class="metric-number">{{ $appointments->where('status', 'pending')->count() }}</div>
                     <div class="metric-change text-warning trend-up">
                         <i class="fas fa-arrow-up"></i>
-                        <span>Awaiting approval</span>
+                        <span class="fw-bold">Awaiting Approval</span>
                     </div>
                 </div>
                 <div class="text-warning">
@@ -25,7 +25,7 @@
                     <div class="metric-number">{{ $appointments->where('status', 'approved')->count() }}</div>
                     <div class="metric-change text-success trend-up">
                         <i class="fas fa-check-circle"></i>
-                        <span>Ready for visit</span>
+                        <span class="fw-bold">Ready for Visit</span>
                     </div>
                 </div>
                 <div class="text-success">

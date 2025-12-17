@@ -174,6 +174,27 @@ class AppointmentHelper
             } else {
                  $availableSlots = $totalSlotsPerDay - $occupiedCount;
             }
+            
+            // For today's date, check if all time slots are in the past
+            $allSlotsPast = false;
+            if ($currentDate->isToday() && !$isBlocked) {
+                $now = Carbon::now();
+                $allSlots = self::getAllTimeSlots();
+                $futureSlots = 0;
+                
+                foreach ($allSlots as $slot) {
+                    $slotTime = Carbon::parse($dateString . ' ' . $slot['time']);
+                    if ($slotTime->isFuture()) {
+                        $futureSlots++;
+                    }
+                }
+                
+                // If no future slots, mark as all slots past
+                if ($futureSlots === 0) {
+                    $availableSlots = 0;
+                    $allSlotsPast = true;
+                }
+            }
 
             $calendar[] = [
                 'date' => $dateString,
@@ -181,10 +202,10 @@ class AppointmentHelper
                 'total_slots' => $totalSlotsPerDay,
                 'occupied_slots' => $occupiedCount,
                 'available_slots' => $availableSlots,
-                'is_fully_occupied' => $availableSlots <= 0,
+                'is_fully_occupied' => $availableSlots <= 0 && !$allSlotsPast,
                 'is_blocked' => $isBlocked,
                 'is_weekend' => $currentDate->isWeekend(),
-                'is_past' => $currentDate->isPast() && !$currentDate->isToday(),
+                'is_past' => ($currentDate->isPast() && !$currentDate->isToday()) || $allSlotsPast,
             ];
         }
 

@@ -85,7 +85,7 @@
             labels: ['Patients', 'Admins'],
             datasets: [{
                 data: [{{ $userStats['patients'] ?? 0 }}, {{ $userStats['admins'] ?? 0 }}],
-                backgroundColor: ['#77dd77', '#D1C700'],
+                backgroundColor: ['#00D100', '#D1D100'],
                 borderWidth: 0
             }]
         },

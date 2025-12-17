@@ -108,18 +108,18 @@
 
         /* Custom status colors */
         .status-badge.bg-warning {
-            background-color: #D1C700 !important;
-            color: #000000 !important;
+            background-color: #D1D100 !important;
+            color: #ffffff !important;
         }
 
         .status-badge.bg-success {
-            background-color: #77dd77 !important;
-            color: #000000 !important;
+            background-color: #00D100 !important;
+            color: #ffffff !important;
         }
 
         .status-badge.bg-danger {
-            background-color: #F53838 !important;
-            color: #000000 !important;
+            background-color: #D10000 !important;
+            color: #ffffff !important;
         }
 
         .status-badge.bg-primary {

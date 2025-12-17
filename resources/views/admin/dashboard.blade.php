@@ -26,8 +26,8 @@
         .kpi-value { font-size: 2rem; font-weight: 700; color: #1e293b; line-height: 1; }
         .kpi-sub { font-size: 0.8rem; margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem; color: #64748b; }
         
-        .text-trend-up { color: #77dd77; }
-        .text-trend-down { color: #F53838; }
+        .text-trend-up { color: #00D100; }
+        .text-trend-down { color: #D10000; }
         .text-neutral { color: #94a3b8; }
 
         /* Chart & Section Cards */
@@ -77,11 +77,11 @@
             <div class="kpi-value">{{ number_format($totalPatients ?? 0) }}</div>
             <div class="kpi-sub">
                 @if(($patientsChange ?? 0) > 0)
-                    <i class="fas fa-arrow-up text-trend-up"></i> <span class="text-trend-up">{{ abs($patientsChange) }}%</span> vs last month
+                    <i class="fas fa-arrow-up text-trend-up"></i> <span class="text-trend-up fw-bold">{{ abs($patientsChange) }}%</span> vs last month
                 @elseif(($patientsChange ?? 0) < 0)
-                    <i class="fas fa-arrow-down text-trend-down"></i> <span class="text-trend-down">{{ abs($patientsChange) }}%</span> vs last month
+                    <i class="fas fa-arrow-down text-trend-down"></i> <span class="text-trend-down fw-bold">{{ abs($patientsChange) }}%</span> vs last month
                 @else
-                    <span class="text-neutral">No change</span>
+                    <span class="text-muted fw-bold">No Change</span>
                 @endif
             </div>
         </div>
@@ -97,14 +97,14 @@
         </div>
 
         <!-- Low Stock -->
-        <div class="kpi-card" style="{{ ($lowStockItems ?? 0) > 0 ? 'border-left: 4px solid #D1C700;' : '' }}">
+        <div class="kpi-card" style="{{ ($lowStockItems ?? 0) > 0 ? 'border-left: 4px solid #D1D100;' : '' }}">
             <div class="kpi-label">Inventory Alerts</div>
             <div class="kpi-value">{{ number_format($lowStockItems ?? 0) }}</div>
             <div class="kpi-sub">
                 @if(($lowStockItems ?? 0) > 0)
-                    <span class="text-warning">Requires Restocking</span>
+                    <span class="text-warning fw-bold">Requires Restocking</span>
                 @else
-                    <span class="text-success">Stock Levels Healthy</span>
+                    <span class="text-success fw-bold">Stock Levels Healthy</span>
                 @endif
             </div>
         </div>
@@ -114,7 +114,7 @@
              <div class="kpi-label">Services Provided</div>
              <div class="kpi-value">{{ number_format($monthlyServices ?? 0) }}</div>
              <div class="kpi-sub">
-                <span class="text-muted">This Month</span>
+                <span class="text-muted fw-bold">This Month</span>
             </div>
         </div>
     </div>
@@ -356,7 +356,7 @@
                     data: [], 
                     // Vibrant Palette
                     backgroundColor: [
-                        '#009fb1', '#77dd77', '#D1C700', '#F53838', '#8b5cf6', '#06b6d4', '#ec4899'
+                        '#009fb1', '#00D100', '#D1D100', '#D10000', '#8b5cf6', '#06b6d4', '#ec4899'
                     ], 
                     borderRadius: 4 
                 }] 
@@ -403,7 +403,7 @@
                 labels: barangayData.map(i => i.barangay),
                 datasets: [{
                     data: barangayData.map(i => i.count),
-                    backgroundColor: ['#009fb1', '#77dd77', '#D1C700', '#F53838', '#8b5cf6'],
+                    backgroundColor: ['#009fb1', '#00D100', '#D1D100', '#D10000', '#8b5cf6'],
                     borderWidth: 0
                 }]
             },

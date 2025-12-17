@@ -25,8 +25,8 @@
         .kpi-label { font-size: 0.85rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
         .kpi-value { font-size: 2rem; font-weight: 700; color: #1e293b; line-height: 1; }
         .kpi-sub { font-size: 0.8rem; margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem; }
-        .text-trend-up { color: #77dd77; }
-        .text-trend-down { color: #F53838; }
+        .text-trend-up { color: #00D100; }
+        .text-trend-down { color: #D10000; }
 
         /* Chart Cards */
         .chart-section {
@@ -64,7 +64,7 @@
         <div class="kpi-card">
             <div class="kpi-label">Volume</div>
             <div class="kpi-value">{{ number_format($appointmentStats['total']) }}</div>
-            <div class="kpi-sub text-muted">Total Appointments</div>
+            <div class="kpi-sub text-muted fw-bold">Total Appointments</div>
         </div>
         <!-- Completion Rate -->
         @php 
@@ -73,23 +73,23 @@
         <div class="kpi-card">
             <div class="kpi-label">Success Rate</div>
             <div class="kpi-value text-primary">{{ number_format($completionRate, 1) }}%</div>
-            <div class="kpi-sub text-muted">Appointments Completed</div>
+            <div class="kpi-sub text-muted fw-bold">Appointments Completed</div>
         </div>
         <!-- Pending Queue -->
         <div class="kpi-card">
             <div class="kpi-label">Backlog</div>
             <div class="kpi-value text-warning">{{ number_format($appointmentStats['pending']) }}</div>
-            <div class="kpi-sub text-muted">Pending Processing</div>
+            <div class="kpi-sub text-muted fw-bold">Pending Processing</div>
         </div>
         <!-- Inventory Value (Proxy: Total Items) -->
-        <div class="kpi-card" style="border-left: 4px solid #77dd77;">
+        <div class="kpi-card">
             <div class="kpi-label">Inventory Health</div>
             <div class="kpi-value">{{ number_format($inventoryStats['total_items']) }}</div>
             <div class="kpi-sub">
                 @if($inventoryStats['low_stock'] > 0)
                     <span class="text-danger fw-bold">{{ $inventoryStats['low_stock'] }} Alerts</span>
                 @else
-                    <span class="text-success">Healthy</span>
+                    <span class="text-success fw-bold">Healthy</span>
                 @endif
             </div>
         </div>
@@ -229,7 +229,7 @@
                         {
                             label: 'Completed',
                             data: monthlyTrend.completed,
-                            borderColor: '#77dd77', // Success green
+                            borderColor: '#00D100', // Success green
                             backgroundColor: 'transparent',
                             fill: false,
                             tension: 0.4,
@@ -238,7 +238,7 @@
                         {
                             label: 'Pending',
                             data: monthlyTrend.pending,
-                            borderColor: '#D1C700', // Warning yellow
+                            borderColor: '#D1D100', // Warning yellow
                             backgroundColor: 'transparent',
                             borderDash: [5, 5],
                             tension: 0.4,
@@ -247,7 +247,7 @@
                         {
                             label: 'Cancelled',
                             data: monthlyTrend.cancelled,
-                            borderColor: '#F53838', // Danger red
+                            borderColor: '#D10000', // Danger red
                             backgroundColor: 'transparent',
                             tension: 0.4,
                             pointRadius: 0
@@ -299,7 +299,7 @@
                     labels: labels,
                     datasets: [{
                         data: data,
-                        backgroundColor: ['#009fb1', '#8b5cf6', '#77dd77', '#D1C700', '#64748b'],
+                        backgroundColor: ['#009fb1', '#8b5cf6', '#00D100', '#D1D100', '#64748b'],
                         borderWidth: 0,
                     }]
                 },

@@ -26,27 +26,27 @@
     }
 
     .strength-bar.weak {
-        background-color: #F53838;
+        background-color: #D10000;
     }
 
     .strength-bar.medium {
-        background-color: #D1C700;
+        background-color: #D1D100;
     }
 
     .strength-bar.strong {
-        background-color: #77dd77;
+        background-color: #00D100;
     }
 
     #strength-text.weak {
-        color: #F53838;
+        color: #D10000;
     }
 
     #strength-text.medium {
-        color: #D1C700;
+        color: #D1D100;
     }
 
     #strength-text.strong {
-        color: #77dd77;
+        color: #00D100;
     }
 
     /* Style date input calendar icon to match password eye icon */

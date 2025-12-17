@@ -34,24 +34,24 @@
         }
 
         .status-active {
-            background-color: #77dd77;
-            color: #000000;
+            background-color: #00D100;
+            color: #ffffff;
         }
 
         .status-inactive {
-            background-color: #F53838;
-            color: #000000;
+            background-color: #D10000;
+            color: #ffffff;
         }
 
         /* Dark mode status badges - keep same consistency */
         body.bg-dark .status-active {
-            background-color: #77dd77;
-            color: #000000;
+            background-color: #00D100;
+            color: #ffffff;
         }
 
         body.bg-dark .status-inactive {
-            background-color: #F53838;
-            color: #000000;
+            background-color: #D10000;
+            color: #ffffff;
         }
 
         .patient-avatar {
@@ -199,6 +199,16 @@
             border-color: #009fb1;
         }
 
+        .calendar-day.selected:hover {
+            background-color: #008a9a;
+            border-color: #008a9a;
+        }
+
+        .calendar-day.selected:hover {
+            background-color: #008a9a;
+            border-color: #008a9a;
+        }
+
         .calendar-day.occupied {
             background-color: #dc3545;
             color: white;
@@ -271,26 +281,37 @@
         }
 
         .time-slot.available {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
+            background-color: #00D100;
+            border-color: #66cc66;
+            color: #fff;
         }
 
         .time-slot.available:hover {
-            background-color: #c3e6cb;
+            background-color: #00b800;
+            border-color: #00b800;
         }
 
         .time-slot.occupied {
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
+            background-color: #D10000;
+            border-color: #e62929;
+            color: #fff;
             cursor: not-allowed;
+        }
+
+        .time-slot.occupied:hover {
+            background-color: #b80000;
+            border-color: #b80000;
         }
 
         .time-slot.selected {
             background-color: #009fb1;
             border-color: #009fb1;
-            color: #fff;
+            color: white;
+        }
+
+        .time-slot.selected:hover {
+            background-color: #008a9a;
+            border-color: #008a9a;
         }
 
         .time-slot .time {
@@ -334,21 +355,41 @@
         }
 
         body.bg-dark .time-slot.available {
-            background-color: #1e3a1f;
-            border-color: #2a5f2e;
-            color: #90ee90;
+            background-color: #00D100;
+            border-color: #66cc66;
+            color: #fff;
+        }
+
+        body.bg-dark .time-slot.available:hover {
+            background-color: #00b800;
+            border-color: #00b800;
         }
 
         body.bg-dark .time-slot.occupied {
-            background-color: #3d1a1a;
-            border-color: #5c2a2a;
-            color: #ff6b6b;
+            background-color: #D10000;
+            border-color: #e62929;
+            color: #fff;
+        }
+
+        body.bg-dark .time-slot.occupied:hover {
+            background-color: #b80000;
+            border-color: #b80000;
         }
 
         body.bg-dark .time-slot.selected {
             background-color: #009fb1;
             border-color: #009fb1;
             color: #fff;
+        }
+
+        body.bg-dark .time-slot.selected:hover {
+            background-color: #008a9a;
+            border-color: #008a9a;
+        }
+
+        body.bg-dark .time-slot.selected:hover {
+            background-color: #008a9a;
+            border-color: #008a9a;
         }
 
         /* Dark Mode Pagination */

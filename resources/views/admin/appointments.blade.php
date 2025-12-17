@@ -30,13 +30,13 @@
         }
 
         .status-pending {
-            background-color: #D1C700;
-            color: #000000;
+            background-color: #D1D100;
+            color: #ffffff;
         }
 
         .status-approved {
-            background-color: #77dd77;
-            color: #000000;
+            background-color: #00D100;
+            color: #ffffff;
         }
 
         .status-completed {
@@ -45,8 +45,8 @@
         }
 
         .status-cancelled {
-            background-color: #F53838;
-            color: #000000;
+            background-color: #D10000;
+            color: #ffffff;
         }
 
         .status-no_show {
@@ -196,16 +196,31 @@
             border-color: #009fb1;
         }
 
+        .calendar-day.selected:hover {
+            background-color: #008a9a;
+            border-color: #008a9a;
+        }
+
         .calendar-day.occupied {
-            background-color: #F53838;
-            color: #000;
-            border-color: #F53838;
+            background-color: #D10000;
+            color: #fff;
+            border-color: #D10000;
+        }
+
+        .calendar-day.occupied:hover {
+            background-color: #b80000;
+            border-color: #b80000;
         }
 
         .calendar-day.partially-occupied {
-            background-color: #D1C700;
-            color: #000;
-            border-color: #D1C700;
+            background-color: #D1D100;
+            color: #fff;
+            border-color: #D1D100;
+        }
+
+        .calendar-day.partially-occupied:hover {
+            background-color: #b8b800;
+            border-color: #b8b800;
         }
 
         .calendar-day.weekend {
@@ -263,20 +278,26 @@
         }
 
         .time-slot.available {
-            background-color: #77dd77;
+            background-color: #00D100;
             border-color: #66cc66;
-            color: #000;
+            color: #fff;
         }
 
         .time-slot.available:hover {
-            background-color: #66cc66;
+            background-color: #00b800;
+            border-color: #00b800;
         }
 
         .time-slot.occupied {
-            background-color: #F53838;
+            background-color: #D10000;
             border-color: #e62929;
-            color: #000;
+            color: #fff;
             cursor: not-allowed;
+        }
+
+        .time-slot.occupied:hover {
+            background-color: #b80000;
+            border-color: #b80000;
         }
 
         .time-slot.past {
@@ -291,6 +312,11 @@
             background-color: #009fb1;
             border-color: #009fb1;
             color: white;
+        }
+
+        .time-slot.selected:hover {
+            background-color: #008a9a;
+            border-color: #008a9a;
         }
 
         .time-slot .time {
@@ -333,15 +359,25 @@
         }
 
         body.bg-dark .time-slot.available {
-            background-color: #77dd77;
+            background-color: #00D100;
             border-color: #66cc66;
-            color: #000;
+            color: #fff;
+        }
+
+        body.bg-dark .time-slot.available:hover {
+            background-color: #00b800;
+            border-color: #00b800;
         }
 
         body.bg-dark .time-slot.occupied {
-            background-color: #F53838;
+            background-color: #D10000;
             border-color: #e62929;
-            color: #000;
+            color: #fff;
+        }
+
+        body.bg-dark .time-slot.occupied:hover {
+            background-color: #b80000;
+            border-color: #b80000;
         }
 
         body.bg-dark .time-slot.past {
@@ -529,21 +565,36 @@
         }
 
         body.bg-dark .time-slot.available {
-            background-color: #77dd77;
+            background-color: #00D100;
             border-color: #66cc66;
-            color: #000;
+            color: #fff;
+        }
+
+        body.bg-dark .time-slot.available:hover {
+            background-color: #00b800;
+            border-color: #00b800;
         }
 
         body.bg-dark .time-slot.occupied {
-            background-color: #F53838;
+            background-color: #D10000;
             border-color: #e62929;
-            color: #000;
+            color: #fff;
+        }
+
+        body.bg-dark .time-slot.occupied:hover {
+            background-color: #b80000;
+            border-color: #b80000;
         }
 
         body.bg-dark .time-slot.selected {
             background-color: #009fb1;
             border-color: #009fb1;
             color: #fff;
+        }
+
+        body.bg-dark .time-slot.selected:hover {
+            background-color: #008a9a;
+            border-color: #008a9a;
         }
 
         /* Dark Mode Modal & Forms */

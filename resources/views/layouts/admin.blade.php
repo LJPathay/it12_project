@@ -178,8 +178,8 @@
 
             /* Analytics Theme Variables */
             --chart-height: 300px;
-            --kpi-trend-up: #77dd77;
-            --kpi-trend-down: #F53838;
+            --kpi-trend-up: #00D100;
+            --kpi-trend-down: #D10000;
             --kpi-trend-neutral: #94a3b8;
         }
 
@@ -311,68 +311,67 @@
             background-color: var(--color-primary) !important;
         }
 
-        /* Global Green Color Override - Change all green to #77dd77 */
+        /* Global Green Color Override - Change all green to #00D100 */
         .bg-success,
         .badge.bg-success,
         .btn-success,
         .alert-success {
-            background-color: #77dd77 !important;
-            border-color: #77dd77 !important;
-            color: #000 !important;
+            background-color: #00D100 !important;
+            border-color: #00D100 !important;
+            color: #fff !important;
         }
 
         .text-success {
-            color: #77dd77 !important;
+            color: #00D100 !important;
         }
 
         .btn-success:hover,
         .btn-success:focus,
         .btn-success:active {
-            background-color: #66cc66 !important;
-            border-color: #66cc66 !important;
-            color: #000 !important;
+            background-color: #00b800 !important;
+            border-color: #00b800 !important;
+            color: #fff !important;
         }
 
         .btn-outline-success {
-            color: #77dd77 !important;
-            border-color: #77dd77 !important;
+            color: #00D100 !important;
+            border-color: #00D100 !important;
         }
 
         .btn-outline-success:hover {
-            background-color: #77dd77 !important;
-            border-color: #77dd77 !important;
-            color: #000 !important;
+            background-color: #00D100 !important;
+            border-color: #00D100 !important;
+            color: #fff !important;
         }
 
         .bg-success-subtle {
-            background-color: rgba(119, 221, 119, 0.1) !important;
-            color: #000 !important;
+            background-color: rgba(0, 209, 0, 0.1) !important;
+            color: #00D100 !important;
         }
 
         /* Dark mode green overrides */
         body.bg-dark .alert-success {
-            background-color: rgba(119, 221, 119, 0.15) !important;
-            border-color: rgba(119, 221, 119, 0.3) !important;
-            border-color: #77dd77 !important;
-            color: #77dd77 !important;
+            background-color: rgba(0, 209, 0, 0.2) !important;
+            border-color: rgba(0, 209, 0, 0.4) !important;
+            color: #00D100 !important;
         }
 
         body.bg-dark .badge.bg-success {
-            background-color: #77dd77 !important;
-            color: #000 !important;
+            background-color: #00D100 !important;
+            color: #fff !important;
         }
 
         body.bg-dark .text-success {
-            color: #77dd77 !important;
+            color: #00D100 !important;
         }
 
         body.bg-dark .btn-success {
-            color: #000 !important;
+            color: #fff !important;
         }
 
-        /* Force black text on all status badges in dark mode */
+        /* Force white text on all status badges in dark mode */
         body.bg-dark .status-badge {
-            color: #000 !important;
+            color: #fff !important;
         }
 
         body.bg-dark .badge.bg-warning,
@@ -382,124 +381,124 @@
         body.bg-dark span.bg-success,
         body.bg-dark span.bg-danger,
         body.bg-dark span.bg-info {
-            color: #000 !important;
+            color: #fff !important;
         }
 
-        /* Global Yellow/Warning Color Override - Change all yellow to #D1C700 */
+        /* Global Yellow/Warning Color Override - Change all yellow to #D1D100 */
         .bg-warning,
         .badge.bg-warning,
         .btn-warning,
         .alert-warning {
-            background-color: #D1C700 !important;
-            border-color: #D1C700 !important;
-            color: #000 !important;
+            background-color: #D1D100 !important;
+            border-color: #D1D100 !important;
+            color: #fff !important;
         }
 
         .text-warning {
-            color: #D1C700 !important;
+            color: #D1D100 !important;
         }
 
         .btn-warning:hover,
         .btn-warning:focus,
         .btn-warning:active {
-            background-color: #bfa500 !important;
-            border-color: #bfa500 !important;
-            color: #000 !important;
+            background-color: #b8b800 !important;
+            border-color: #b8b800 !important;
+            color: #fff !important;
         }
 
         .btn-outline-warning {
-            color: #D1C700 !important;
-            border-color: #D1C700 !important;
+            color: #D1D100 !important;
+            border-color: #D1D100 !important;
         }
 
         .btn-outline-warning:hover {
-            background-color: #D1C700 !important;
-            border-color: #D1C700 !important;
-            color: #000 !important;
+            background-color: #D1D100 !important;
+            border-color: #D1D100 !important;
+            color: #fff !important;
         }
 
         .bg-warning-subtle {
-            background-color: rgba(209, 199, 0, 0.1) !important;
-            color: #000 !important;
+            background-color: rgba(209, 209, 0, 0.1) !important;
+            color: #D1D100 !important;
         }
 
         /* Dark mode yellow overrides */
         body.bg-dark .alert-warning {
-            background-color: rgba(209, 199, 0, 0.15) !important;
-            border-color: rgba(209, 199, 0, 0.3) !important;
-            color: #D1C700 !important;
+            background-color: rgba(209, 209, 0, 0.2) !important;
+            border-color: rgba(209, 209, 0, 0.4) !important;
+            color: #D1D100 !important;
         }
 
         body.bg-dark .bg-warning {
-            background-color: #D1C700 !important;
-            color: #000 !important;
+            background-color: #D1D100 !important;
+            color: #fff !important;
         }
 
         body.bg-dark .text-warning {
-            color: #D1C700 !important;
+            color: #D1D100 !important;
         }
 
         body.bg-dark .badge.bg-warning {
-            color: #000 !important;
+            color: #fff !important;
         }
 
         body.bg-dark .btn-warning {
-            color: #000 !important;
+            color: #fff !important;
         }
 
-        /* Global Red/Danger Color Override - Change all red to #F53838 */
+        /* Global Red/Danger Color Override - Change all red to #D10000 */
         .bg-danger,
         .badge.bg-danger,
         .alert-danger {
-            background-color: #F53838 !important;
-            border-color: #F53838 !important;
-            color: #000 !important;
+            background-color: #D10000 !important;
+            border-color: #D10000 !important;
+            color: #fff !important;
         }
 
         .btn-danger {
-            background-color: #F53838 !important;
-            border-color: #F53838 !important;
+            background-color: #D10000 !important;
+            border-color: #D10000 !important;
             color: #fff !important;
         }
 
         .text-danger {
-            color: #F53838 !important;
+            color: #D10000 !important;
         }
 
         .btn-danger:hover,
         .btn-danger:focus,
         .btn-danger:active {
-            background-color: #e62929 !important;
-            border-color: #e62929 !important;
+            background-color: #b80000 !important;
+            border-color: #b80000 !important;
             color: #fff !important;
         }
 
         .btn-outline-danger {
-            color: #F53838 !important;
-            border-color: #F53838 !important;
+            color: #D10000 !important;
+            border-color: #D10000 !important;
         }
 
         .btn-outline-danger:hover {
-            background-color: #F53838 !important;
-            border-color: #F53838 !important;
+            background-color: #D10000 !important;
+            border-color: #D10000 !important;
             color: #fff !important;
         }
 
         .bg-danger-subtle {
-            background-color: rgba(245, 56, 56, 0.1) !important;
-            color: #000 !important;
+            background-color: rgba(209, 0, 0, 0.1) !important;
+            color: #D10000 !important;
         }
 
         /* Dark mode red overrides */
         body.bg-dark .alert-danger {
-            background-color: rgba(245, 56, 56, 0.15) !important;
-            border-color: rgba(245, 56, 56, 0.3) !important;
-            border-color: #F53838 !important;
-            color: #F53838 !important;
+            background-color: rgba(209, 0, 0, 0.2) !important;
+            border-color: rgba(209, 0, 0, 0.4) !important;
+            color: #D10000 !important;
         }
 
         body.bg-dark .badge.bg-danger {
-            color: #000 !important;
+            background-color: #D10000 !important;
+            color: #fff !important;
         }
 
         body.bg-dark .btn-danger {
@@ -509,19 +508,19 @@
 
         }
 
-        /* Global Info/Blue Color Override - Change all info to #009fb1 */
+        /* Global Info/Blue Color Override - Keep info as #009fb1 */
         .bg-info,
         .badge.bg-info,
         .alert-info {
             background-color: #009fb1 !important;
             border-color: #009fb1 !important;
-            color: #000 !important;
+            color: #fff !important;
         }
 
         .btn-info {
             background-color: #009fb1 !important;
             border-color: #009fb1 !important;
-            color: #000 !important;
+            color: #fff !important;
         }
 
         .text-info {
@@ -533,7 +532,7 @@
         .btn-info:active {
             background-color: #008a9a !important;
             border-color: #008a9a !important;
-            color: #000 !important;
+            color: #fff !important;
         }
 
         .btn-outline-info {
@@ -544,36 +543,35 @@
         .btn-outline-info:hover {
             background-color: #009fb1 !important;
             border-color: #009fb1 !important;
-            color: #000 !important;
+            color: #fff !important;
         }
 
         .bg-info-subtle {
             background-color: rgba(0, 159, 177, 0.1) !important;
-            color: #000 !important;
+            color: #009fb1 !important;
         }
 
         /* Dark mode info overrides */
         body.bg-dark .alert-info {
-            background-color: rgba(0, 159, 177, 0.15) !important;
-            border-color: rgba(0, 159, 177, 0.3) !important;
-            border-color: #009fb1 !important;
+            background-color: rgba(0, 159, 177, 0.2) !important;
+            border-color: rgba(0, 159, 177, 0.4) !important;
             color: #009fb1 !important;
         }
 
         body.bg-dark .badge.bg-info {
-            color: #000 !important;
             background-color: #009fb1 !important;
+            color: #fff !important;
         }
 
         body.bg-dark .btn-info {
-            color: #000 !important;
+            color: #fff !important;
         }
         
         /* Global Border Utility Overrides */
         .border-primary { border-color: var(--color-primary) !important; }
-        .border-success { border-color: #77dd77 !important; }
-        .border-warning { border-color: #D1C700 !important; }
-        .border-danger { border-color: #F53838 !important; }
+        .border-success { border-color: #00D100 !important; }
+        .border-warning { border-color: #D1D100 !important; }
+        .border-danger { border-color: #D10000 !important; }
         .border-info { border-color: #009fb1 !important; }
 
         body.bg-dark {
@@ -1286,8 +1284,8 @@
         }
 
         body.bg-dark .swal2-icon.swal2-warning {
-            border-color: #D1C700 !important;
-            color: #D1C700 !important;
+            border-color: #D1D100 !important;
+            color: #D1D100 !important;
         }
 
         body.bg-dark .swal2-icon.swal2-success {
@@ -1997,12 +1995,12 @@
                         }
 
                         .dropdown-menu-profile .dropdown-item.text-danger:hover {
-                            background-color: rgba(245, 56, 56, 0.1) !important;
-                            color: #F53838 !important;
+                            background-color: rgba(163, 0, 0, 0.1) !important;
+                            color: #D10000 !important;
                         }
 
                         .dropdown-menu-profile .dropdown-item.text-danger:hover i {
-                            color: #F53838 !important;
+                            color: #D10000 !important;
                         }
 
                         /* Dark Mode Dropdown Item Hover Colors */
@@ -2016,12 +2014,12 @@
                         }
 
                         body.bg-dark .dropdown-menu-profile .dropdown-item.text-danger:hover {
-                            background-color: rgba(245, 56, 56, 0.15) !important;
-                            color: #F53838 !important;
+                            background-color: rgba(163, 0, 0, 0.15) !important;
+                            color: #D10000 !important;
                         }
 
                         body.bg-dark .dropdown-menu-profile .dropdown-item.text-danger:hover i {
-                            color: #F53838 !important;
+                            color: #D10000 !important;
                         }
                     </style>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 dropdown-menu-profile" aria-labelledby="dropdownUser1">

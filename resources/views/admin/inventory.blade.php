@@ -35,15 +35,15 @@
         }
 
         .stock-good {
-            background-color: #77dd77;
+            background-color: #00D100;
         }
 
         .stock-low {
-            background-color: #D1C700;
+            background-color: #D1D100;
         }
 
         .stock-out {
-            background-color: #F53838;
+            background-color: #D10000;
         }
 
         .modal-content {
@@ -116,12 +116,12 @@
         /* Dark mode for expiring items alert */
         body.bg-dark .alert-light.border-warning {
             background-color: rgba(209, 199, 0, 0.15);
-            border-color: #D1C700 !important;
-            color: #D1C700;
+            border-color: #D1D100 !important;
+            color: #D1D100;
         }
 
         body.bg-dark .alert-light.border-warning .text-warning {
-            color: #D1C700 !important;
+            color: #D1D100 !important;
         }
 
         /* Dark mode for search input group */
