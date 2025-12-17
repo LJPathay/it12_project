@@ -1985,6 +1985,44 @@
                         body.bg-dark .user-name-text {
                             color: #fff !important;
                         }
+
+                        /* Custom Dropdown Item Hover Colors */
+                        .dropdown-menu-profile .dropdown-item:not(.text-danger):hover {
+                            background-color: rgba(0, 159, 177, 0.1) !important;
+                            color: #009fb1 !important;
+                        }
+
+                        .dropdown-menu-profile .dropdown-item:not(.text-danger):hover i {
+                            color: #009fb1 !important;
+                        }
+
+                        .dropdown-menu-profile .dropdown-item.text-danger:hover {
+                            background-color: rgba(245, 56, 56, 0.1) !important;
+                            color: #F53838 !important;
+                        }
+
+                        .dropdown-menu-profile .dropdown-item.text-danger:hover i {
+                            color: #F53838 !important;
+                        }
+
+                        /* Dark Mode Dropdown Item Hover Colors */
+                        body.bg-dark .dropdown-menu-profile .dropdown-item:not(.text-danger):hover {
+                            background-color: rgba(0, 159, 177, 0.15) !important;
+                            color: #009fb1 !important;
+                        }
+
+                        body.bg-dark .dropdown-menu-profile .dropdown-item:not(.text-danger):hover i {
+                            color: #009fb1 !important;
+                        }
+
+                        body.bg-dark .dropdown-menu-profile .dropdown-item.text-danger:hover {
+                            background-color: rgba(245, 56, 56, 0.15) !important;
+                            color: #F53838 !important;
+                        }
+
+                        body.bg-dark .dropdown-menu-profile .dropdown-item.text-danger:hover i {
+                            color: #F53838 !important;
+                        }
                     </style>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 dropdown-menu-profile" aria-labelledby="dropdownUser1">
                         <li class="px-3 py-3 border-bottom bg-light">
