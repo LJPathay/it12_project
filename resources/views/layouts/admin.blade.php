@@ -270,6 +270,8 @@
         body.bg-dark .btn-filter.active { color: #f1f5f9; }
 
         body {
+            margin: 0;
+            padding: 0;
             background-color: var(--bg-light);
             color: var(--text-light);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -843,8 +845,10 @@
 
         /* ---------- Header ---------- */
         .header {
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: var(--sidebar-width);
+            right: 0;
             z-index: 100;
             background: var(--header-bg-light);
             border-bottom: 1px solid var(--border-color);
@@ -854,6 +858,7 @@
             align-items: center;
             justify-content: space-between;
             box-shadow: var(--shadow-sm);
+            transition: left var(--transition);
         }
 
         .header h4 {
@@ -867,10 +872,16 @@
             margin: 0;
         }
 
+        /* Header position when sidebar is collapsed */
+        .sidebar.collapsed ~ .main-content .header {
+            left: var(--sidebar-collapsed);
+        }
+
         /* ---------- Main Content ---------- */
         .main-content {
             min-height: 100vh;
             margin-left: var(--sidebar-width);
+            padding-top: var(--header-height);
             background: #f9f9f9;
             transition: margin-left var(--transition);
         }
@@ -1577,6 +1588,7 @@
 
             /* Adjust header padding for mobile */
             .header {
+                left: 0;
                 padding: 1rem;
                 width: 100%;
             }
