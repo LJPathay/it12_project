@@ -2,6 +2,20 @@
 <html lang="en">
 
 <head>
+    @php
+        $themeStorageKey = 'app-theme';
+        if (\App\Helpers\AuthHelper::check()) {
+            $authUser = \App\Helpers\AuthHelper::user();
+            $authType = 'user';
+            // Determine user type for unique key
+            if (method_exists($authUser, 'isPatient') && $authUser->isPatient()) $authType = 'patient';
+            elseif (method_exists($authUser, 'isAdmin') && $authUser->isAdmin()) $authType = 'admin';
+            elseif (method_exists($authUser, 'isSuperAdmin') && $authUser->isSuperAdmin()) $authType = 'superadmin';
+            
+            $themeStorageKey = "app-theme-{$authType}-{$authUser->id}";
+        }
+    @endphp
+    <script>const APP_THEME_KEY = "{{ $themeStorageKey }}";</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -74,7 +88,7 @@
     <script>
         // Check theme and apply to loader
         (function() {
-            var isDark = localStorage.getItem('app-theme') === 'dark';
+            var isDark = localStorage.getItem(APP_THEME_KEY) === 'dark';
             if (isDark) {
                 document.write('<div id="page-loader" class="dark"><div class="spinner"></div></div>');
             } else {
@@ -2203,7 +2217,7 @@
             const overlay = document.getElementById('sidebarOverlay');
             const themeToggle = document.getElementById('themeToggle');
             const sidebarKey = 'sidebar-collapsed';
-            const themeKey = 'app-theme';
+            const themeKey = APP_THEME_KEY;
 
             const isDesktop = () => window.innerWidth >= 992;
 
