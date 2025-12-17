@@ -175,7 +175,16 @@
 
                 async loadTimeSlots(date) {
                     try {
-                        const response = await fetch(`/patient/appointments/slots?date=${date}`, {
+                        // Get selected service type if available
+                        const serviceSelect = document.getElementById('service_id');
+                        const serviceType = serviceSelect ? serviceSelect.options[serviceSelect.selectedIndex]?.text : null;
+                        
+                        let url = `/patient/appointments/slots?date=${date}`;
+                        if (serviceType && serviceType !== 'Select a service') {
+                            url += `&service_type=${encodeURIComponent(serviceType)}`;
+                        }
+                        
+                        const response = await fetch(url, {
                             headers: {
                                 'X-Requested-With': 'XMLHttpRequest'
                             }

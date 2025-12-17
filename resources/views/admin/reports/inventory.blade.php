@@ -122,7 +122,8 @@
                                 <tr>
                                     <th>Item</th>
                                     <th>Type</th>
-                                    <th class="text-end">Qty</th>
+                                    <th>Qty</th>
+                                    <th>User</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -135,11 +136,18 @@
                                                 {{ ucfirst($transaction->transaction_type) }}
                                             </span>
                                         </td>
-                                        <td class="text-end">{{ $transaction->quantity }}</td>
+                                        <td>{{ $transaction->quantity }}</td>
+                                        <td>
+                                            @if($transaction->performable)
+                                                {{ $transaction->performable->name }}
+                                            @else
+                                                <span class="text-muted">System</span>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3" class="text-center text-muted">No recent transactions</td>
+                                        <td colspan="4" class="text-center text-muted">No recent transactions</td>
                                     </tr>
                                 @endforelse
                             </tbody>

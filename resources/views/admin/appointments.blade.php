@@ -54,21 +54,6 @@
             color: #000000;
         }
 
-        .status-rescheduled {
-            background-color: #ffc107;
-            color: #000000;
-        }
-
-        .status-blocked {
-            background-color: #343a40;
-            color: #ffffff;
-        }
-
-        .status-in_progress {
-            background-color: #0d6efd;
-            color: #ffffff;
-        }
-
         .table-modern {
             border-collapse: separate;
             border-spacing: 0;
@@ -212,41 +197,15 @@
         }
 
         .calendar-day.occupied {
-            background-color: #dc3545;
-            color: white;
-            border-color: #dc3545;
-        }
-
-        /* Date/Time layout spacing */
-        .date-time-layout {
-            align-items: flex-start;
-            gap: 1.5rem;
-        }
-
-        .date-time-layout .card {
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-        }
-
-        .date-time-layout .card-body {
-            padding: 1rem;
-        }
-
-        .calendar-card .month-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
-        }
-
-        .calendar-card .calendar-grid {
-            gap: 4px;
+            background-color: #F53838;
+            color: #000;
+            border-color: #F53838;
         }
 
         .calendar-day.partially-occupied {
-            background-color: #ffc107;
-            color: #212529;
-            border-color: #ffc107;
+            background-color: #D1C700;
+            color: #000;
+            border-color: #D1C700;
         }
 
         .calendar-day.weekend {
@@ -304,20 +263,28 @@
         }
 
         .time-slot.available {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
+            background-color: #77dd77;
+            border-color: #66cc66;
+            color: #000;
         }
 
         .time-slot.available:hover {
-            background-color: #c3e6cb;
+            background-color: #66cc66;
         }
 
         .time-slot.occupied {
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
+            background-color: #F53838;
+            border-color: #e62929;
+            color: #000;
             cursor: not-allowed;
+        }
+
+        .time-slot.past {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+            color: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.6;
         }
 
         .time-slot.selected {
@@ -366,15 +333,22 @@
         }
 
         body.bg-dark .time-slot.available {
-            background-color: #1e3a1f;
-            border-color: #2a5f2e;
-            color: #90ee90;
+            background-color: #77dd77;
+            border-color: #66cc66;
+            color: #000;
         }
 
         body.bg-dark .time-slot.occupied {
-            background-color: #3d1a1a;
-            border-color: #5c2a2a;
-            color: #ff6b6b;
+            background-color: #F53838;
+            border-color: #e62929;
+            color: #000;
+        }
+
+        body.bg-dark .time-slot.past {
+            background-color: #1e2124;
+            border-color: #2a2f35;
+            color: #6c757d;
+            opacity: 0.5;
         }
 
         /* Skeleton Loading */
@@ -555,15 +529,15 @@
         }
 
         body.bg-dark .time-slot.available {
-            background-color: #1e3a1f;
-            border-color: #2a5f2e;
-            color: #90ee90;
+            background-color: #77dd77;
+            border-color: #66cc66;
+            color: #000;
         }
 
         body.bg-dark .time-slot.occupied {
-            background-color: #3d1a1a;
-            border-color: #5c2a2a;
-            color: #ff6b6b;
+            background-color: #F53838;
+            border-color: #e62929;
+            color: #000;
         }
 
         body.bg-dark .time-slot.selected {
@@ -1270,9 +1244,6 @@
             </div>
         </div>
         <div class="d-flex align-items-center gap-2">
-            {{-- <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#blockDateModal">
-                <i class="fas fa-ban me-2"></i> Block Date
-            </button> --}}
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
                 <i class="fas fa-plus me-2"></i> Add New Appointment
             </button>
@@ -1377,10 +1348,8 @@
                                         'rescheduled' => 'Rescheduled',
                                         'cancelled' => 'Cancelled',
                                         'completed' => 'Completed',
-                                        'no_show' => 'No Show',
-                                        'blocked' => 'Blocked',
-                                        'in_progress' => 'In Progress'
-                                    ][$appointment->status] ?? ucfirst(str_replace('_', ' ', $appointment->status));
+                                        'no_show' => 'No Show'
+                                    ][$appointment->status] ?? ucfirst($appointment->status);
                                 @endphp
                                 <span class="status-badge status-{{ $appointment->status }}">{{ $statusDisplay }}</span>
                             </td>
@@ -1429,10 +1398,8 @@
                                 'rescheduled' => 'Rescheduled',
                                 'cancelled' => 'Cancelled',
                                 'completed' => 'Completed',
-                                'no_show' => 'No Show',
-                                'blocked' => 'Blocked',
-                                'in_progress' => 'In Progress'
-                            ][$appointment->status] ?? ucfirst(str_replace('_', ' ', $appointment->status));
+                                'no_show' => 'No Show'
+                            ][$appointment->status] ?? ucfirst($appointment->status);
                         @endphp
                         <span class="status-badge status-{{ $appointment->status }}">{{ $statusDisplay }}</span>
                     </div>
@@ -1548,29 +1515,25 @@
                         </div>
                         <div class="mb-4">
                             <label class="form-label">Appointment Date & Time <span class="text-danger">*</span></label>
-                            <div class="row date-time-layout d-flex flex-wrap date-time-container align-items-start">
+                            <div class="row g-3">
                                 <div class="col-md-5">
-                                    <div class="card h-100 shadow-sm calendar-card">
-                                        <div class="card-body">
-                                            <div class="month-nav">
-                                                <button type="button" class="btn btn-sm btn-outline-primary" id="prevMonth">
-                                                    <i class="fas fa-chevron-left"></i>
-                                                </button>
-                                                <h6 class="mb-0" id="currentMonth">Loading...</h6>
-                                                <button type="button" class="btn btn-sm btn-outline-primary" id="nextMonth">
-                                                    <i class="fas fa-chevron-right"></i>
-                                                </button>
-                                            </div>
-                                            <div id="calendarGrid" class="calendar-grid">
-                                                <div class="col-12">
-                                                    <div class="skeleton calendar-skeleton"></div>
-                                                </div>
-                                            </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" id="prevMonth">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <h6 class="mb-0" id="currentMonth">Loading...</h6>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" id="nextMonth">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                    <div id="calendarGrid" class="calendar-grid">
+                                        <div class="col-12">
+                                            <div class="skeleton calendar-skeleton"></div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-7">
-                                    <div class="card h-100 shadow-sm time-card">
+                                    <div class="card h-100">
                                         <div class="card-header">
                                             <h6 class="mb-0">Time Slots</h6>
                                         </div>
@@ -1605,44 +1568,6 @@
         </div>
     </div>
 
-    <!-- Block Date Modal -->
-    <div class="modal fade" id="blockDateModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-danger">Block Date (Doctor Unavailable)</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form action="{{ route('admin.appointment.block') }}" method="POST">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <strong>Warning:</strong> Blocking this date will:
-                            <ul class="mb-0 mt-1">
-                                <li>Prevent any new bookings for this date.</li>
-                                <li>Mark existing appointments as "Needs Reschedule".</li>
-                                <li>Automatically notify affected patients via email.</li>
-                            </ul>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Date to Block</label>
-                            <input type="date" class="form-control" name="date" min="{{ date('Y-m-d') }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Reason (Optional)</label>
-                            <input type="text" class="form-control" name="reason" placeholder="e.g. Doctor on Leave, Maintenance">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-danger">Confirm Block</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <!-- Reschedule Appointment Modal (Single Instance) -->
     <div class="modal fade" id="rescheduleAppointmentModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
@@ -1657,29 +1582,25 @@
                     <div class="modal-body">
                         <div class="mb-4">
                             <label class="form-label">New Appointment Date & Time <span class="text-danger">*</span></label>
-                            <div class="row g-4 date-time-layout">
+                            <div class="row g-3">
                                 <div class="col-md-5">
-                                    <div class="card h-100 shadow-sm calendar-card">
-                                        <div class="card-body">
-                                            <div class="month-nav">
-                                                <button type="button" class="btn btn-sm btn-outline-primary" id="reschedPrevMonth">
-                                                    <i class="fas fa-chevron-left"></i>
-                                                </button>
-                                                <h6 class="mb-0" id="reschedCurrentMonth">Loading...</h6>
-                                                <button type="button" class="btn btn-sm btn-outline-primary" id="reschedNextMonth">
-                                                    <i class="fas fa-chevron-right"></i>
-                                                </button>
-                                            </div>
-                                            <div id="reschedCalendarGrid" class="calendar-grid">
-                                                <div class="col-12">
-                                                    <div class="skeleton calendar-skeleton"></div>
-                                                </div>
-                                            </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" id="reschedPrevMonth">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <h6 class="mb-0" id="reschedCurrentMonth">Loading...</h6>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" id="reschedNextMonth">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                    <div id="reschedCalendarGrid" class="calendar-grid">
+                                        <div class="col-12">
+                                            <div class="skeleton calendar-skeleton"></div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-7">
-                                    <div class="card h-100 shadow-sm time-card">
+                                    <div class="card h-100">
                                         <div class="card-header">
                                             <h6 class="mb-0">Time Slots</h6>
                                         </div>
@@ -2496,9 +2417,28 @@
 
                     slots.forEach(slot => {
                         const slotElement = document.createElement('div');
-                        slotElement.className = `time-slot ${slot.available ? 'available' : 'occupied'}`;
+                        
+                        // Determine slot class and status text based on availability
+                        let slotClass = 'time-slot';
+                        let statusText = '';
+                        
+                        if (slot.is_past) {
+                            // Past slots are unavailable (gray)
+                            slotClass += ' past';
+                            statusText = 'Unavailable';
+                        } else if (slot.available) {
+                            // Available slots (green)
+                            slotClass += ' available';
+                            statusText = 'Available';
+                        } else {
+                            // Occupied slots (red) - show count
+                            slotClass += ' occupied';
+                            statusText = `Occupied (${slot.occupied_count})`;
+                        }
+                        
+                        slotElement.className = slotClass;
 
-                        if (slot.available) {
+                        if (slot.available && !slot.is_past) {
                             slotElement.addEventListener('click', () => {
                                 this.selectTimeSlot(slot.time, slot.display);
                             });
@@ -2510,7 +2450,7 @@
 
                         const statusElement = document.createElement('div');
                         statusElement.className = 'status';
-                        statusElement.textContent = slot.available ? 'Available' : `Occupied (${slot.occupied_count})`;
+                        statusElement.textContent = statusText;
 
                         slotElement.appendChild(timeElement);
                         slotElement.appendChild(statusElement);

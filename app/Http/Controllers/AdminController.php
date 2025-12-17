@@ -619,36 +619,75 @@ class AdminController extends Controller
         $appointment->update($update);
 
         // Send approval email only when transitioning to approved
-        if ($oldStatus !== 'approved' && $request->status === 'approved') {
-            $appointment->loadMissing('user');
-            $targetEmail = $appointment->user->email ?? null;
-            Log::info('[AppointmentApprovedEmail] Preparing to send', [
-                'appointment_id' => $appointment->id,
-                'user_id' => $appointment->user->id ?? null,
-                'target_email' => $targetEmail,
-            ]);
-            if (!empty($targetEmail)) {
-                try {
-                    Mail::to($targetEmail)->send(new AppointmentApproved($appointment));
-                    Log::info('[AppointmentApprovedEmail] Sent successfully', [
-                        'appointment_id' => $appointment->id,
-                        'target_email' => $targetEmail,
-                    ]);
-                } catch (\Throwable $e) {
-                    Log::error('[AppointmentApprovedEmail] Failed to send', [
-                        'appointment_id' => $appointment->id,
-                        'target_email' => $targetEmail,
-                        'error' => $e->getMessage(),
-                    ]);
-                }
-            } else {
-                Log::warning('[AppointmentApprovedEmail] No recipient email found for appointment approval', [
+    if ($oldStatus !== 'approved' && $request->status === 'approved') {
+        $appointment->loadMissing('user');
+        $targetEmail = $appointment->user->email ?? null;
+        Log::info('[AppointmentApprovedEmail] Preparing to send', [
+            'appointment_id' => $appointment->id,
+            'user_id' => $appointment->user->id ?? null,
+            'target_email' => $targetEmail,
+        ]);
+        if (!empty($targetEmail)) {
+            try {
+                Mail::to($targetEmail)->send(new AppointmentApproved($appointment));
+                Log::info('[AppointmentApprovedEmail] Sent successfully', [
                     'appointment_id' => $appointment->id,
+                    'target_email' => $targetEmail,
+                ]);
+            } catch (\Throwable $e) {
+                Log::error('[AppointmentApprovedEmail] Failed to send', [
+                    'appointment_id' => $appointment->id,
+                    'target_email' => $targetEmail,
+                    'error' => $e->getMessage(),
                 ]);
             }
+        } else {
+            Log::warning('[AppointmentApprovedEmail] No recipient email found for appointment approval', [
+                'appointment_id' => $appointment->id,
+            ]);
         }
 
-        return redirect()->back()->with('success', 'Appointment status updated successfully.');
+        // Auto-cancel conflicting pending appointments (First-In-First-Out)
+        $conflictingAppointments = Appointment::where('id', '!=', $appointment->id)
+            ->where('appointment_date', $appointment->appointment_date)
+            ->where('appointment_time', $appointment->appointment_time)
+            ->where('service_type', $appointment->service_type)
+            ->where('status', 'pending')
+            ->with('user')
+            ->get();
+
+        if ($conflictingAppointments->count() > 0) {
+            Log::info('[AppointmentConflictResolution] Found conflicting appointments', [
+                'approved_appointment_id' => $appointment->id,
+                'conflicts_count' => $conflictingAppointments->count(),
+            ]);
+
+            foreach ($conflictingAppointments as $conflict) {
+                $conflict->update([
+                    'status' => 'cancelled',
+                    'notes' => 'Automatically cancelled - Time slot was filled by another patient. Please book a new appointment.',
+                ]);
+
+                // Send cancellation email
+                if ($conflict->user && $conflict->user->email) {
+                    try {
+                        Mail::to($conflict->user->email)->send(new \App\Mail\AppointmentCancelled($conflict));
+                        Log::info('[AppointmentConflictResolution] Cancellation email sent', [
+                            'cancelled_appointment_id' => $conflict->id,
+                            'patient_email' => $conflict->user->email,
+                        ]);
+                    } catch (\Throwable $e) {
+                        Log::error('[AppointmentConflictResolution] Failed to send cancellation email', [
+                            'cancelled_appointment_id' => $conflict->id,
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+                }
+            }
+        }
+    }
+
+    return redirect()->back()->with('success', 'Appointment status updated successfully.');
     }
 
     public function inventory(Request $request)
@@ -1263,7 +1302,7 @@ class AdminController extends Controller
             ->get();
 
         // Recent transactions within range
-        $recentTransactions = InventoryTransaction::with(['inventory', 'user'])
+        $recentTransactions = InventoryTransaction::with(['inventory', 'performable'])
             ->whereBetween('created_at', [$startDate, $endDate])
             ->latest()
             ->limit(10)
@@ -1601,49 +1640,119 @@ class AdminController extends Controller
         $endDate = Carbon::parse($request->end_date)->endOfDay();
 
         $inventory = Inventory::orderBy('item_name', 'asc')->get();
+        
+        // Get all transactions within the date range
+        $transactions = InventoryTransaction::with(['inventory', 'performable'])
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        $export = new class ($inventory, $startDate, $endDate) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings {
+        // Create multi-sheet export
+        $export = new class ($inventory, $transactions, $startDate, $endDate) implements \Maatwebsite\Excel\Concerns\WithMultipleSheets {
             protected $inventory;
+            protected $transactions;
             protected $startDate;
             protected $endDate;
 
-            public function __construct($inventory, $startDate, $endDate)
+            public function __construct($inventory, $transactions, $startDate, $endDate)
             {
                 $this->inventory = $inventory;
+                $this->transactions = $transactions;
                 $this->startDate = $startDate;
                 $this->endDate = $endDate;
             }
 
-            public function collection()
+            public function sheets(): array
             {
-                return $this->inventory->map(function ($item) {
-                    // Calculate Stocks Used (Usage + Deduct transactions)
-                    $stocksUsed = \App\Models\InventoryTransaction::where('inventory_id', $item->id)
-                        ->whereIn('transaction_type', ['usage', 'deduct', 'dispense']) // Assuming 'dispense' might be a type, verifying logic
-                        ->where(function($q) {
-                             $q->where('transaction_type', '!=', 'restock');
-                        })
-                        ->whereBetween('created_at', [$this->startDate, $this->endDate])
-                        ->sum('quantity');
-
-                    return [
-                        'Item Name' => $item->item_name,
-                        'Category' => $item->category,
-                        'Current Stock' => $item->current_stock . ' ' . $item->unit,
-                        'Stocks Used' => $stocksUsed . ' ' . $item->unit,
-                        'Status' => str_replace('_', ' ', ucfirst($item->status)),
-                        'Expiry Date' => $item->expiry_date ? \Carbon\Carbon::parse($item->expiry_date)->format('M d, Y') : 'N/A',
-                    ];
-                });
-            }
-
-            public function headings(): array
-            {
-                return ['Item Name', 'Category', 'Current Stock', 'Stocks Used', 'Status', 'Expiry Date'];
+                return [
+                    new InventorySummarySheet($this->inventory, $this->startDate, $this->endDate),
+                    new TransactionHistorySheet($this->transactions),
+                ];
             }
         };
 
         return Excel::download($export, 'inventory_reports_' . $request->start_date . '_to_' . $request->end_date . '.xlsx');
+    }
+}
+
+// Inventory Summary Sheet
+class InventorySummarySheet implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings, \Maatwebsite\Excel\Concerns\WithTitle {
+    protected $inventory;
+    protected $startDate;
+    protected $endDate;
+
+    public function __construct($inventory, $startDate, $endDate)
+    {
+        $this->inventory = $inventory;
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+    }
+
+    public function collection()
+    {
+        return $this->inventory->map(function ($item) {
+            // Calculate Stocks Used (Usage + Deduct transactions)
+            $stocksUsed = \App\Models\InventoryTransaction::where('inventory_id', $item->id)
+                ->whereIn('transaction_type', ['usage', 'deduct', 'dispense'])
+                ->where(function($q) {
+                     $q->where('transaction_type', '!=', 'restock');
+                })
+                ->whereBetween('created_at', [$this->startDate, $this->endDate])
+                ->sum('quantity');
+
+            return [
+                'Item Name' => $item->item_name,
+                'Category' => $item->category,
+                'Current Stock' => $item->current_stock . ' ' . $item->unit,
+                'Stocks Used' => $stocksUsed . ' ' . $item->unit,
+                'Status' => str_replace('_', ' ', ucfirst($item->status)),
+                'Expiry Date' => $item->expiry_date ? \Carbon\Carbon::parse($item->expiry_date)->format('M d, Y') : 'N/A',
+            ];
+        });
+    }
+
+    public function headings(): array
+    {
+        return ['Item Name', 'Category', 'Current Stock', 'Stocks Used', 'Status', 'Expiry Date'];
+    }
+
+    public function title(): string
+    {
+        return 'Inventory Summary';
+    }
+}
+
+// Transaction History Sheet
+class TransactionHistorySheet implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings, \Maatwebsite\Excel\Concerns\WithTitle {
+    protected $transactions;
+
+    public function __construct($transactions)
+    {
+        $this->transactions = $transactions;
+    }
+
+    public function collection()
+    {
+        return $this->transactions->map(function ($transaction) {
+            return [
+                'Date' => $transaction->created_at->format('M d, Y h:i A'),
+                'Item Name' => $transaction->inventory->item_name ?? 'N/A',
+                'Type' => ucfirst($transaction->transaction_type),
+                'Quantity' => $transaction->quantity,
+                'User' => $transaction->performable ? $transaction->performable->name : 'System',
+                'Notes' => $transaction->notes ?? '',
+            ];
+        });
+    }
+
+    public function headings(): array
+    {
+        return ['Date', 'Item Name', 'Type', 'Quantity', 'User', 'Notes'];
+    }
+
+    public function title(): string
+    {
+        return 'Transaction History';
     }
 
     public function exportInventoryPdf(Request $request)

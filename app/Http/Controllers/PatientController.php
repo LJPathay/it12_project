@@ -55,6 +55,17 @@ class PatientController extends Controller
 
         $service = Service::find($request->service_id);
         
+        // Check if the time slot is already approved (prevent overbooking)
+        $approvedCount = Appointment::where('appointment_date', $request->appointment_date)
+            ->where('appointment_time', $request->appointment_time)
+            ->where('service_type', $service->name)
+            ->where('status', 'approved')
+            ->count();
+
+        if ($approvedCount > 0) {
+            return redirect()->back()->with('error', 'This time slot has already been filled. Please choose another time.');
+        }
+        
         // Validate Slot Availability/Quota
         $slots = AppointmentHelper::getAvailableSlots($request->appointment_date, $service->name);
         $normalizedTime = substr($request->appointment_time, 0, 5); // Ensure H:i format
