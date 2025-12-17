@@ -11,27 +11,77 @@ use Illuminate\Validation\Rule;
 
 // Homepage
 Route::get('/', function () {
+    if (\App\Helpers\AuthHelper::check()) {
+        $role = \App\Helpers\AuthHelper::user()->role;
+        if ($role === 'super_admin') {
+            return redirect()->route('superadmin.dashboard');
+        } elseif ($role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } else {
+            return redirect()->route('patient.dashboard');
+        }
+    }
     return view('home');
 })->name('home');
 
 // Booking Policy Page
-Route::get('/policy', fn() => view('policy'))->name('policy');
+Route::get('/policy', function () {
+    if (\App\Helpers\AuthHelper::check()) {
+        $role = \App\Helpers\AuthHelper::user()->role;
+        return $role === 'super_admin' ? redirect()->route('superadmin.dashboard')
+             : ($role === 'admin' ? redirect()->route('admin.dashboard')
+             : redirect()->route('patient.dashboard'));
+    }
+    return view('policy');
+})->name('policy');
 
 // Contact Us Page
-Route::get('/contact', fn() => view('contact'))->name('contact');
+Route::get('/contact', function () {
+    if (\App\Helpers\AuthHelper::check()) {
+        $role = \App\Helpers\AuthHelper::user()->role;
+        return $role === 'super_admin' ? redirect()->route('superadmin.dashboard')
+             : ($role === 'admin' ? redirect()->route('admin.dashboard')
+             : redirect()->route('patient.dashboard'));
+    }
+    return view('contact');
+})->name('contact');
 
 // Services Page (static)
-Route::get('/services', fn() => view('partials.services'))->name('services');
+Route::get('/services', function () {
+    if (\App\Helpers\AuthHelper::check()) {
+        $role = \App\Helpers\AuthHelper::user()->role;
+        return $role === 'super_admin' ? redirect()->route('superadmin.dashboard')
+             : ($role === 'admin' ? redirect()->route('admin.dashboard')
+             : redirect()->route('patient.dashboard'));
+    }
+    return view('partials.services');
+})->name('services');
 
 // How It Works Page
-Route::get('/how-it-works', fn() => view('partials.how-it-works'))->name('how-it-works');
+Route::get('/how-it-works', function () {
+    if (\App\Helpers\AuthHelper::check()) {
+        $role = \App\Helpers\AuthHelper::user()->role;
+        return $role === 'super_admin' ? redirect()->route('superadmin.dashboard')
+             : ($role === 'admin' ? redirect()->route('admin.dashboard')
+             : redirect()->route('patient.dashboard'));
+    }
+    return view('partials.how-it-works');
+})->name('how-it-works');
 
 // UI Style Guide (Dev only)
-Route::get('/style-guide', fn() => view('style-guide'))->name('style-guide');
+Route::get('/style-guide', function () {
+    if (\App\Helpers\AuthHelper::check()) {
+        $role = \App\Helpers\AuthHelper::user()->role;
+        return $role === 'super_admin' ? redirect()->route('superadmin.dashboard')
+             : ($role === 'admin' ? redirect()->route('admin.dashboard')
+             : redirect()->route('patient.dashboard'));
+    }
+    return view('style-guide'); // line 79
+})->name('style-guide');
 
 // Booking Page
 Route::get('/booking', function () {
-    if (!Auth::check()) {
+    if (!\App\Helpers\AuthHelper::check()) {
         // User not logged in — show the home page with login modal open
         return redirect('/')->with('showLoginModal', true);
     }
@@ -39,7 +89,19 @@ Route::get('/booking', function () {
 })->name('booking');
 
 // Authentication Routes
-Route::get('/login', fn() => view('auth.login'))->name('login');
+Route::get('/login', function () {
+    if (\App\Helpers\AuthHelper::check()) {
+        $role = \App\Helpers\AuthHelper::user()->role;
+        if ($role === 'super_admin') {
+            return redirect()->route('superadmin.dashboard');
+        } elseif ($role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } else {
+            return redirect()->route('patient.dashboard');
+        }
+    }
+    return view('auth.login');
+})->name('login');
 Route::post('/login', [App\Http\Controllers\AuthController::class, 'login'])
     ->middleware('throttle:5,1'); // 5 attempts per minute
 
@@ -65,7 +127,19 @@ Route::middleware(['auth.multi'])->group(function () {
     Route::post('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });
 
-Route::get('/register', fn() => view('auth.register'))->name('register');
+Route::get('/register', function () {
+    if (\App\Helpers\AuthHelper::check()) {
+        $role = \App\Helpers\AuthHelper::user()->role;
+        if ($role === 'super_admin') {
+            return redirect()->route('superadmin.dashboard');
+        } elseif ($role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } else {
+            return redirect()->route('patient.dashboard');
+        }
+    }
+    return view('auth.register');
+})->name('register');
 Route::post('/register', [App\Http\Controllers\AuthController::class, 'register']);
 Route::post('/check-email', [App\Http\Controllers\AuthController::class, 'checkEmailAvailability']);
 

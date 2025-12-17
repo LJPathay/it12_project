@@ -17,10 +17,7 @@ class EnsureSuperAdmin
     public function handle(Request $request, Closure $next): Response
     {
         if (!Auth::guard('super_admin')->check()) {
-             if (Auth::guard('admin')->check() || Auth::guard('patient')->check() || Auth::check()) {
-                return redirect()->back();
-            }
-            return redirect('/login')->with('error', 'Please login as a super admin to access this page.');
+            abort(404);
         }
 
         return $next($request);
