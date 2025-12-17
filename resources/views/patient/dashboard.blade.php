@@ -45,3 +45,4 @@
 @push('scripts')
 @include('patient.partials.dashboard-scripts')
 @endpush
+// push
