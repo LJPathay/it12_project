@@ -1270,9 +1270,9 @@
             </div>
         </div>
         <div class="d-flex align-items-center gap-2">
-            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#blockDateModal">
+            {{-- <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#blockDateModal">
                 <i class="fas fa-ban me-2"></i> Block Date
-            </button>
+            </button> --}}
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
                 <i class="fas fa-plus me-2"></i> Add New Appointment
             </button>
