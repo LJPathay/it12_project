@@ -77,7 +77,7 @@
         <div class="modal-content overflow-hidden border-0 shadow-lg" style="border-radius: 16px;">
             <div class="row g-0">
                 <!-- Left side - Image with gradient overlay -->
-                <div class="col-md-5 position-relative" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                <div class="col-md-5 position-relative" style="background: linear-gradient(135deg, #009fb1 0%, #138496 100%);">
                     <div class="position-absolute top-0 end-0 p-3">
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>

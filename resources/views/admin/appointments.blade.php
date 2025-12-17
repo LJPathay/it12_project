@@ -40,7 +40,7 @@
         }
 
         .status-completed {
-            background-color: #d1ecf1;
+            background-color: #009fb1;
             color: #000000;
         }
 
@@ -279,7 +279,7 @@
 
         .time-slot.available {
             background-color: #00D100;
-            border-color: #66cc66;
+            border-color: #00D100;
             color: #fff;
         }
 
@@ -290,7 +290,7 @@
 
         .time-slot.occupied {
             background-color: #D10000;
-            border-color: #e62929;
+            border-color: #D10000;
             color: #fff;
             cursor: not-allowed;
         }
@@ -360,7 +360,7 @@
 
         body.bg-dark .time-slot.available {
             background-color: #00D100;
-            border-color: #66cc66;
+            border-color: #00D100;
             color: #fff;
         }
 
@@ -371,7 +371,7 @@
 
         body.bg-dark .time-slot.occupied {
             background-color: #D10000;
-            border-color: #e62929;
+            border-color: #D10000;
             color: #fff;
         }
 
@@ -566,7 +566,7 @@
 
         body.bg-dark .time-slot.available {
             background-color: #00D100;
-            border-color: #66cc66;
+            border-color: #00D100;
             color: #fff;
         }
 
@@ -577,7 +577,7 @@
 
         body.bg-dark .time-slot.occupied {
             background-color: #D10000;
-            border-color: #e62929;
+            border-color: #D10000;
             color: #fff;
         }
 
@@ -2662,7 +2662,7 @@
                             missingFields.map(field => '<li class="mb-1">' + field + '</li>').join('') +
                             '</ul>',
                         confirmButtonText: 'OK, I\'ll complete them',
-                        confirmButtonColor: '#17a2b8',
+                        confirmButtonColor: '#009fb1',
                         customClass: {
                             popup: 'swal-wide'
                         }

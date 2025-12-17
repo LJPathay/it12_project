@@ -123,7 +123,7 @@
         }
 
         .status-badge.bg-primary {
-            background-color: #17a2b8 !important;
+            background-color: #009fb1 !important;
             color: #000000 !important;
         }
 
@@ -173,7 +173,7 @@
         body.bg-dark .form-control:focus,
         body.bg-dark .form-select:focus {
             background: #161b20;
-            border-color: #17a2b8;
+            border-color: #009fb1;
             color: #e6e6e6;
         }
 

@@ -62,34 +62,34 @@
     <div class="kpi-row">
         <!-- Total Appointments -->
         <div class="kpi-card">
-            <div class="kpi-label">Volume</div>
+            <div class="kpi-label fw-bold">Volume</div>
             <div class="kpi-value">{{ number_format($appointmentStats['total']) }}</div>
-            <div class="kpi-sub text-muted fw-bold">Total Appointments</div>
+            <div class="text-muted">Total Appointments</div>
         </div>
         <!-- Completion Rate -->
         @php 
             $completionRate = $appointmentStats['total'] > 0 ? ($appointmentStats['completed'] / $appointmentStats['total']) * 100 : 0; 
         @endphp
         <div class="kpi-card">
-            <div class="kpi-label">Success Rate</div>
+            <div class="kpi-label fw-bold">Success Rate</div>
             <div class="kpi-value text-primary">{{ number_format($completionRate, 1) }}%</div>
-            <div class="kpi-sub text-muted fw-bold">Appointments Completed</div>
+            <div class="text-muted">Appointments Completed</div>
         </div>
         <!-- Pending Queue -->
         <div class="kpi-card">
-            <div class="kpi-label">Backlog</div>
+            <div class="kpi-label fw-bold">Backlog</div>
             <div class="kpi-value text-warning">{{ number_format($appointmentStats['pending']) }}</div>
-            <div class="kpi-sub text-muted fw-bold">Pending Processing</div>
+            <div class="text-muted">Pending Processing</div>
         </div>
         <!-- Inventory Value (Proxy: Total Items) -->
         <div class="kpi-card">
-            <div class="kpi-label">Inventory Health</div>
+            <div class="kpi-label fw-bold">Inventory Health</div>
             <div class="kpi-value">{{ number_format($inventoryStats['total_items']) }}</div>
-            <div class="kpi-sub">
+            <div class="text-muted">
                 @if($inventoryStats['low_stock'] > 0)
-                    <span class="text-danger fw-bold">{{ $inventoryStats['low_stock'] }} Alerts</span>
+                    <span class="text-danger">{{ $inventoryStats['low_stock'] }} Alerts</span>
                 @else
-                    <span class="text-success fw-bold">Healthy</span>
+                    <span class="text-success">Healthy</span>
                 @endif
             </div>
         </div>

@@ -505,14 +505,14 @@
 
                         // Map score (0-4) to bars (0-3)
                         let activeBars = 0;
-                        let color = '#dc3545'; // Red
+                        let color = '#D10000'; // Red
                         let label = 'Weak';
 
                         if (score < 2) {
                             activeBars = 1;
                         } else if (score === 2 || score === 3) {
                             activeBars = 2;
-                            color = '#ffc107'; // Yellow
+                            color = '#D1D100'; // Yellow
                             label = 'Medium';
                         } else if (score >= 4) {
                             activeBars = 3;

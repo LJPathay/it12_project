@@ -98,11 +98,11 @@
             width: 100%;
             margin-top: 0.25rem;
             font-size: 0.875rem;
-            color: #dc3545;
+            color: #D10000;
         }
 
         .is-invalid {
-            border-color: #dc3545;
+            border-color: #D10000;
         }
 
         /* Calendar Styles */
@@ -258,18 +258,18 @@
         }
 
         .time-slot.available {
-            background-color: #00D100;
-            border-color: #66cc66;
+            background: #00D100;
+            border-color: #29e629;
             color: #fff;
         }
 
         .time-slot.available:hover {
-            background-color: #00b800;
+            background: #00b800;
             border-color: #00b800;
         }
 
         .time-slot.occupied {
-            background-color: #D10000;
+            background: #D10000;
             border-color: #e62929;
             color: #fff;
             cursor: not-allowed;
@@ -339,18 +339,18 @@
         }
 
         body.bg-dark .time-slot.available {
-            background-color: #00D100;
-            border-color: #66cc66;
+            background: #00D100;
+            border-color: #29e629;
             color: #fff;
         }
 
         body.bg-dark .time-slot.available:hover {
-            background-color: #00b800;
+            background: #00b800;
             border-color: #00b800;
         }
 
         body.bg-dark .time-slot.occupied {
-            background-color: #D10000;
+            background: #D10000;
             border-color: #e62929;
             color: #fff;
         }
@@ -536,8 +536,8 @@
         }
 
         .step.completed .step-circle {
-            background: #28a745;
-            border-color: #28a745;
+            background: #00D100;
+            border-color: #00D100;
             color: white;
         }
 
@@ -553,7 +553,7 @@
         }
 
         .step.completed .step-label {
-            color: #28a745;
+            color: #00D100;
         }
 
         body.bg-dark .step-circle {
@@ -606,12 +606,12 @@
 
         .legend-color.available {
             background: #00D100;
-            border-color: #66cc66;
+            border-color: #29e629;
         }
 
         body.bg-dark .legend-color.available {
             background: #00D100;
-            border-color: #66cc66;
+            border-color: #29e629;
         }
 
         .legend-color.partially-occupied {
@@ -620,6 +620,7 @@
 
         .legend-color.occupied {
             background: #D10000;
+            border-color: #e62929;
         }
 
         .legend-color.selected {
@@ -634,6 +635,11 @@
         body.bg-dark .legend-color.unavailable {
             background: #1e2124;
             border-color: #495057;
+        }
+
+        body.bg-dark .legend-color.occupied {
+            background: #D10000;
+            border-color: #e62929;
         }
 
         /* Confirmation Modal */

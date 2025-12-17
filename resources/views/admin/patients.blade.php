@@ -151,14 +151,14 @@
         /* Dark mode alerts */
         body.bg-dark .alert-success {
             background-color: #1e3a1e;
-            color: #d4edda;
-            border-color: #28a745;
+            color: #00D100;
+            border-color: #00D100;
         }
 
         body.bg-dark .alert-danger {
             background-color: #3a1e1e;
-            color: #f8d7da;
-            border-color: #dc3545;
+            color: #D10000;
+            border-color: #D10000;
         }
 
         /* Calendar Styles */
@@ -210,15 +210,15 @@
         }
 
         .calendar-day.occupied {
-            background-color: #dc3545;
+            background-color: #D10000;
             color: white;
-            border-color: #dc3545;
+            border-color: #D10000;
         }
 
         .calendar-day.partially-occupied {
-            background-color: #ffc107;
+            background-color: #D1D100;
             color: #212529;
-            border-color: #ffc107;
+            border-color: #D1D100;
         }
 
         .calendar-day.weekend {
@@ -282,7 +282,7 @@
 
         .time-slot.available {
             background-color: #00D100;
-            border-color: #66cc66;
+            border-color: #00D100;
             color: #fff;
         }
 
@@ -356,7 +356,7 @@
 
         body.bg-dark .time-slot.available {
             background-color: #00D100;
-            border-color: #66cc66;
+            border-color: #00D100;
             color: #fff;
         }
 
@@ -1316,14 +1316,14 @@
 
                     // Map score (0-4) to bars (0-3)
                     let activeBars = 0;
-                    let color = '#dc3545'; // Red
+                    let color = '#D10000'; // Red
                     let label = 'Weak';
 
                     if (score < 2) {
                         activeBars = 1;
                     } else if (score === 2 || score === 3) {
                         activeBars = 2;
-                        color = '#ffc107'; // Yellow
+                        color = '#D1D100'; // Yellow
                         label = 'Medium';
                     } else if (score >= 4) {
                         activeBars = 3;

@@ -4,12 +4,20 @@
         <div class="metric-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="metric-label">Pending Appointments</div>
-                    <div class="metric-number">{{ $appointments->where('status', 'pending')->count() }}</div>
-                    <div class="metric-change text-warning trend-up">
-                        <i class="fas fa-arrow-up"></i>
-                        <span class="fw-bold">Awaiting Approval</span>
+                    <div class="kpi-label fw-bold">Pending Appointments</div>
+                    @php
+                        $today = \Carbon\Carbon::today();
+                        $pendingCount = $appointments->where('status', 'pending')->filter(function ($appointment) use ($today) {
+                            return \Carbon\Carbon::parse($appointment->appointment_date)->gte($today);
+                        })->count();
+                    @endphp
+                    <div class="kpi-value">{{ $pendingCount }}</div>
+                    @if($pendingCount > 0)
+                    <div class="text-warning">
+                        <i class="fas fa-clock"></i>
+                        <span>Awaiting Approval</span>
                     </div>
+                    @endif
                 </div>
                 <div class="text-warning">
                     <i class="fas fa-clock fa-2x"></i>
@@ -21,12 +29,19 @@
         <div class="metric-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="metric-label">Approved Appointments</div>
-                    <div class="metric-number">{{ $appointments->where('status', 'approved')->count() }}</div>
-                    <div class="metric-change text-success trend-up">
+                    <div class="kpi-label fw-bold">Approved Appointments</div>
+                    @php
+                        $approvedCount = $appointments->where('status', 'approved')->filter(function ($appointment) use ($today) {
+                            return \Carbon\Carbon::parse($appointment->appointment_date)->gte($today);
+                        })->count();
+                    @endphp
+                    <div class="kpi-value">{{ $approvedCount }}</div>
+                    @if($approvedCount > 0)
+                    <div class="text-success">
                         <i class="fas fa-check-circle"></i>
-                        <span class="fw-bold">Ready for Visit</span>
+                        <span>Ready for Visit</span>
                     </div>
+                    @endif
                 </div>
                 <div class="text-success">
                     <i class="fas fa-check-circle fa-2x"></i>

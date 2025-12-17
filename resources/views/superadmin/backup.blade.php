@@ -48,7 +48,7 @@
         }
 
         .backup-success {
-            background-color: #d4edda;
+            background-color: #00D100;
             color: #155724;
         }
 
@@ -58,7 +58,7 @@
         }
 
         .backup-warning {
-            background-color: #fff3cd;
+            background-color: #D1D100;
             color: #856404;
         }
 
@@ -68,7 +68,7 @@
         }
 
         .backup-danger {
-            background-color: #f8d7da;
+            background-color: #D10000;
             color: #721c24;
         }
 
@@ -78,7 +78,7 @@
         }
 
         .backup-info {
-            background-color: #d1ecf1;
+            background-color: #009fb1;
             color: #0c5460;
         }
 

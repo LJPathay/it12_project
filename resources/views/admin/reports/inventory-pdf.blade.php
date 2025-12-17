@@ -13,9 +13,9 @@
         .header { text-align: center; margin-bottom: 30px; }
         .date { text-align: center; color: #666; margin-bottom: 20px; }
         .status-badge { padding: 2px 6px; border-radius: 3px; font-size: 10px; }
-        .status-available { background-color: #d4edda; color: #155724; }
-        .status-low { background-color: #fff3cd; color: #856404; }
-        .status-out { background-color: #f8d7da; color: #721c24; }
+        .status-available { background-color: #00D100; color: #155724; }
+        .status-low { background-color: #D1D100; color: #856404; }
+        .status-out { background-color: #D10000; color: #721c24; }
     </style>
 </head>
 <body>

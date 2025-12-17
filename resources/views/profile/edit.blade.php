@@ -152,7 +152,7 @@
 
         body.bg-dark .form-control:focus {
             background-color: #151718 !important;
-            border-color: #17a2b8 !important;
+            border-color: #009fb1 !important;
             color: #e6e6e6 !important;
             box-shadow: 0 0 0 0.25rem rgba(23, 162, 184, 0.25) !important;
         }

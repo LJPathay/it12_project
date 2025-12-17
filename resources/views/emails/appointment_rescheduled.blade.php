@@ -4,9 +4,9 @@
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #f8f9fa; padding: 20px; text-align: center; border-bottom: 3px solid #dc3545; }
+        .header { background-color: #f8f9fa; padding: 20px; text-align: center; border-bottom: 3px solid #D10000; }
         .content { padding: 20px; }
-        .appointment-details { background-color: #fff3cd; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .appointment-details { background-color: #D1D100; padding: 15px; border-radius: 5px; margin: 15px 0; }
         .footer { font-size: 12px; color: #666; text-align: center; margin-top: 20px; }
     </style>
 </head>

@@ -73,48 +73,48 @@
     <div class="kpi-row">
         <!-- Total Patients -->
         <div class="kpi-card">
-            <div class="kpi-label">Patient Base</div>
+            <div class="kpi-label fw-bold">Patient Base</div>
             <div class="kpi-value">{{ number_format($totalPatients ?? 0) }}</div>
-            <div class="kpi-sub">
+            <div class="text-muted">
                 @if(($patientsChange ?? 0) > 0)
-                    <i class="fas fa-arrow-up text-trend-up"></i> <span class="text-trend-up fw-bold">{{ abs($patientsChange) }}%</span> vs last month
+                    <i class="fas fa-arrow-up"></i> <span>{{ abs($patientsChange) }}%</span> vs last month
                 @elseif(($patientsChange ?? 0) < 0)
-                    <i class="fas fa-arrow-down text-trend-down"></i> <span class="text-trend-down fw-bold">{{ abs($patientsChange) }}%</span> vs last month
+                    <i class="fas fa-arrow-down"></i> <span>{{ abs($patientsChange) }}%</span> vs last month
                 @else
-                    <span class="text-muted fw-bold">No Change</span>
+                    <span>No Change</span>
                 @endif
             </div>
         </div>
 
         <!-- Today's Appointments -->
         <div class="kpi-card">
-            <div class="kpi-label">Today's Schedule</div>
+            <div class="kpi-label fw-bold">Today's Schedule</div>
             <div class="kpi-value">{{ number_format($todayAppointments ?? 0) }}</div>
-            <div class="kpi-sub">
-                <span class="text-primary fw-bold">{{ $todayCompleted ?? 0 }} Done</span> • 
-                <span class="text-warning fw-bold">{{ $todayPending ?? 0 }} Pending</span>
+            <div class="text-muted">
+                <span class="text-primary">{{ $todayCompleted ?? 0 }} Done</span> • 
+                <span class="text-warning">{{ $todayPending ?? 0 }} Pending</span>
             </div>
         </div>
 
         <!-- Low Stock -->
         <div class="kpi-card" style="{{ ($lowStockItems ?? 0) > 0 ? 'border-left: 4px solid #D1D100;' : '' }}">
-            <div class="kpi-label">Inventory Alerts</div>
+            <div class="kpi-label fw-bold">Inventory Alerts</div>
             <div class="kpi-value">{{ number_format($lowStockItems ?? 0) }}</div>
-            <div class="kpi-sub">
+            <div class="text-muted">
                 @if(($lowStockItems ?? 0) > 0)
-                    <span class="text-warning fw-bold">Requires Restocking</span>
+                    <span class="text-warning">Requires Restocking</span>
                 @else
-                    <span class="text-success fw-bold">Stock Levels Healthy</span>
+                    <span class="text-success">Stock Levels Healthy</span>
                 @endif
             </div>
         </div>
 
         <!-- Monthly Services -->
         <div class="kpi-card">
-             <div class="kpi-label">Services Provided</div>
+             <div class="kpi-label fw-bold">Services Provided</div>
              <div class="kpi-value">{{ number_format($monthlyServices ?? 0) }}</div>
-             <div class="kpi-sub">
-                <span class="text-muted fw-bold">This Month</span>
+             <div class="text-muted">
+                <span>This Month</span>
             </div>
         </div>
     </div>

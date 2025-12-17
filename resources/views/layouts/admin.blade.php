@@ -1289,11 +1289,11 @@
         }
 
         body.bg-dark .swal2-icon.swal2-success {
-            border-color: #28a745 !important;
+            border-color: #00D100 !important;
         }
 
         body.bg-dark .swal2-icon.swal2-success [class^='swal2-success-line'] {
-            background-color: #28a745 !important;
+            background-color: #00D100 !important;
         }
 
         body.bg-dark .swal2-icon.swal2-success .swal2-success-ring {
@@ -1301,11 +1301,11 @@
         }
 
         body.bg-dark .swal2-icon.swal2-error {
-            border-color: #dc3545 !important;
+            border-color: #D10000 !important;
         }
 
         body.bg-dark .swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
-            background-color: #dc3545 !important;
+            background-color: #D10000 !important;
         }
 
         body.bg-dark .swal2-icon.swal2-question {
