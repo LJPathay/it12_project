@@ -41,7 +41,7 @@
         </p>
 
         <!-- Overview Cards -->
-        <div class="row g-3 mb-4">
+        <div class="row g-4 mb-4">
             <div class="col-md-3">
                 <div class="card-surface p-3 h-100">
                     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -80,11 +80,11 @@
             </div>
         </div>
 
-        <div class="row g-3 mb-4">
+        <div class="row g-4 mb-4">
             <!-- Category Breakdown -->
             <div class="col-md-6">
                 <div class="card-surface p-3 h-100">
-                    <h5 class="mb-3">Category Breakdown</h5>
+                    <h5 class="mb-3 fw-bold">Category Breakdown</h5>
                     <div class="table-responsive">
                         <table class="table table-sm mb-0">
                             <thead>
@@ -115,28 +115,23 @@
             <!-- Recent Transactions -->
             <div class="col-md-6">
                 <div class="card-surface p-3 h-100">
-                    <h5 class="mb-3">Recent Transactions</h5>
-                    <div class="table-responsive">
+                    <h5 class="mb-3 fw-bold">Recent Transactions</h5>
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                         <table class="table table-sm mb-0">
-                            <thead>
+                            <thead class="table-light sticky-top">
                                 <tr>
+                                    <th>Date</th>
                                     <th>Item</th>
-                                    <th>Type</th>
-                                    <th>Qty</th>
                                     <th>User</th>
+                                    <th>Qty</th>
+                                    <th>Notes</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($recentTransactions as $transaction)
                                     <tr>
+                                        <td>{{ $transaction->created_at->format('M d, Y') }}<br><small class="text-muted">{{ $transaction->created_at->format('h:i A') }}</small></td>
                                         <td>{{ Str::limit($transaction->inventory->item_name ?? 'N/A', 20) }}</td>
-                                        <td>
-                                            <span
-                                                class="badge bg-{{ $transaction->transaction_type === 'restock' ? 'success' : 'danger' }}">
-                                                {{ ucfirst($transaction->transaction_type) }}
-                                            </span>
-                                        </td>
-                                        <td>{{ $transaction->quantity }}</td>
                                         <td>
                                             @if($transaction->performable)
                                                 {{ $transaction->performable->name }}
@@ -144,6 +139,10 @@
                                                 <span class="text-muted">System</span>
                                             @endif
                                         </td>
+                                        <td class="{{ $transaction->transaction_type === 'restock' ? 'text-success' : 'text-danger' }} fw-bold">
+                                            {{ $transaction->transaction_type === 'restock' ? '+' : '-' }}{{ $transaction->quantity }}
+                                        </td>
+                                        <td class="small text-muted">{{ Str::limit($transaction->notes ?? '-', 20) }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -158,11 +157,11 @@
         </div>
 
         <!-- Critical Items -->
-        <div class="row g-3">
+        <div class="row g-4">
             <!-- Low Stock Items -->
             <div class="col-md-6">
                 <div class="card-surface p-3 h-100">
-                    <h5 class="mb-3">
+                    <h5 class="mb-3 fw-bold">
                         <i class="fas fa-exclamation-triangle text-warning me-2"></i>Low Stock Items
                     </h5>
                     <div class="table-responsive">
@@ -196,7 +195,7 @@
             <!-- Expiring Soon Items -->
             <div class="col-md-6">
                 <div class="card-surface p-3 h-100">
-                    <h5 class="mb-3">
+                    <h5 class="mb-3 fw-bold">
                         <i class="fas fa-clock text-info me-2"></i>Expiring Soon
                     </h5>
                     <div class="table-responsive">

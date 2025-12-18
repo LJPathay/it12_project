@@ -29,6 +29,9 @@ class AdminController extends Controller
     public function dashboard()
     {
         $totalPatients = Patient::query()->count();
+        $newPatientsThisMonth = Patient::whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
 
         // Today metrics
         $todayAppointments = Appointment::whereDate('appointment_date', today())->count();
@@ -36,8 +39,13 @@ class AdminController extends Controller
             ->where('status', 'completed')
             ->count();
         $todayPending = Appointment::whereDate('appointment_date', today())
-            ->where('status', 'pending')
+            ->whereIn('status', ['pending', 'approved', 'waiting', 'in_progress', 'rescheduled'])
             ->count();
+
+        // Get today's appointment list
+        $todaysAppointments = Appointment::whereDate('appointment_date', today())
+            ->orderBy('appointment_time', 'asc')
+            ->get();
 
         // Inventory metrics
         $lowStockItems = Inventory::whereColumn('current_stock', '<=', 'minimum_stock')->count();
@@ -150,6 +158,7 @@ class AdminController extends Controller
 
         return view('admin.dashboard', compact(
             'totalPatients',
+            'newPatientsThisMonth',
             'todayAppointments',
             'todayCompleted',
             'todayPending',
@@ -163,7 +172,8 @@ class AdminController extends Controller
             'patientsByBarangay',
             'chartData',
             'outOfStockCount',
-            'expiringSoonCount'
+            'expiringSoonCount',
+            'todaysAppointments'
         ));
     }
 
@@ -1128,31 +1138,74 @@ class AdminController extends Controller
             ->limit(5)
             ->get();
 
-        // 3. Status Trends for Line Chart (Comparison)
+        // 3. Performance Trends (Weekly, Monthly, Yearly)
         $driver = DB::getDriverName();
+        $dayOfWeekSql = $driver === 'pgsql' ? 'EXTRACT(DOW FROM appointment_date) + 1' : 'DAYOFWEEK(appointment_date)';
+        $dayOfMonthSql = $driver === 'pgsql' ? 'EXTRACT(DAY FROM appointment_date)' : 'DAY(appointment_date)';
         $monthSql = $driver === 'pgsql' ? 'EXTRACT(MONTH FROM appointment_date)' : 'MONTH(appointment_date)';
-        
-        // Group by Month AND Status
-        $rawTrend = Appointment::selectRaw("$monthSql as month, status, count(*) as count")
-            ->whereYear('appointment_date', now()->year)
-            ->whereIn('status', ['completed', 'cancelled', 'pending'])
-            ->groupBy('month', 'status')
-            ->get();
-        
-        // Format for Chart.js (Datasets)
-        $monthlyTrend = [
-            'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            'completed' => array_fill(0, 12, 0),
-            'cancelled' => array_fill(0, 12, 0),
-            'pending' => array_fill(0, 12, 0),
-        ];
 
-        foreach ($rawTrend as $row) {
-            $monthIndex = $row->month - 1; // 0-indexed
-            if(isset($monthlyTrend[$row->status][$monthIndex])) {
-                $monthlyTrend[$row->status][$monthIndex] = $row->count;
+        // Helper to initialize status maps
+        $initStatusMap = function($labelsCount) {
+            return [
+                'completed' => array_fill(0, $labelsCount, 0),
+                'cancelled' => array_fill(0, $labelsCount, 0),
+                'pending'   => array_fill(0, $labelsCount, 0),
+            ];
+        };
+
+        // --- WEEKLY ---
+        $weeklyRaw = Appointment::selectRaw("$dayOfWeekSql as label_key, status, count(*) as count")
+            ->whereBetween('appointment_date', [now()->startOfWeek(), now()->endOfWeek()])
+            ->whereIn('status', ['completed', 'cancelled', 'pending'])
+            ->groupBy('label_key', 'status')
+            ->get();
+
+        $weeklyTrend = $initStatusMap(7);
+        foreach ($weeklyRaw as $row) {
+            $index = $row->label_key - 1; // 1-7
+            if (isset($weeklyTrend[$row->status][$index])) {
+                $weeklyTrend[$row->status][$index] = $row->count;
             }
         }
+
+        // --- MONTHLY ---
+        $daysInMonth = now()->daysInMonth;
+        $monthlyRaw = Appointment::selectRaw("$dayOfMonthSql as label_key, status, count(*) as count")
+            ->whereMonth('appointment_date', now()->month)
+            ->whereYear('appointment_date', now()->year)
+            ->whereIn('status', ['completed', 'cancelled', 'pending'])
+            ->groupBy('label_key', 'status')
+            ->get();
+
+        $monthlyTrend = $initStatusMap($daysInMonth);
+        foreach ($monthlyRaw as $row) {
+            $index = $row->label_key - 1; // 1-31
+            if (isset($monthlyTrend[$row->status][$index])) {
+                $monthlyTrend[$row->status][$index] = $row->count;
+            }
+        }
+
+        // --- YEARLY ---
+        $yearlyRaw = Appointment::selectRaw("$monthSql as label_key, status, count(*) as count")
+            ->whereYear('appointment_date', now()->year)
+            ->whereIn('status', ['completed', 'cancelled', 'pending'])
+            ->groupBy('label_key', 'status')
+            ->get();
+
+        $yearlyTrend = $initStatusMap(12);
+        foreach ($yearlyRaw as $row) {
+            $index = $row->label_key - 1; // 1-12
+            if (isset($yearlyTrend[$row->status][$index])) {
+                $yearlyTrend[$row->status][$index] = $row->count;
+            }
+        }
+
+        // Consolidate
+        $performanceTrends = [
+            'weekly'  => $weeklyTrend,
+            'monthly' => $monthlyTrend,
+            'yearly'  => $yearlyTrend,
+        ];
 
         return view('admin.reports', compact(
             'appointmentStats', 
@@ -1160,7 +1213,7 @@ class AdminController extends Controller
             'serviceTypes', 
             'servicePerformance',
             'inventoryByCategory',
-            'monthlyTrend'
+            'performanceTrends'
         ));
     }
 

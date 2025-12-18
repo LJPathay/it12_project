@@ -61,7 +61,7 @@
         </p>
 
         <!-- Overview Cards -->
-         <div class="row g-3 mb-4">
+         <div class="row g-4 mb-4">
             <div class="col-md-3">
                 <div class="card-surface p-3 h-100">
                     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -102,11 +102,11 @@
             </div>
         </div>
 
-        <div class="row g-3 mb-4">
+        <div class="row g-4 mb-4">
             <!-- Age Distribution -->
             <div class="col-md-6">
                 <div class="card-surface p-3 h-100">
-                    <h5 class="mb-3">Age Distribution</h5>
+                    <h5 class="mb-3 fw-bold">Age Distribution</h5>
                     <div class="table-responsive">
                         <table class="table table-sm mb-0">
                             <thead>
@@ -135,7 +135,7 @@
             <!-- Barangay Distribution -->
             <div class="col-md-6">
                 <div class="card-surface p-3 h-100">
-                    <h5 class="mb-3">Barangay Distribution</h5>
+                    <h5 class="mb-3 fw-bold">Barangay Distribution</h5>
                     <div class="table-responsive">
                         <table class="table table-sm mb-0">
                             <thead>
@@ -167,10 +167,10 @@
         </div>
 
         <!-- Detailed Patient List (Replaces Top Patients) -->
-        <div class="row g-3 mb-4">
+        <div class="row g-4 mb-4">
              <div class="col-12">
                 <div class="card-surface p-3 h-100">
-                    <h5 class="mb-3">
+                    <h5 class="mb-3 fw-bold">
                         Patient List 
                         @if(request('barangay'))
                             <span class="badge bg-primary ms-2">{{ request('barangay') }}</span>

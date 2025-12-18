@@ -10,7 +10,7 @@
         .analytics-container { max-width: 1400px; }
 
         /* KPI Cards */
-        .kpi-row { display: flex; gap: 1rem; margin-bottom: 2rem; overflow-x: auto; padding-bottom: 0.5rem; }
+        .kpi-row { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 0.5rem; }
         .kpi-card {
             flex: 1;
             min-width: 200px;
@@ -63,11 +63,89 @@
         }
         .btn-filter.active { color: #0f172a; text-decoration: underline; text-underline-offset: 4px; }
         body.bg-dark .btn-filter.active { color: #f1f5f9; }
+
+        /* Modal & Info Card Styles (Copied from Appointments) */
+        .info-card { background: #f8f9fa; border: 1px solid #e9ecef; transition: all 0.2s ease; }
+        .info-label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #6c757d; margin-bottom: 0.5rem; }
+        .info-value { font-size: 0.95rem; color: #212529; font-weight: 500; }
+        
+        .status-badge { padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .status-pending { background-color: #D1D100; color: #ffffff; }
+        .status-approved { background-color: #00D100; color: #ffffff; }
+        .status-completed { background-color: #009fb1; color: #000000; }
+        .status-cancelled { background-color: #D10000; color: #ffffff; }
+        .status-rescheduled { background-color: #ffc107; color: #000; }
+
+        /* Dark Mode Modal */
+        body.bg-dark .info-card { background: #2a2f35; border-color: #3f4751; }
+        body.bg-dark .info-label { color: #adb5bd; }
+        body.bg-dark .info-value { color: #e9ecef; }
+        body.bg-dark .modal-content { background: #1e2124; border-color: #2a2f35; color: #e6e6e6; }
+        body.bg-dark .modal-header { border-bottom-color: #2a2f35; }
+        body.bg-dark .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+
+        /* Timeline Styles */
+        .timeline-container { position: relative; padding-left: 1rem; }
+        .timeline-item { position: relative; padding-bottom: 1.5rem; display: flex; gap: 1.5rem; }
+        .timeline-item:last-child { padding-bottom: 0; }
+        
+        .timeline-line {
+            position: absolute; left: 86px; top: 2rem; bottom: -2rem;
+            width: 2px; background-color: #e2e8f0; z-index: 0;
+        }
+        .timeline-item:last-child .timeline-line { display: none; }
+        body.bg-dark .timeline-line { background-color: #2d3748; }
+
+        .timeline-time {
+            min-width: 70px; text-align: right; padding-top: 0.35rem; /* Aligned with card title */
+        }
+        .time-large { font-size: 1.1rem; font-weight: 700; color: #1e293b; line-height: 1; }
+        .time-small { font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; margin-top: 2px; }
+        body.bg-dark .time-large { color: #f1f5f9; }
+
+        .timeline-marker {
+            width: 14px; height: 14px; border-radius: 50%;
+            background: #cbd5e1; border: 3px solid #fff; /* Thicker border for separation */
+            position: relative; z-index: 1; margin-top: 0.4rem;
+            box-shadow: 0 0 0 1px #e2e8f0; /* Ring effect */
+        }
+        body.bg-dark .timeline-marker { border-color: #1a202c; box-shadow: 0 0 0 1px #4a5568; }
+        
+        /* Status Colors for Marker */
+        .marker-pending { background-color: #D1D100; }
+        .marker-approved { background-color: #00D100; }
+        .marker-completed { background-color: #009fb1; }
+        .marker-cancelled { background-color: #D10000; }
+        .marker-rescheduled { background-color: #f59e0b; }
+
+        .timeline-content {
+            flex-grow: 1; background: #fff; border: 1px solid #f1f5f9;
+            border-radius: 12px; padding: 1rem;
+            transition: all 0.2s ease; position: relative;
+        }
+        .timeline-content:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px); border-color: #e2e8f0;
+        }
+        body.bg-dark .timeline-content { background: #1e2124; border-color: #2d3748; }
+        body.bg-dark .timeline-content:hover { border-color: #4a5568; }
+
+        .avatar-circle {
+            width: 42px; height: 42px; border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 0.9rem; flex-shrink: 0;
+        }
+        
+        /* Action Buttons Hover Info */
+        .hover-actions { opacity: 0; transition: opacity 0.2s ease; }
+        .timeline-content:hover .hover-actions { opacity: 1; }
+
     </style>
 @endsection
 
 @section('content')
-<div class="analytics-container container-fluid px-2">
+<div class="analytics-container container-fluid px-0">
 
     <!-- KPI Row -->
     <div class="kpi-row">
@@ -76,12 +154,10 @@
             <div class="kpi-label fw-bold">Patient Base</div>
             <div class="kpi-value">{{ number_format($totalPatients ?? 0) }}</div>
             <div class="text-muted">
-                @if(($patientsChange ?? 0) > 0)
-                    <i class="fas fa-arrow-up"></i> <span>{{ abs($patientsChange) }}%</span> vs last month
-                @elseif(($patientsChange ?? 0) < 0)
-                    <i class="fas fa-arrow-down"></i> <span>{{ abs($patientsChange) }}%</span> vs last month
+                @if(($newPatientsThisMonth ?? 0) > 0)
+                    <span class="text-success"><i class="fas fa-arrow-up"></i> +{{ $newPatientsThisMonth }} New</span> this month
                 @else
-                    <span>No Change</span>
+                    <span class="text-muted">No new patients this month</span>
                 @endif
             </div>
         </div>
@@ -179,29 +255,98 @@
                 </div>
                 
                 @if(($todaysAppointments ?? collect([]))->count() > 0)
-                    <div class="d-flex flex-column">
+                    <div class="timeline-container mt-2">
                         @foreach($todaysAppointments as $appointment)
-                            <div class="activity-item">
-                                <div class="activity-icon bg-primary bg-opacity-10 text-primary">
-                                    <i class="fas fa-user"></i>
+                            <div class="timeline-item">
+                                <!-- Time Column -->
+                                <div class="timeline-time">
+                                    <div class="time-large">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i') }}</div>
+                                    <div class="time-small">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('A') }}</div>
                                 </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-0 fw-bold" style="font-size: 0.9rem;">
-                                        {{ $appointment->patient_name ?? ($appointment->user->name ?? 'Walk-in Patient') }}
-                                    </h6>
-                                    <small class="text-muted">{{ $appointment->service_type }}</small>
-                                </div>
-                                <div class="text-end">
-                                    <div class="fw-bold text-dark">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}</div>
-                                    <span class="badge bg-light text-secondary border">{{ ucfirst($appointment->status) }}</span>
+
+                                <!-- Connecting Line -->
+                                <div class="timeline-line"></div>
+                                <div class="timeline-marker marker-{{ $appointment->status }}"></div>
+
+                                <!-- Content Card -->
+                                <div class="timeline-content">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <!-- Left: Avatar + Details -->
+                                        <div class="d-flex gap-3 align-items-center">
+                                            <div class="avatar-circle">
+                                                {{ strtoupper(substr($appointment->patient_name, 0, 1)) }}{{ strtoupper(substr(strstr($appointment->patient_name, ' '), 1, 1)) }}
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1 text-dark" style="font-size: 1rem;">
+                                                    {{ $appointment->patient_name }}
+                                                </h6>
+                                                <div class="text-muted small d-flex align-items-center gap-2">
+                                                    <span><i class="fas fa-notes-medical text-primary me-1"></i> {{ $appointment->service_type }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Right: Status -->
+                                        <div class="text-end">
+                                            @php
+                                                $statusConfig = match($appointment->status) {
+                                                    'approved' => ['bg-success', 'fa-check-circle', 'Confirmed'],
+                                                    'pending' => ['bg-warning text-dark', 'fa-clock', 'Pending'],
+                                                    'completed' => ['bg-info text-dark', 'fa-check-double', 'Completed'],
+                                                    'cancelled' => ['bg-danger', 'fa-times-circle', 'Cancelled'],
+                                                    'rescheduled' => ['bg-warning text-dark', 'fa-redo', 'Rescheduled'],
+                                                    default => ['bg-secondary', 'fa-circle', ucfirst($appointment->status)]
+                                                };
+                                            @endphp
+                                            <span class="badge {{ $statusConfig[0] }} rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm" style="font-weight: 600; font-size: 0.75rem;">
+                                                <i class="fas {{ $statusConfig[1] }}"></i> {{ $statusConfig[2] }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Action Footer (Lighter Divider + Metadata) -->
+                                    <div class="mt-3 pt-2 border-top border-light d-flex justify-content-between align-items-center">
+                                        
+                                        <!-- Metadata (ID / Duration) -->
+                                        <div class="d-flex align-items-center gap-3 text-muted small">
+                                            <span title="Appointment ID"><i class="fas fa-hashtag me-1 opacity-50"></i>{{ $appointment->id }}</span>
+                                            <span class="opacity-50">|</span>
+                                            <span><i class="fas fa-hourglass-half me-1 opacity-50"></i>30m</span>
+                                        </div>
+
+                                        <!-- Actions -->
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="hover-actions d-flex gap-2 me-2">
+                                                @if($appointment->status === 'approved')
+                                                    <form method="POST" action="{{ route('admin.appointment.update', $appointment) }}" class="d-inline">
+                                                        @csrf
+                                                        <input type="hidden" name="status" value="completed">
+                                                        <button type="submit" class="btn btn-sm btn-outline-success btn-icon" title="Mark as Done" style="width: 28px; height: 28px;">
+                                                            <i class="fas fa-check" style="font-size: 0.8rem;"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </div>
+
+                                            <button class="btn btn-sm btn-outline-primary px-3 rounded-pill fw-bold" 
+                                                    data-bs-toggle="modal" data-bs-target="#viewAppointmentModal{{ $appointment->id }}"
+                                                    style="font-size: 0.8rem; border-width: 1.5px;">
+                                                View <i class="fas fa-arrow-right ms-1"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 @else
-                    <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted" style="min-height: 200px;">
-                        <i class="fas fa-calendar-day mb-3" style="font-size: 2rem; opacity: 0.3;"></i>
-                        <p>No appointments for today.</p>
+                    <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted py-5 text-center">
+                         <div class="bg-light rounded-circle p-4 mb-3">
+                             <i class="fas fa-calendar-check text-success" style="font-size: 2.5rem; opacity: 0.8;"></i>
+                         </div>
+                         <h6 class="fw-bold text-dark mb-1">No appointments scheduled for today</h6>
+                         <p class="small mb-0">Enjoy a lighter workload!</p>
+                    </div>
                 @endif
             </div>
         </div>
@@ -255,6 +400,99 @@
             </div>
         </div>
     </div>
+
+    <!-- View Appointment Modals (Loop) -->
+    @if(($todaysAppointments ?? collect([]))->count() > 0)
+        @foreach($todaysAppointments as $appointment)
+            <div class="modal fade" id="viewAppointmentModal{{ $appointment->id }}" tabindex="-1">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Appointment Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body p-4">
+                            <div class="row g-4">
+                                <!-- Left Column: Patient Info -->
+                                <div class="col-md-6">
+                                    <div class="info-card p-3 rounded-3 h-100">
+                                        <h6 class="text-uppercase text-muted small fw-bold mb-3 d-flex align-items-center">
+                                            <i class="fas fa-user-circle me-2"></i>Patient Information
+                                        </h6>
+                                        <div class="info-item mb-3">
+                                            <label class="info-label">Name</label>
+                                            <div class="info-value">{{ $appointment->patient_name }}</div>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="info-label">Contact</label>
+                                            <div class="info-value">
+                                                <div><i class="fas fa-phone me-2 text-muted"></i>{{ $appointment->patient_phone }}</div>
+                                                <div class="mt-1"><i class="fas fa-envelope me-2 text-muted"></i>{{ $appointment->user->email ?? 'No email linked' }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="info-item">
+                                            <label class="info-label">Address</label>
+                                            <div class="info-value"><i class="fas fa-map-marker-alt me-2 text-muted"></i>{{ $appointment->patient_address ?? 'N/A' }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Column: Appointment Info -->
+                                <div class="col-md-6">
+                                    <div class="info-card p-3 rounded-3 h-100">
+                                        <h6 class="text-uppercase text-muted small fw-bold mb-3 d-flex align-items-center">
+                                            <i class="fas fa-calendar-check me-2"></i>Appointment Information
+                                        </h6>
+                                        <div class="info-item mb-3">
+                                            <label class="info-label">Service</label>
+                                            <div class="info-value text-primary fw-bold">
+                                                <i class="fas fa-stethoscope me-2"></i>{{ $appointment->service_type }}
+                                            </div>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="info-label">Date & Time</label>
+                                            <div class="info-value">
+                                                <div class="mb-1">
+                                                    <i class="fas fa-calendar-alt me-2 text-muted"></i>
+                                                    {{ $appointment->appointment_date->format('F d, Y') }}
+                                                </div>
+                                                <div>
+                                                    <i class="fas fa-clock me-2 text-muted"></i>
+                                                    {{ $appointment->appointment_time }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="info-label">Status</label>
+                                            @php
+                                                $statusDisplay = [
+                                                    'pending' => 'Pending',
+                                                    'approved' => 'Confirmed',
+                                                    'rescheduled' => 'Rescheduled',
+                                                    'cancelled' => 'Cancelled',
+                                                    'completed' => 'Completed',
+                                                    'no_show' => 'No Show'
+                                                ][$appointment->status] ?? ucfirst($appointment->status);
+                                            @endphp
+                                            <div>
+                                                <span class="status-badge status-{{ $appointment->status }}">{{ $statusDisplay }}</span>
+                                            </div>
+                                        </div>
+                                        @if($appointment->notes)
+                                            <div class="info-item">
+                                                <label class="info-label">Notes</label>
+                                                <div class="notes-box p-2 rounded">{{ $appointment->notes }}</div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    @endif
 
 </div>
 @endsection

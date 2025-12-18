@@ -495,24 +495,17 @@
                                         <thead class="table-light sticky-top">
                                             <tr>
                                                 <th>Date</th>
-                                                <th>Type</th>
+                                                <th>User</th>
                                                 <th>Qty</th>
                                                 <th>Prev. Expiry</th>
                                                 <th>Notes</th>
-                                                <th>User</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @forelse($item->transactions->sortByDesc('created_at') as $transaction)
                                                 <tr>
-                                                    <td>{{ $transaction->created_at->format('M d, Y H:i') }}</td>
-                                                    <td>
-                                                        @if($transaction->transaction_type === 'restock')
-                                                            <span class="badge bg-success-subtle text-success">Restock</span>
-                                                        @else
-                                                            <span class="badge bg-danger-subtle text-danger">Deduct</span>
-                                                        @endif
-                                                    </td>
+                                                    <td>{{ $transaction->created_at->format('M d, Y h:i A') }}</td>
+                                                    <td class="small">{{ $transaction->performable->name ?? 'System' }}</td>
                                                     <td
                                                         class="{{ $transaction->transaction_type === 'restock' ? 'text-success' : 'text-danger' }} fw-bold">
                                                         {{ $transaction->transaction_type === 'restock' ? '+' : '-' }}{{ $transaction->quantity }}
@@ -525,7 +518,6 @@
                                                         @endif
                                                     </td>
                                                     <td class="small text-muted">{{ $transaction->notes ?? '-' }}</td>
-                                                    <td class="small">{{ $transaction->user->name ?? 'System' }}</td>
                                                 </tr>
                                             @empty
                                                 <tr>

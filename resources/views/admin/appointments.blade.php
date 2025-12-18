@@ -758,6 +758,14 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
+        .action-buttons .btn-modern {
+            min-width: 200px;
+        }
+
+        .action-buttons form {
+            display: contents;
+        }
+
         .btn-modern:active {
             transform: translateY(0);
         }
@@ -1793,7 +1801,7 @@
                             </div>
                         </div>
                         <div class="modal-footer d-flex justify-content-between align-items-center px-4 py-3">
-                            <div class="d-flex gap-2 flex-wrap">
+                            <div class="d-flex gap-2 flex-wrap action-buttons">
                                 <!-- Reschedule -->
                                 @if($appointment->status !== 'cancelled' && $appointment->status !== 'completed')
                                     <button type="button" class="btn-modern btn-modern-warning reschedule-btn"
@@ -1806,8 +1814,7 @@
 
                                 <!-- Mark Completed -->
                                 @if($appointment->status === 'approved')
-                                    <form method="POST" action="{{ route('admin.appointment.update', $appointment) }}"
-                                        class="d-inline">
+                                    <form method="POST" action="{{ route('admin.appointment.update', $appointment) }}">
                                         @csrf
                                         <input type="hidden" name="status" value="completed">
                                         <button type="submit" class="btn-modern btn-modern-success">
@@ -1818,8 +1825,7 @@
 
                                 <!-- Mark No-show -->
                                 @if($appointment->status === 'approved')
-                                    <form method="POST" action="{{ route('admin.appointment.update', $appointment) }}"
-                                        class="d-inline">
+                                    <form method="POST" action="{{ route('admin.appointment.update', $appointment) }}">
                                         @csrf
                                         <input type="hidden" name="status" value="no_show">
                                         <button type="submit" class="btn-modern btn-modern-secondary">
@@ -1830,8 +1836,7 @@
 
                                 <!-- Approve Button (only show if pending) -->
                                 @if($appointment->status === 'pending')
-                                    <form method="POST" action="{{ route('admin.appointment.update', $appointment) }}"
-                                        class="d-inline">
+                                    <form method="POST" action="{{ route('admin.appointment.update', $appointment) }}">
                                         @csrf
                                         <input type="hidden" name="status" value="approved">
                                         <button type="submit" class="btn-modern btn-modern-success">
@@ -1843,7 +1848,7 @@
                                 <!-- Cancel Button -->
                                 @if($appointment->status !== 'cancelled' && $appointment->status !== 'completed')
                                     <form method="POST" action="{{ route('admin.appointment.update', $appointment) }}"
-                                        class="d-inline cancel-form" id="cancelForm{{ $appointment->id }}">
+                                        class="cancel-form" id="cancelForm{{ $appointment->id }}">
                                         @csrf
                                         <input type="hidden" name="status" value="cancelled">
                                         <button type="button" class="btn-modern btn-modern-danger"

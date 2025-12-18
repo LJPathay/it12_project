@@ -246,11 +246,11 @@
     </div>
     <!-- Walk-in Queue Table -->
     <div class="card">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-            <h5 class="mb-0 fw-bold text-secondary">Walk-In Queue</h5>
-            <div class="d-flex gap-2">
-                 <input type="text" id="walkInSearch" class="form-control form-control-sm" placeholder="Search walk-ins..." style="width: 200px;">
-                <select id="statusFilter" class="form-select form-select-sm" style="width: 150px;">
+        <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center py-3 gap-3">
+            <h5 class="mb-0 fw-bold text-secondary text-nowrap">Walk-In Queue</h5>
+            <div class="d-flex gap-2 flex-grow-1 flex-md-grow-0 w-100 w-md-auto">
+                 <input type="text" id="walkInSearch" class="form-control form-control-sm flex-grow-1" placeholder="Search walk-ins..." style="min-width: 150px;">
+                <select id="statusFilter" class="form-select form-select-sm" style="width: auto; min-width: 120px;">
                     <option value="">All Statuses</option>
                     <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
                     <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>

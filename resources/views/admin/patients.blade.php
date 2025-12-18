@@ -512,6 +512,7 @@
                                     <th>Address</th>
                                     <th>Contact #</th>
                                     <th>Gender</th>
+                                    <th>Age</th>
                                     <th class="text-center">Status</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
@@ -540,6 +541,7 @@
                                         </td>
                                         <td>{{ $patient->phone ?? 'N/A' }}</td>
                                         <td>{{ ucfirst($patient->gender ?? 'N/A') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($patient->birth_date)->age }}</td>
                                         <td class="text-center">
                                             <span class="status-badge status-active">
                                                 Active

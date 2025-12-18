@@ -10,7 +10,7 @@
         .analytics-container { max-width: 1400px; }
         
         /* KPI Cards - Compact & Data-First */
-        .kpi-row { display: flex; gap: 1rem; margin-bottom: 2rem; overflow-x: auto; padding-bottom: 0.5rem; }
+        .kpi-row { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 0.5rem; }
         .kpi-card {
             flex: 1;
             min-width: 200px;
@@ -52,6 +52,14 @@
         body.bg-dark .analytics-table th { color: #94a3b8; background: #2d3136; border-color: #2d3748; }
         body.bg-dark .analytics-table td { color: #e2e8f0; border-color: #2d3748; }
         body.bg-dark .analytics-table tr:hover { background-color: #2d3136; }
+
+        /* Filter buttons */
+        .btn-filter {
+            border: none; background: transparent; color: #94a3b8; font-weight: 600; font-size: 0.85rem; padding: 0.25rem 0.75rem; transition: all 0.2s;
+        }
+        .btn-filter:hover { color: #64748b; }
+        .btn-filter.active { color: #3b82f6; text-decoration: underline; text-underline-offset: 4px; }
+        body.bg-dark .btn-filter.active { color: #3b82f6; }
     </style>
 @endsection
 
@@ -102,7 +110,14 @@
             <div class="chart-section">
                 <div class="section-header">
                     <div class="header-title">Appointment Performance Trends</div>
-                    <small class="text-muted">Monthly volume by status (This Year)</small>
+                    <div class="d-flex align-items-center gap-3">
+                        <small id="trendDescription" class="text-muted d-none d-md-inline">Monthly volume by status (This Year)</small>
+                        <div class="btn-group btn-group-sm" id="trendFilter">
+                            <button type="button" class="btn btn-filter" onclick="updateTrendChart('weekly', this)">Weekly</button>
+                            <button type="button" class="btn btn-filter" onclick="updateTrendChart('monthly', this)">Monthly</button>
+                            <button type="button" class="btn btn-filter active" onclick="updateTrendChart('yearly', this)">Yearly</button>
+                        </div>
+                    </div>
                 </div>
                 <div style="height: 300px;">
                     <canvas id="trendChart"></canvas>
@@ -209,7 +224,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Data Injection
-        const monthlyTrend = @json($monthlyTrend);
+        const performanceTrends = @json($performanceTrends);
         const serviceData = @json($serviceTypes);
 
         // Detect dark mode
@@ -218,27 +233,29 @@
         const gridColor = isDarkMode ? '#2d3748' : '#f1f5f9';
         const tickColor = isDarkMode ? '#94a3b8' : '#64748b';
 
-        // 1. Line Chart: Comparison (Comparison is key for Analytics)
+        // 1. Line Chart: Comparison
         const trendCtx = document.getElementById('trendChart')?.getContext('2d');
+        let trendChart;
+        
         if (trendCtx) {
-            new Chart(trendCtx, {
+            trendChart = new Chart(trendCtx, {
                 type: 'line',
                 data: {
-                    labels: monthlyTrend.labels,
+                    labels: [],
                     datasets: [
                         {
                             label: 'Completed',
-                            data: monthlyTrend.completed,
-                            borderColor: '#00D100', // Success green
+                            data: [],
+                            borderColor: '#00D100',
                             backgroundColor: 'transparent',
                             fill: false,
                             tension: 0.4,
-                             pointRadius: 4,
+                            pointRadius: 4,
                         },
                         {
                             label: 'Pending',
-                            data: monthlyTrend.pending,
-                            borderColor: '#D1D100', // Warning yellow
+                            data: [],
+                            borderColor: '#D1D100',
                             backgroundColor: 'transparent',
                             borderDash: [5, 5],
                             tension: 0.4,
@@ -246,8 +263,8 @@
                         },
                         {
                             label: 'Cancelled',
-                            data: monthlyTrend.cancelled,
-                            borderColor: '#D10000', // Danger red
+                            data: [],
+                            borderColor: '#D10000',
                             backgroundColor: 'transparent',
                             tension: 0.4,
                             pointRadius: 0
@@ -285,6 +302,40 @@
                     }
                 }
             });
+
+            // Initialize with default (Yearly)
+            updateTrendChart('yearly', document.querySelector('#trendFilter .btn-filter.active'));
+        }
+
+        function updateTrendChart(timeframe, element) {
+            if (!trendChart) return;
+
+            document.querySelectorAll('#trendFilter .btn-filter').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            
+            const raw = performanceTrends[timeframe];
+            const description = {
+                'weekly': 'Daily volume by status (This Week)',
+                'monthly': 'Daily volume by status (This Month)',
+                'yearly': 'Monthly volume by status (This Year)'
+            };
+            document.getElementById('trendDescription').innerText = description[timeframe];
+
+            let labels = [];
+            if (timeframe === 'weekly') {
+                labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            } else if (timeframe === 'monthly') {
+                const days = raw.completed.length;
+                for (let i = 1; i <= days; i++) labels.push(i);
+            } else if (timeframe === 'yearly') {
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            }
+
+            trendChart.data.labels = labels;
+            trendChart.data.datasets[0].data = raw.completed;
+            trendChart.data.datasets[1].data = raw.pending;
+            trendChart.data.datasets[2].data = raw.cancelled;
+            trendChart.update();
         }
 
         // 2. Service Demand (Doughnut)
