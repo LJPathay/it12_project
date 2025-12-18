@@ -54,6 +54,11 @@
             color: #000000;
         }
 
+        .status-rescheduled {
+            background-color: #ffc107;
+            color: #000000;
+        }
+
         .table-modern {
             border-collapse: separate;
             border-spacing: 0;
@@ -1419,6 +1424,16 @@
                                         data-bs-target="#viewAppointmentModal{{ $appointment->id }}" title="View Details">
                                         <i class="fas fa-eye"></i>
                                     </button>
+
+                                    <!-- Quick Reschedule -->
+                                    @if($appointment->status === 'approved')
+                                        <button class="btn btn-outline-warning btn-sm btn-icon reschedule-btn" 
+                                            data-appointment-id="{{ $appointment->id }}"
+                                            data-action-url="{{ route('admin.appointment.update', $appointment) }}"
+                                            title="Reschedule">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

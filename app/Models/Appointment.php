@@ -23,6 +23,7 @@ class Appointment extends Model
         'notes',
         'medical_history',
         'is_walk_in',
+        'priority',
         'approved_by_admin_id',
         'approved_by_super_admin_id',
         'approved_at'

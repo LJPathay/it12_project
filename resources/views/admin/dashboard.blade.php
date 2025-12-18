@@ -137,10 +137,41 @@
             font-weight: 600; font-size: 0.9rem; flex-shrink: 0;
         }
         
-        /* Action Buttons Hover Info */
-        .hover-actions { opacity: 0; transition: opacity 0.2s ease; }
-        .timeline-content:hover .hover-actions { opacity: 1; }
+        /* Calendar Styles (Ported from Appointments) */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; font-size: 0.8rem; }
+        .calendar-header { text-align: center; font-weight: 600; padding: 0.5rem; background-color: #f8f9fa; border: 1px solid #dee2e6; }
+        .calendar-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border: 1px solid #dee2e6; cursor: pointer; transition: all 0.2s ease; position: relative; }
+        .calendar-day:hover { background-color: #e9ecef; }
+        .calendar-day.selected { background-color: #009fb1; color: white; border-color: #009fb1; }
+        .calendar-day.occupied { background-color: #D10000; color: #fff; border-color: #D10000; }
+        .calendar-day.partially-occupied { background-color: #D1D100; color: #fff; border-color: #D1D100; }
+        .calendar-day.weekend { background-color: #f8f9fa; color: #6c757d; }
+        .calendar-day.past { background-color: #e9ecef; color: #adb5bd; cursor: not-allowed; }
+        .calendar-day .day-number { font-weight: 600; font-size: 0.9rem; z-index: 1; position: relative; display: flex; align-items: center; justify-content: center; height: 70%; }
+        .calendar-day .slot-indicator { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 0.55rem; background: rgba(0, 0, 0, 0.15); color: #666; padding: 1px 4px; border-radius: 3px; font-weight: 600; z-index: 2; line-height: 1; width: auto; white-space: nowrap; }
+        
+        .time-slots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.5rem; }
+        .time-slot { padding: 0.75rem; border: 1px solid #dee2e6; border-radius: 0.375rem; text-align: center; cursor: pointer; transition: all 0.2s ease; }
+        .time-slot.available { background-color: #00D100; border-color: #00D100; color: #fff; }
+        .time-slot.occupied { background-color: #D10000; border-color: #D10000; color: #fff; cursor: not-allowed; }
+        .time-slot.past { background-color: #e9ecef; border-color: #dee2e6; color: #6c757d; cursor: not-allowed; opacity: 0.6; }
+        .time-slot.selected { background-color: #009fb1; border-color: #009fb1; color: white; }
+        .time-slot .time { font-weight: 600; font-size: 0.9rem; }
+        .time-slot .status { font-size: 0.75rem; margin-top: 0.25rem; }
 
+        /* Dark Mode Calendar */
+        body.bg-dark .calendar-header { background-color: #2a2f35; color: #e6e6e6; border-color: #2a2f35; }
+        body.bg-dark .calendar-day { border-color: #2a2f35; color: #e6e6e6; }
+        body.bg-dark .calendar-day:hover { background-color: #2a2f35; }
+        body.bg-dark .calendar-day.weekend, body.bg-dark .calendar-day.past { background-color: #1e2124; color: #6c757d; }
+        body.bg-dark .time-slot { border-color: #2a2f35; }
+        body.bg-dark .time-slot.past { background-color: #1e2124; border-color: #2a2f35; color: #6c757d; opacity: 0.5; }
+
+        /* Skeleton Animation */
+        .skeleton { background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%); border-radius: 5px; background-size: 200% 100%; animation: 1.5s shine linear infinite; }
+        body.bg-dark .skeleton { background: linear-gradient(110deg, #2a2f35 8%, #32383e 18%, #2a2f35 33%); background-size: 200% 100%; }
+        @keyframes shine { to { background-position-x: -200%; } }
+        .calendar-skeleton { height: 300px; width: 100%; }
     </style>
 @endsection
 
@@ -328,6 +359,15 @@
                                                 @endif
                                             </div>
 
+                                            @if($appointment->status === 'approved')
+                                                <button class="btn btn-sm btn-outline-warning px-3 rounded-pill fw-bold reschedule-btn" 
+                                                        data-appointment-id="{{ $appointment->id }}"
+                                                        data-action-url="{{ route('admin.appointment.update', $appointment) }}"
+                                                        style="font-size: 0.8rem; border-width: 1.5px;">
+                                                    <i class="fas fa-calendar-alt me-1"></i> Resched
+                                                </button>
+                                            @endif
+
                                             <button class="btn btn-sm btn-outline-primary px-3 rounded-pill fw-bold" 
                                                     data-bs-toggle="modal" data-bs-target="#viewAppointmentModal{{ $appointment->id }}"
                                                     style="font-size: 0.8rem; border-width: 1.5px;">
@@ -494,6 +534,72 @@
         @endforeach
     @endif
 
+    <!-- Reschedule Appointment Modal (Single Instance) -->
+    <div class="modal fade" id="rescheduleAppointmentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reschedule Appointment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="rescheduleForm" method="POST">
+                    @csrf
+                    <input type="hidden" name="status" value="rescheduled">
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <label class="form-label">New Appointment Date & Time <span class="text-danger">*</span></label>
+                            <div class="row g-3">
+                                <div class="col-md-5">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" id="reschedPrevMonth">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <h6 class="mb-0" id="reschedCurrentMonth">Loading...</h6>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" id="reschedNextMonth">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                    <div id="reschedCalendarGrid" class="calendar-grid">
+                                        <div class="col-12">
+                                            <div class="skeleton calendar-skeleton"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="card h-100">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Time Slots</h6>
+                                        </div>
+                                        <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                                            <div id="reschedSelectedDateDisplay" class="mb-3 text-muted">Select a date to view available time slots</div>
+                                            <div id="reschedTimeSlotsGrid" class="time-slots-grid">
+                                                <div class="text-center text-muted">
+                                                    <i class="fas fa-clock fa-2x mb-2"></i>
+                                                    <p>Select a date to view time slots</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Hidden inputs to store selected date and time -->
+                            <input type="hidden" id="resched_new_date" name="new_date" required>
+                            <input type="hidden" id="resched_new_time" name="new_time" required>
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="form-label">Notes (optional)</label>
+                            <textarea class="form-control" name="notes" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -622,6 +728,7 @@
             }
         });
 
+
         function updateServiceChart(timeframe, element) {
             document.querySelectorAll('#serviceFilter .btn-filter').forEach(btn => btn.classList.remove('active'));
             element.classList.add('active');
@@ -630,7 +737,9 @@
             const labels = raw.map(i => i.service_type);
             const data = raw.map(i => i.count);
             
-            serviceChart.data.labels = labels; serviceChart.data.datasets[0].data = data; serviceChart.update();
+            serviceChart.data.labels = labels; 
+            serviceChart.data.datasets[0].data = data; 
+            serviceChart.update();
         }
 
         // 3. Barangay (Doughnut)
@@ -660,7 +769,152 @@
             }
         });
 
-        // Init
+        // AppointmentCalendar class and Reschedule logic
+        class AppointmentCalendar {
+            constructor(config) {
+                this.config = config;
+                this.currentDate = new Date();
+                this.selectedDate = null;
+                this.calendarData = [];
+                this.init();
+            }
+            init() { this.attachEventListeners(); this.loadCalendar(); }
+            attachEventListeners() {
+                const prevBtn = document.getElementById(this.config.prevBtnId);
+                const nextBtn = document.getElementById(this.config.nextBtnId);
+                if (prevBtn) prevBtn.addEventListener('click', () => { this.currentDate.setMonth(this.currentDate.getMonth() - 1); this.loadCalendar(); });
+                if (nextBtn) nextBtn.addEventListener('click', () => { this.currentDate.setMonth(this.currentDate.getMonth() + 1); this.loadCalendar(); });
+            }
+            async loadCalendar() {
+                const year = this.currentDate.getFullYear();
+                const month = this.currentDate.getMonth() + 1;
+                try {
+                    const response = await fetch(`/admin/appointments/calendar?year=${year}&month=${month}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    const data = await response.json();
+                    this.calendarData = data.calendar;
+                    this.renderCalendar();
+                    this.updateMonthDisplay();
+                } catch (error) { console.error('Error loading calendar:', error); }
+            }
+            renderCalendar() {
+                const calendarGrid = document.getElementById(this.config.calendarGridId);
+                if (!calendarGrid) return;
+                calendarGrid.innerHTML = '';
+                ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+                    const header = document.createElement('div'); header.className = 'calendar-header'; header.textContent = day; calendarGrid.appendChild(header);
+                });
+                const firstDay = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1).getDay();
+                for (let i = 0; i < firstDay; i++) calendarGrid.appendChild(document.createElement('div'));
+                this.calendarData.forEach(dayData => {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'calendar-day';
+                    dayElement.dataset.date = dayData.date;
+                    const dayNumber = document.createElement('span'); dayNumber.className = 'day-number'; dayNumber.textContent = dayData.day; dayElement.appendChild(dayNumber);
+                    if (dayData.is_weekend || dayData.is_past) {
+                        dayElement.classList.add(dayData.is_weekend ? 'weekend' : 'past');
+                        dayElement.style.opacity = '0.5'; dayElement.style.cursor = 'not-allowed'; dayElement.style.pointerEvents = 'none';
+                    } else {
+                        if (dayData.is_fully_occupied) dayElement.classList.add('occupied');
+                        else if (dayData.occupied_slots > 0) dayElement.classList.add('partially-occupied');
+                        dayElement.addEventListener('click', () => this.selectDate(dayData.date));
+                    }
+                    if (dayData.occupied_slots > 0) {
+                        const indicator = document.createElement('span'); indicator.className = 'slot-indicator'; indicator.textContent = `${dayData.occupied_slots}/${dayData.total_slots}`; dayElement.appendChild(indicator);
+                    }
+                    calendarGrid.appendChild(dayElement);
+                });
+            }
+            updateMonthDisplay() {
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                const displayEl = document.getElementById(this.config.currentMonthId);
+                if (displayEl) displayEl.textContent = `${monthNames[this.currentDate.getMonth()]} ${this.currentDate.getFullYear()}`;
+            }
+            async selectDate(date) {
+                const calendarGrid = document.getElementById(this.config.calendarGridId);
+                if (calendarGrid) {
+                    calendarGrid.querySelectorAll('.calendar-day.selected').forEach(el => el.classList.remove('selected'));
+                    calendarGrid.querySelectorAll('.calendar-day').forEach(el => { if (el.dataset.date === date) el.classList.add('selected'); });
+                }
+                this.selectedDate = date;
+                const formattedDate = new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                const dateDisplay = document.getElementById(this.config.selectedDateDisplayId);
+                if (dateDisplay) dateDisplay.textContent = formattedDate;
+                await this.loadTimeSlots(date);
+            }
+            async loadTimeSlots(date) {
+                try {
+                    const response = await fetch(`/admin/appointments/slots?date=${date}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    const data = await response.json();
+                    this.renderTimeSlots(data.slots);
+                } catch (error) { console.error('Error loading time slots:', error); }
+            }
+            renderTimeSlots(slots) {
+                const timeSlotsGrid = document.getElementById(this.config.timeSlotsGridId);
+                if (!timeSlotsGrid) return;
+                timeSlotsGrid.innerHTML = '';
+                if (!slots || slots.length === 0) { timeSlotsGrid.innerHTML = '<div class="text-center text-muted">No time slots available</div>'; return; }
+                slots.forEach(slot => {
+                    const slotElement = document.createElement('div');
+                    let slotClass = 'time-slot'; let statusText = '';
+                    if (slot.is_past) { slotClass += ' past'; statusText = 'Unavailable'; }
+                    else if (slot.available) { slotClass += ' available'; statusText = 'Available'; }
+                    else { slotClass += ' occupied'; statusText = `Occupied (${slot.occupied_count})`; }
+                    slotElement.className = slotClass;
+                    if (slot.available && !slot.is_past) slotElement.addEventListener('click', () => this.selectTimeSlot(slot.time, slot.display));
+                    const timeElement = document.createElement('div'); timeElement.className = 'time'; timeElement.textContent = slot.display;
+                    const statusElement = document.createElement('div'); statusElement.className = 'status'; statusElement.textContent = statusText;
+                    slotElement.appendChild(timeElement); slotElement.appendChild(statusElement);
+                    timeSlotsGrid.appendChild(slotElement);
+                });
+            }
+            selectTimeSlot(time, display) {
+                const timeSlotsGrid = document.getElementById(this.config.timeSlotsGridId);
+                if (timeSlotsGrid) {
+                    timeSlotsGrid.querySelectorAll('.time-slot.selected').forEach(el => el.classList.remove('selected'));
+                    timeSlotsGrid.querySelectorAll('.time-slot').forEach(el => {
+                        const timeEl = el.querySelector('.time');
+                        if (timeEl && timeEl.textContent === display) el.classList.add('selected');
+                    });
+                }
+                this.selectedTime = time;
+                const timeInput = document.getElementById(this.config.timeInputId);
+                const dateInput = document.getElementById(this.config.dateInputId);
+                if (timeInput) timeInput.value = time;
+                if (dateInput) dateInput.value = this.selectedDate;
+            }
+        }
+
+        const rescheduleModal = document.getElementById('rescheduleAppointmentModal');
+        let rescheduleCalendar = null;
+        if (rescheduleModal) {
+            rescheduleModal.addEventListener('shown.bs.modal', function () {
+                if (!rescheduleCalendar) {
+                    rescheduleCalendar = new AppointmentCalendar({
+                        prevBtnId: 'reschedPrevMonth', nextBtnId: 'reschedNextMonth', currentMonthId: 'reschedCurrentMonth',
+                        calendarGridId: 'reschedCalendarGrid', selectedDateDisplayId: 'reschedSelectedDateDisplay',
+                        timeSlotsGridId: 'reschedTimeSlotsGrid', dateInputId: 'resched_new_date', timeInputId: 'resched_new_time'
+                    });
+                }
+            });
+            rescheduleModal.addEventListener('hidden.bs.modal', function () {
+                if (rescheduleCalendar) {
+                    rescheduleCalendar.selectedDate = null; rescheduleCalendar.selectedTime = null;
+                    document.getElementById('reschedSelectedDateDisplay').textContent = 'Select a date to view available time slots';
+                    document.getElementById('reschedTimeSlotsGrid').innerHTML = '<div class="text-center text-muted"><i class="fas fa-clock fa-2x mb-2"></i><p>Select a date to view time slots</p></div>';
+                    document.getElementById('resched_new_date').value = ''; document.getElementById('resched_new_time').value = '';
+                    document.querySelectorAll('#reschedCalendarGrid .selected').forEach(el => el.classList.remove('selected'));
+                }
+            });
+        }
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.reschedule-btn');
+            if (btn) {
+                document.getElementById('rescheduleForm').action = btn.dataset.actionUrl;
+                new bootstrap.Modal(rescheduleModal).show();
+            }
+        });
+
+        // Init Charts
         updateOverviewChart('weekly', document.querySelectorAll('#overviewFilter button')[0]);
         updateServiceChart('monthly', document.querySelectorAll('#serviceFilter button')[0]);
     </script>

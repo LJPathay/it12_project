@@ -946,9 +946,13 @@ class AdminController extends Controller
             $query->whereDate('appointment_date', '<=', $request->to);
         }
 
-        // Sort by most recent first
+        // Sort: Today first, then by priority, then by earliest arrival
         $walkIns = $query->orderByDesc('appointment_date')
-            ->orderByDesc('appointment_time')
+            ->orderByRaw("CASE 
+                WHEN priority = 'emergency' THEN 1 
+                WHEN priority = 'priority' THEN 2 
+                ELSE 3 END")
+            ->orderBy('appointment_time', 'asc')
             ->get();
 
         // Get services for filter dropdown
@@ -978,7 +982,7 @@ class AdminController extends Controller
 
         $todayWaiting = Appointment::where('is_walk_in', true)
             ->whereDate('appointment_date', today())
-            ->where('status', 'waiting')
+            ->where('status', 'pending')
             ->count();
 
         $todayInProgress = Appointment::where('is_walk_in', true)
@@ -1018,7 +1022,7 @@ class AdminController extends Controller
                 'service_type' => $request->service_type,
                 'notes' => $request->notes,
                 'is_walk_in' => true,
-                'status' => 'waiting',
+                'status' => 'pending',
                 'priority' => $request->input('priority', 'regular'), // Default to regular if not specified
                 'approved_by_admin_id' => Auth::guard('admin')->id(),
                 'approved_at' => now()
