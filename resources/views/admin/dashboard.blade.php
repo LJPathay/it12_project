@@ -171,6 +171,22 @@
         .skeleton { background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%); border-radius: 5px; background-size: 200% 100%; animation: 1.5s shine linear infinite; }
         body.bg-dark .skeleton { background: linear-gradient(110deg, #2a2f35 8%, #32383e 18%, #2a2f35 33%); background-size: 200% 100%; }
         @keyframes shine { to { background-position-x: -200%; } }
+        /* Timeline Scrollable Section */
+        .timeline-scroll-container {
+            max-height: 480px;
+            overflow-y: auto;
+            padding-right: 1rem;
+            margin-right: -0.5rem;
+        }
+        
+        /* Custom Scrollbar */
+        .timeline-scroll-container::-webkit-scrollbar { width: 5px; }
+        .timeline-scroll-container::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        .timeline-scroll-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .timeline-scroll-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        body.bg-dark .timeline-scroll-container::-webkit-scrollbar-track { background: #1a202c; }
+        body.bg-dark .timeline-scroll-container::-webkit-scrollbar-thumb { background: #4a5568; }
+
         .calendar-skeleton { height: 300px; width: 100%; }
     </style>
 @endsection
@@ -262,7 +278,7 @@
     <div class="row g-4">
         <!-- Services Chart (Bar) -->
         <div class="col-lg-6">
-             <div class="chart-section">
+             <div class="chart-section d-flex flex-column h-100">
                 <div class="section-header">
                     <div class="header-title">Service Demand</div>
                     <div class="d-flex" id="serviceFilter">
@@ -271,7 +287,7 @@
                          <button class="btn-filter" onclick="updateServiceChart('yearly', this)">Year</button>
                     </div>
                 </div>
-                <div style="height: 250px;">
+                <div class="flex-grow-1" style="min-height: 250px;">
                     <canvas id="serviceChart"></canvas>
                 </div>
             </div>
@@ -286,98 +302,100 @@
                 </div>
                 
                 @if(($todaysAppointments ?? collect([]))->count() > 0)
-                    <div class="timeline-container mt-2">
-                        @foreach($todaysAppointments as $appointment)
-                            <div class="timeline-item">
-                                <!-- Time Column -->
-                                <div class="timeline-time">
-                                    <div class="time-large">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i') }}</div>
-                                    <div class="time-small">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('A') }}</div>
-                                </div>
+                    <div class="timeline-scroll-container">
+                        <div class="timeline-container mt-2">
+                            @foreach($todaysAppointments as $appointment)
+                                <div class="timeline-item">
+                                    <!-- Time Column -->
+                                    <div class="timeline-time">
+                                        <div class="time-large">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i') }}</div>
+                                        <div class="time-small">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('A') }}</div>
+                                    </div>
 
-                                <!-- Connecting Line -->
-                                <div class="timeline-line"></div>
-                                <div class="timeline-marker marker-{{ $appointment->status }}"></div>
+                                    <!-- Connecting Line -->
+                                    <div class="timeline-line"></div>
+                                    <div class="timeline-marker marker-{{ $appointment->status }}"></div>
 
-                                <!-- Content Card -->
-                                <div class="timeline-content">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <!-- Left: Avatar + Details -->
-                                        <div class="d-flex gap-3 align-items-center">
-                                            <div class="avatar-circle">
-                                                {{ strtoupper(substr($appointment->patient_name, 0, 1)) }}{{ strtoupper(substr(strstr($appointment->patient_name, ' '), 1, 1)) }}
-                                            </div>
-                                            <div>
-                                                <h6 class="fw-bold mb-1 text-dark" style="font-size: 1rem;">
-                                                    {{ $appointment->patient_name }}
-                                                </h6>
-                                                <div class="text-muted small d-flex align-items-center gap-2">
-                                                    <span><i class="fas fa-notes-medical text-primary me-1"></i> {{ $appointment->service_type }}</span>
+                                    <!-- Content Card -->
+                                    <div class="timeline-content">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <!-- Left: Avatar + Details -->
+                                            <div class="d-flex gap-3 align-items-center">
+                                                <div class="avatar-circle">
+                                                    {{ strtoupper(substr($appointment->patient_name, 0, 1)) }}{{ strtoupper(substr(strstr($appointment->patient_name, ' '), 1, 1)) }}
+                                                </div>
+                                                <div>
+                                                    <h6 class="fw-bold mb-1 text-dark" style="font-size: 1rem;">
+                                                        {{ $appointment->patient_name }}
+                                                    </h6>
+                                                    <div class="text-muted small d-flex align-items-center gap-2">
+                                                        <span><i class="fas fa-notes-medical text-primary me-1"></i> {{ $appointment->service_type }}</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <!-- Right: Status -->
-                                        <div class="text-end">
-                                            @php
-                                                $statusConfig = match($appointment->status) {
-                                                    'approved' => ['bg-success', 'fa-check-circle', 'Confirmed'],
-                                                    'pending' => ['bg-warning text-dark', 'fa-clock', 'Pending'],
-                                                    'completed' => ['bg-info text-dark', 'fa-check-double', 'Completed'],
-                                                    'cancelled' => ['bg-danger', 'fa-times-circle', 'Cancelled'],
-                                                    'rescheduled' => ['bg-warning text-dark', 'fa-redo', 'Rescheduled'],
-                                                    default => ['bg-secondary', 'fa-circle', ucfirst($appointment->status)]
-                                                };
-                                            @endphp
-                                            <span class="badge {{ $statusConfig[0] }} rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm" style="font-weight: 600; font-size: 0.75rem;">
-                                                <i class="fas {{ $statusConfig[1] }}"></i> {{ $statusConfig[2] }}
-                                            </span>
+                                            <!-- Right: Status -->
+                                            <div class="text-end">
+                                                @php
+                                                    $statusConfig = match($appointment->status) {
+                                                        'approved' => ['bg-success', 'fa-check-circle', 'Confirmed'],
+                                                        'pending' => ['bg-warning text-dark', 'fa-clock', 'Pending'],
+                                                        'completed' => ['bg-info text-primary', 'fa-check-double', 'Completed'],
+                                                        'cancelled' => ['bg-danger', 'fa-times-circle', 'Cancelled'],
+                                                        'rescheduled' => ['bg-warning text-dark', 'fa-redo', 'Rescheduled'],
+                                                        default => ['bg-secondary', 'fa-circle', ucfirst($appointment->status)]
+                                                    };
+                                                @endphp
+                                                <span class="badge {{ $statusConfig[0] }} rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm" style="font-weight: 600; font-size: 0.75rem;">
+                                                    <i class="fas {{ $statusConfig[1] }}"></i> {{ $statusConfig[2] }}
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    
-                                    <!-- Action Footer (Lighter Divider + Metadata) -->
-                                    <div class="mt-3 pt-2 border-top border-light d-flex justify-content-between align-items-center">
                                         
-                                        <!-- Metadata (ID / Duration) -->
-                                        <div class="d-flex align-items-center gap-3 text-muted small">
-                                            <span title="Appointment ID"><i class="fas fa-hashtag me-1 opacity-50"></i>{{ $appointment->id }}</span>
-                                            <span class="opacity-50">|</span>
-                                            <span><i class="fas fa-hourglass-half me-1 opacity-50"></i>30m</span>
-                                        </div>
-
-                                        <!-- Actions -->
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="hover-actions d-flex gap-2 me-2">
-                                                @if($appointment->status === 'approved')
-                                                    <form method="POST" action="{{ route('admin.appointment.update', $appointment) }}" class="d-inline">
-                                                        @csrf
-                                                        <input type="hidden" name="status" value="completed">
-                                                        <button type="submit" class="btn btn-sm btn-outline-success btn-icon" title="Mark as Done" style="width: 28px; height: 28px;">
-                                                            <i class="fas fa-check" style="font-size: 0.8rem;"></i>
-                                                        </button>
-                                                    </form>
-                                                @endif
+                                        <!-- Action Footer (Lighter Divider + Metadata) -->
+                                        <div class="mt-3 pt-2 border-top border-light d-flex justify-content-between align-items-center">
+                                            
+                                            <!-- Metadata (ID / Duration) -->
+                                            <div class="d-flex align-items-center gap-3 text-muted small">
+                                                <span title="Appointment ID"><i class="fas fa-hashtag me-1 opacity-50"></i>{{ $appointment->id }}</span>
+                                                <span class="opacity-50">|</span>
+                                                <span><i class="fas fa-hourglass-half me-1 opacity-50"></i>30m</span>
                                             </div>
 
-                                            @if($appointment->status === 'approved')
-                                                <button class="btn btn-sm btn-outline-warning px-3 rounded-pill fw-bold reschedule-btn" 
-                                                        data-appointment-id="{{ $appointment->id }}"
-                                                        data-action-url="{{ route('admin.appointment.update', $appointment) }}"
-                                                        style="font-size: 0.8rem; border-width: 1.5px;">
-                                                    <i class="fas fa-calendar-alt me-1"></i> Resched
-                                                </button>
-                                            @endif
+                                            <!-- Actions -->
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="hover-actions d-flex gap-2 me-2">
+                                                    @if($appointment->status === 'approved')
+                                                        <form method="POST" action="{{ route('admin.appointment.update', $appointment) }}" class="d-inline">
+                                                            @csrf
+                                                            <input type="hidden" name="status" value="completed">
+                                                            <button type="submit" class="btn btn-sm btn-outline-success btn-icon" title="Mark as Done" style="width: 28px; height: 28px;">
+                                                                <i class="fas fa-check" style="font-size: 0.8rem;"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endif
+                                                </div>
 
-                                            <button class="btn btn-sm btn-outline-primary px-3 rounded-pill fw-bold" 
-                                                    data-bs-toggle="modal" data-bs-target="#viewAppointmentModal{{ $appointment->id }}"
-                                                    style="font-size: 0.8rem; border-width: 1.5px;">
-                                                View <i class="fas fa-arrow-right ms-1"></i>
-                                            </button>
+                                                @if($appointment->status === 'approved')
+                                                    <button class="btn btn-sm btn-outline-warning px-3 rounded-pill fw-bold reschedule-btn" 
+                                                            data-appointment-id="{{ $appointment->id }}"
+                                                            data-action-url="{{ route('admin.appointment.update', $appointment) }}"
+                                                            style="font-size: 0.8rem; border-width: 1.5px;">
+                                                        <i class="fas fa-calendar-alt me-1"></i> Resched
+                                                    </button>
+                                                @endif
+
+                                                <button class="btn btn-sm btn-outline-primary px-3 rounded-pill fw-bold" 
+                                                        data-bs-toggle="modal" data-bs-target="#viewAppointmentModal{{ $appointment->id }}"
+                                                        style="font-size: 0.8rem; border-width: 1.5px;">
+                                                    View <i class="fas fa-arrow-right ms-1"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                     </div>
                 @else
                     <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted py-5 text-center">
@@ -700,10 +718,13 @@
                     data: [], 
                     // Vibrant Palette
                     backgroundColor: [
-                        '#009fb1', '#00D100', '#D1D100', '#D10000', '#8b5cf6', '#06b6d4', '#ec4899'
+                        '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'
                     ], 
-                    borderRadius: 4 
-                }] 
+                    borderRadius: 6,
+                    borderWidth: 0,
+                    hoverBackgroundColor: [
+                        '#4f46e5', '#059669', '#d97706', '#dc2626', '#7c3aed', '#0891b2', '#db2777'
+                    ]                }] 
             },
             options: { 
                 responsive: true, 
