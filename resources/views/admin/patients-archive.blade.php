@@ -78,7 +78,7 @@
                                                 <th>Patient</th>
                                                 <th>Email</th>
                                                 <th>Archived At</th>
-                                                <th>Actions</th>
+                                                <th class="text-center">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -87,17 +87,11 @@
                                                 <td>{{ $patient->name }}</td>
                                                 <td>{{ $patient->email }}</td>
                                                 <td>{{ optional($patient->deleted_at)->format('M d, Y g:i A') }}</td>
-                                                <td>
-                                                    <div class="d-flex gap-2">
-                                                        <button type="button" class="btn btn-outline-success btn-sm d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#restorePatientModal{{ $patient->id }}">
-                                                            <i class="fas fa-undo me-1"></i>
-                                                            <span>Restore</span>
-                                                        </button>
-                                                        <button type="button" class="btn btn-outline-success btn-sm d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#restorePatientModal{{ $patient->id }}">
-                                                            <i class="fas fa-undo me-1"></i>
-                                                            <span>Restore</span>
-                                                        </button>
-                                                    </div>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-outline-success btn-sm d-inline-flex align-items-center mx-auto" data-bs-toggle="modal" data-bs-target="#restorePatientModal{{ $patient->id }}">
+                                                        <i class="fas fa-undo me-1"></i>
+                                                        <span>Restore</span>
+                                                    </button>
                                                 </td>
                                             </tr>
                                         @endforeach
