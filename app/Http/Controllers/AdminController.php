@@ -28,47 +28,62 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
+        $adminId = Auth::guard('admin')->id();
         $totalPatients = Patient::query()->count();
         $newPatientsThisMonth = Patient::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
 
-        // Today metrics
-        $todayAppointments = Appointment::whereDate('appointment_date', today())->count();
+        // Today metrics (Personalized)
+        $todayAppointments = Appointment::whereDate('appointment_date', today())
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
+            ->count();
         $todayCompleted = Appointment::whereDate('appointment_date', today())
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
             ->where('status', 'completed')
             ->count();
         $todayPending = Appointment::whereDate('appointment_date', today())
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
             ->whereIn('status', ['pending', 'approved', 'waiting', 'in_progress', 'rescheduled'])
             ->count();
 
-        // Get today's appointment list
+        // Get today's appointment list (Personalized)
         $todaysAppointments = Appointment::whereDate('appointment_date', today())
-            ->orderBy('appointment_time', 'asc')
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
+            ->whereIn('status', ['approved', 'waiting', 'completed']) // Exclude pending
+            ->orderBy('appointment_time')
             ->get();
 
-        // Inventory metrics
+        // Inventory metrics (Keep global as stock is shared)
         $lowStockItems = Inventory::whereColumn('current_stock', '<=', 'minimum_stock')->count();
         $outOfStockCount = Inventory::where('current_stock', 0)->count();
         $expiringSoonCount = Inventory::whereNotNull('expiry_date')
             ->whereBetween('expiry_date', [now(), now()->addDays(90)])
             ->count();
 
-        // Monthly services metrics
+        // Monthly services metrics (Personalized)
         $now = now();
         $lastMonth = $now->copy()->subMonth();
 
         $monthlyServices = Appointment::whereMonth('created_at', $now->month)
             ->whereYear('created_at', $now->year)
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
             ->count();
         $lastMonthServices = Appointment::whereMonth('created_at', $lastMonth->month)
             ->whereYear('created_at', $lastMonth->year)
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
             ->count();
         $servicesChange = $lastMonthServices > 0
             ? round((($monthlyServices - $lastMonthServices) / $lastMonthServices) * 100)
             : null;
 
-        // Monthly patient growth metrics
+        // Monthly patient growth metrics (Stay global)
         $patientsThisMonth = Patient::query()
             ->whereMonth('created_at', $now->month)
             ->whereYear('created_at', $now->year)
@@ -81,19 +96,22 @@ class AdminController extends Controller
             ? round((($patientsThisMonth - $patientsLastMonth) / $patientsLastMonth) * 100)
             : null;
 
-        $recentAppointments = Appointment::with('user')->latest()->limit(5)->get();
+        $recentAppointments = Appointment::with('user')
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
+            ->latest()
+            ->limit(5)
+            ->get();
         $lowStockInventory = Inventory::whereColumn('current_stock', '<=', 'minimum_stock')->limit(5)->get();
 
-        // Patients by Barangay data for the doughnut chart
+        // Patients by Barangay data for the doughnut chart (Stay global)
         $patientsByBarangay = Patient::query()
             ->whereNotNull('barangay')
             ->selectRaw('barangay, count(*) as count')
             ->groupBy('barangay')
             ->get();
 
-        // --- Chart Data Preparation ---
-
-        // 1. Overview Chart Data (Appointments Count)
+        // --- Chart Data Preparation (Personalized) ---
 
         $driver = DB::getDriverName();
 
@@ -101,6 +119,8 @@ class AdminController extends Controller
         $dayOfWeekSql = $driver === 'pgsql' ? 'EXTRACT(DOW FROM appointment_date) + 1' : 'DAYOFWEEK(appointment_date)';
         $weeklyOverview = Appointment::selectRaw("$dayOfWeekSql as label_key, count(*) as count")
             ->whereBetween('appointment_date', [now()->startOfWeek(), now()->endOfWeek()])
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
             ->groupBy('label_key')
             ->pluck('count', 'label_key')
             ->toArray();
@@ -110,6 +130,8 @@ class AdminController extends Controller
         $monthlyOverview = Appointment::selectRaw("$daySql as label_key, count(*) as count")
             ->whereMonth('appointment_date', now()->month)
             ->whereYear('appointment_date', now()->year)
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
             ->groupBy('label_key')
             ->pluck('count', 'label_key')
             ->toArray();
@@ -118,29 +140,35 @@ class AdminController extends Controller
         $monthSql = $driver === 'pgsql' ? 'EXTRACT(MONTH FROM appointment_date)' : 'MONTH(appointment_date)';
         $yearlyOverview = Appointment::selectRaw("$monthSql as label_key, count(*) as count")
             ->whereYear('appointment_date', now()->year)
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
             ->groupBy('label_key')
             ->pluck('count', 'label_key')
             ->toArray();
 
-        // 2. Services Chart Data (Service Types Distribution)
-
-        // Weekly
-        $weeklyServices = Appointment::selectRaw('service_type, count(*) as count')
+        // Weekly (Service breakdown per day)
+        $weeklyServices = Appointment::selectRaw("$dayOfWeekSql as day, service_type, count(*) as count")
             ->whereBetween('appointment_date', [now()->startOfWeek(), now()->endOfWeek()])
-            ->groupBy('service_type')
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
+            ->groupBy('day', 'service_type')
             ->get();
 
         // Monthly
         $monthlyServicesChart = Appointment::selectRaw('service_type, count(*) as count')
             ->whereMonth('appointment_date', now()->month)
             ->whereYear('appointment_date', now()->year)
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
             ->groupBy('service_type')
             ->get();
 
-        // Yearly
-        $yearlyServices = Appointment::selectRaw('service_type, count(*) as count')
+        // Yearly (Service breakdown per month)
+        $yearlyServices = Appointment::selectRaw("$monthSql as month, service_type, count(*) as count")
             ->whereYear('appointment_date', now()->year)
-            ->groupBy('service_type')
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
+            ->groupBy('month', 'service_type')
             ->get();
 
         $chartData = [
@@ -156,6 +184,19 @@ class AdminController extends Controller
             ]
         ];
 
+        // Count for notifications
+        $adminId = Auth::guard('admin')->id();
+        $totalPendingAction = Appointment::where('status', 'pending')
+            ->where('approved_by_admin_id', $adminId)
+            ->count();
+        
+        $totalSystemPending = Appointment::where('status', 'pending')->count();
+
+        $appointmentsNeedingAction = Appointment::whereIn('status', ['pending', 'approved'])
+            ->whereDate('appointment_date', '<=', today())
+            ->where('approved_by_admin_id', $adminId)
+            ->count();
+
         return view('admin.dashboard', compact(
             'totalPatients',
             'newPatientsThisMonth',
@@ -166,14 +207,18 @@ class AdminController extends Controller
             'monthlyServices',
             'servicesChange',
             'patientsChange',
+            'totalPendingAction',
+            'totalSystemPending',
+            'appointmentsNeedingAction',
             'recentAppointments',
             'lowStockInventory',
-            'patientsByBarangay',
             'patientsByBarangay',
             'chartData',
             'outOfStockCount',
             'expiringSoonCount',
-            'todaysAppointments'
+            'todaysAppointments',
+            'totalPendingAction',
+            'appointmentsNeedingAction'
         ));
     }
 
@@ -217,14 +262,6 @@ class AdminController extends Controller
         $patient->restore();
 
         return redirect()->route('admin.patients.archive')->with('success', 'Patient restored successfully.');
-    }
-
-    public function forceDeletePatient($id)
-    {
-        $patient = Patient::onlyTrashed()->findOrFail($id);
-        $patient->forceDelete();
-
-        return redirect()->route('admin.patients.archive')->with('success', 'Patient permanently deleted.');
     }
 
     public function createPatient(Request $request)
@@ -381,7 +418,10 @@ class AdminController extends Controller
 
     public function appointments(Request $request)
     {
-        $query = Appointment::with(['patient', 'approvedByAdmin', 'approvedBySuperAdmin']);
+        $adminId = Auth::guard('admin')->id();
+        $query = Appointment::with(['patient', 'approvedByAdmin'])
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false);
 
         $sort = $request->get('sort');
         $direction = strtolower($request->get('direction', 'desc')) === 'asc' ? 'asc' : 'desc';
@@ -444,14 +484,25 @@ class AdminController extends Controller
         // Simple availability metrics for today (all services)
         $todaySlots = 9; // per service per day
         $todayBooked = Appointment::whereDate('appointment_date', today())
+            ->where('approved_by_admin_id', $adminId)
             ->where('status', '!=', 'cancelled')
             ->count();
         $todayCapacity = $todaySlots > 0 ? (int) min(100, round(($todayBooked / $todaySlots) * 100)) : 0;
 
-        // Additional Stats for KPI Cards
-        $pendingCount = Appointment::where('status', 'pending')->count();
-        $todayCount = Appointment::whereDate('appointment_date', today())->count();
-        $completedToday = Appointment::whereDate('appointment_date', today())->where('status', 'completed')->count();
+        // Additional Stats for KPI Cards (Personalized)
+        $pendingCount = Appointment::where('status', 'pending')
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
+            ->count();
+        $todayCount = Appointment::whereDate('appointment_date', today())
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
+            ->count();
+        $completedToday = Appointment::whereDate('appointment_date', today())
+            ->where('status', 'completed')
+            ->where('approved_by_admin_id', $adminId)
+            ->where('is_walk_in', false)
+            ->count();
 
         return view('admin.appointments', compact(
             'appointments', 
@@ -506,6 +557,7 @@ class AdminController extends Controller
             'service_type' => $request->service_type,
             'notes' => $request->notes,
             'is_walk_in' => $isWalkIn,
+            'approved_by_admin_id' => ($assignedAdmin = AppointmentHelper::getLeastBusyAdmin()) ? $assignedAdmin->id : null,
             'status' => 'pending'
         ]);
 
@@ -702,7 +754,15 @@ class AdminController extends Controller
 
     public function inventory(Request $request)
     {
-        $query = Inventory::query()->with('transactions')->orderBy('item_name');
+        $query = Inventory::query()
+            ->with([
+                'transactions',
+                'batches' => function($q) {
+                    $q->orderBy('expiry_date', 'asc')
+                      ->orderBy('received_date', 'asc');
+                }
+            ])
+            ->orderBy('item_name');
         if ($request->filled('category')) {
             $query->whereRaw('LOWER(category) = ?', [strtolower($request->category)]);
         }
@@ -1024,7 +1084,7 @@ class AdminController extends Controller
                 'is_walk_in' => true,
                 'status' => 'pending',
                 'priority' => $request->input('priority', 'regular'), // Default to regular if not specified
-                'approved_by_admin_id' => Auth::guard('admin')->id(),
+                'approved_by_admin_id' => ($assignedAdmin = AppointmentHelper::getLeastBusyAdmin()) ? $assignedAdmin->id : Auth::guard('admin')->id(),
                 'approved_at' => now()
             ]);
             
@@ -1090,7 +1150,7 @@ class AdminController extends Controller
             'is_walk_in' => true,
             'status' => 'pending', // Default status for new appointments
             'priority' => $request->input('priority', 'regular'),
-            'approved_by_admin_id' => Auth::guard('admin')->id(),
+            'approved_by_admin_id' => ($assignedAdmin = AppointmentHelper::getLeastBusyAdmin()) ? $assignedAdmin->id : Auth::guard('admin')->id(),
             'approved_at' => now()
         ]);
         

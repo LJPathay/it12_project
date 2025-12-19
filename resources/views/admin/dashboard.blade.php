@@ -242,10 +242,46 @@
         </div>
     </div>
 
-    <!-- Charts Row -->
+    <!-- Charts Row (Top) -->
     <div class="row g-4 mb-4">
-        <!-- Dashboard Overview (Line Chart) -->
+        <!-- Service Demand (Bar Chart) -->
         <div class="col-lg-8">
+            <div class="chart-section d-flex flex-column" style="min-height: 350px;">
+                <div class="section-header">
+                    <div>
+                        <div class="header-title">Service Demand</div>
+                        <small class="text-muted">Breakdown of services across the week/month</small>
+                    </div>
+                    <div class="d-flex" id="serviceFilter">
+                         <button class="btn-filter active" onclick="updateServiceChart('weekly', this)">Week</button>
+                         <button class="btn-filter" onclick="updateServiceChart('monthly', this)">Month</button>
+                         <button class="btn-filter" onclick="updateServiceChart('yearly', this)">Year</button>
+                    </div>
+                </div>
+                <div class="flex-grow-1" style="height: 250px;">
+                    <canvas id="serviceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patients by Barangay (Doughnut) -->
+        <div class="col-lg-4">
+            <div class="chart-section d-flex flex-column" style="min-height: 350px;">
+                <div class="section-header">
+                    <div class="header-title">Demographics</div>
+                    <small class="text-muted">By Barangay</small>
+                </div>
+                <div class="flex-grow-1 position-relative d-flex justify-content-center align-items-center">
+                     <canvas id="barangayChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row (Middle) -->
+    <div class="row g-4 mb-4">
+        <!-- Activity Overview (Line Chart) -->
+        <div class="col-12">
             <div class="chart-section">
                 <div class="section-header">
                     <div class="header-title">Activity Overview</div>
@@ -259,42 +295,12 @@
                 </div>
             </div>
         </div>
-
-        <!-- Patients by Barangay (Doughnut) -->
-        <div class="col-lg-4">
-            <div class="chart-section d-flex flex-column">
-                <div class="section-header">
-                    <div class="header-title">Demographics</div>
-                    <small class="text-muted">By Barangay</small>
-                </div>
-                <div class="flex-grow-1 position-relative d-flex justify-content-center align-items-center">
-                     <canvas id="barangayChart"></canvas>
-                </div>
-            </div>
-        </div>
     </div>
 
-    <!-- Bottom Row -->
+    <!-- Bottom Row (Schedule) -->
     <div class="row g-4">
-        <!-- Services Chart (Bar) -->
-        <div class="col-lg-6">
-             <div class="chart-section d-flex flex-column h-100">
-                <div class="section-header">
-                    <div class="header-title">Service Demand</div>
-                    <div class="d-flex" id="serviceFilter">
-                         <button class="btn-filter" onclick="updateServiceChart('weekly', this)">Week</button>
-                         <button class="btn-filter active" onclick="updateServiceChart('monthly', this)">Month</button>
-                         <button class="btn-filter" onclick="updateServiceChart('yearly', this)">Year</button>
-                    </div>
-                </div>
-                <div class="flex-grow-1" style="min-height: 250px;">
-                    <canvas id="serviceChart"></canvas>
-                </div>
-            </div>
-        </div>
-
         <!-- Today's Schedule (List) -->
-        <div class="col-lg-6">
+        <div class="col-12">
             <div class="chart-section">
                 <div class="section-header">
                     <div class="header-title">Today's Schedule</div>
@@ -624,6 +630,36 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if(($totalPendingAction ?? 0) > 0 || ($appointmentsNeedingAction ?? 0) > 0)
+                // Check if we should show the notification (once per session)
+                if (!sessionStorage.getItem('appointment_notification_shown')) {
+                    Swal.fire({
+                        title: 'Pending Appointments',
+                        html: `
+                            <div class="text-start">
+                                <p>You have <strong>{{ $totalPendingAction }}</strong> pending appointment(s) assigned to you for approval.</p>
+                                @if(($appointmentsNeedingAction ?? 0) > 0)
+                                    <p>Overall, <strong>{{ $appointmentsNeedingAction }}</strong> appointment(s) require attention today.</p>
+                                @endif
+                            </div>
+                        `,
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'View My Tasks',
+                        cancelButtonText: 'Later',
+                        confirmButtonColor: '#6366f1',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "{{ route('admin.appointments') }}?status=pending&assigned=me";
+                        }
+                    });
+                    sessionStorage.setItem('appointment_notification_shown', 'true');
+                }
+            @endif
+        });
+
         const chartData = @json($chartData);
         const barangayData = @json($patientsByBarangay);
 
@@ -707,30 +743,20 @@
             overviewChart.data.labels = labels; overviewChart.data.datasets[0].data = data; overviewChart.update();
         }
 
-        // 2. Services Chart (Bar) - Vibrant Colors
+        // 2. Services Chart (Bar) - Vibrant Colors & Daily Breakdown
         const serviceCtx = document.getElementById('serviceChart').getContext('2d');
         let serviceChart = new Chart(serviceCtx, {
             type: 'bar',
             data: { 
                 labels: [], 
-                datasets: [{ 
-                    label: 'Demand', 
-                    data: [], 
-                    // Vibrant Palette
-                    backgroundColor: [
-                        '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'
-                    ], 
-                    borderRadius: 6,
-                    borderWidth: 0,
-                    hoverBackgroundColor: [
-                        '#4f46e5', '#059669', '#d97706', '#dc2626', '#7c3aed', '#0891b2', '#db2777'
-                    ]                }] 
+                datasets: [] 
             },
             options: { 
                 responsive: true, 
                 maintainAspectRatio: false, 
                 scales: { 
                     y: { 
+                        stacked: true,
                         beginAtZero: true, 
                         grid: { color: gridColor }, 
                         ticks: { 
@@ -739,27 +765,85 @@
                         } 
                     }, 
                     x: { 
+                        stacked: true,
                         grid: { display: false },
                         ticks: { color: tickColor }
                     } 
                 }, 
                 plugins: { 
-                    legend: { display: false } 
+                    legend: { 
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            boxWidth: 10,
+                            padding: 10,
+                            color: tickColor,
+                            font: { size: 10 }
+                        }
+                    } 
                 } 
             }
         });
-
 
         function updateServiceChart(timeframe, element) {
             document.querySelectorAll('#serviceFilter .btn-filter').forEach(btn => btn.classList.remove('active'));
             element.classList.add('active');
             
             const raw = chartData.services[timeframe];
-            const labels = raw.map(i => i.service_type);
-            const data = raw.map(i => i.count);
+            const colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'];
             
-            serviceChart.data.labels = labels; 
-            serviceChart.data.datasets[0].data = data; 
+            if (timeframe === 'weekly') {
+                const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+                const services = [...new Set(raw.map(item => item.service_type))];
+                
+                serviceChart.data.labels = days;
+                serviceChart.data.datasets = services.map((service, idx) => {
+                    const data = days.map((day, dayIdx) => {
+                        const match = raw.find(item => item.service_type === service && parseInt(item.day) === (dayIdx + 1));
+                        return match ? match.count : 0;
+                    });
+                    return {
+                        label: service,
+                        data: data,
+                        backgroundColor: colors[idx % colors.length],
+                        borderRadius: 4
+                    };
+                });
+            } else if (timeframe === 'yearly') {
+                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                const services = [...new Set(raw.map(item => item.service_type))];
+                
+                serviceChart.data.labels = months;
+                serviceChart.data.datasets = services.map((service, idx) => {
+                    const data = months.map((month, monthIdx) => {
+                        const match = raw.find(item => item.service_type === service && parseInt(item.month) === (monthIdx + 1));
+                        return match ? match.count : 0;
+                    });
+                    return {
+                        label: service,
+                        data: data,
+                        backgroundColor: colors[idx % colors.length],
+                        borderRadius: 4
+                    };
+                });
+            } else {
+                const labels = raw.map(i => i.service_type);
+                const data = raw.map(i => i.count);
+                
+                serviceChart.data.labels = labels; 
+                serviceChart.data.datasets = [{
+                    label: 'Demand',
+                    data: data,
+                    backgroundColor: colors,
+                    borderRadius: 6
+                }];
+            }
+            
+            // Adjust stacking based on timeframe
+            serviceChart.options.scales.x.stacked = (timeframe === 'weekly' || timeframe === 'yearly');
+            serviceChart.options.scales.y.stacked = (timeframe === 'weekly' || timeframe === 'yearly');
+            serviceChart.options.plugins.legend.display = (timeframe === 'weekly' || timeframe === 'yearly');
+            
             serviceChart.update();
         }
 
@@ -935,8 +1019,8 @@
             }
         });
 
-        // Init Charts
+        // Initialize both charts
         updateOverviewChart('weekly', document.querySelectorAll('#overviewFilter button')[0]);
-        updateServiceChart('monthly', document.querySelectorAll('#serviceFilter button')[0]);
+        updateServiceChart('weekly', document.querySelectorAll('#serviceFilter button')[0]);
     </script>
 @endpush

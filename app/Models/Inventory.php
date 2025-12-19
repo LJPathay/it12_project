@@ -36,6 +36,45 @@ class Inventory extends Model
         return $this->hasMany(InventoryTransaction::class);
     }
 
+    /**
+     * Get all batches for this inventory item
+     */
+    public function batches()
+    {
+        return $this->hasMany(InventoryBatch::class);
+    }
+
+    /**
+     * Get active batches ordered by FIFO
+     */
+    public function activeBatches()
+    {
+        return $this->batches()
+                    ->active()
+                    ->fifo();
+    }
+
+    /**
+     * Get total stock from all active batches
+     */
+    public function getTotalBatchStockAttribute()
+    {
+        return $this->batches()
+                    ->where('status', 'active')
+                    ->sum('remaining_quantity');
+    }
+
+    /**
+     * Get batches expiring soon
+     */
+    public function getExpiringSoonBatchesAttribute()
+    {
+        return $this->batches()
+                    ->active()
+                    ->expiringSoon()
+                    ->get();
+    }
+
     public function scopeLowStock($query)
     {
         return $query->whereColumn('current_stock', '<=', 'minimum_stock');

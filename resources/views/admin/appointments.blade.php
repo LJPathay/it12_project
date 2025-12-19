@@ -1482,10 +1482,6 @@
                             <i class="fas fa-calendar-alt me-2" style="width:16px"></i>
                             {{ $appointment->appointment_date->format('M d, Y') }}
                         </div>
-                        <div class="d-flex align-items-center text-muted small">
-                            <i class="fas fa-clock me-2" style="width:16px"></i>
-                            {{ $appointment->appointment_time }}
-                        </div>
                     </div>
                     <div class="d-flex gap-2">
                         <button class="btn btn-outline-info btn-sm flex-grow-1" data-bs-toggle="modal"
@@ -1787,6 +1783,19 @@
                                                 <span class="status-badge status-{{ $appointment->status }}">{{ $statusDisplay }}</span>
                                             </div>
                                         </div>
+                                        <div class="info-item mb-3">
+                                            <label class="info-label">Staff</label>
+                                            <div>
+                                                @if($appointment->approvedByAdmin)
+                                                    <div class="d-flex align-items-center gap-1">
+                                                        <i class="fas fa-user-circle text-muted"></i>
+                                                        <small class="fw-bold">{{ $appointment->approvedByAdmin->name }}</small>
+                                                    </div>
+                                                @else
+                                                    <span class="text-muted small">Not Assigned</span>
+                                                @endif
+                                            </div>
+                                        </div>
                                         @if($appointment->notes)
                                             <div class="info-item">
                                                 <label class="info-label">Notes</label>
@@ -1817,15 +1826,6 @@
                         </div>
                         <div class="modal-footer d-flex justify-content-between align-items-center px-4 py-3">
                             <div class="d-flex gap-2 flex-wrap action-buttons">
-                                <!-- Reschedule -->
-                                @if($appointment->status !== 'cancelled' && $appointment->status !== 'completed')
-                                    <button type="button" class="btn-modern btn-modern-warning reschedule-btn"
-                                        data-appointment-id="{{ $appointment->id }}"
-                                        data-action-url="{{ route('admin.appointment.update', $appointment) }}"
-                                        data-bs-dismiss="modal">
-                                        <i class="fas fa-calendar-alt me-2"></i>Reschedule
-                                    </button>
-                                @endif
 
                                 <!-- Mark Completed -->
                                 @if($appointment->status === 'approved')

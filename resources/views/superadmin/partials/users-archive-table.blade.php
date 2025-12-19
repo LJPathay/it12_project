@@ -27,16 +27,6 @@
             <i class="fas fa-undo text-success"></i>
         </button>
     </form>
-    <form method="POST" action="{{ route('superadmin.user.force-delete', ['type' => $user->role, 'id' => $user->id]) }}" class="d-inline">
-        @csrf
-        @method('DELETE')
-        <button type="button" class="btn btn-sm btn-outline-secondary action-btn"
-            data-confirm data-confirm-title="Delete User"
-            data-confirm-message="Permanently delete this user? This cannot be undone."
-            title="Delete">
-            <i class="fas fa-trash text-danger"></i>
-        </button>
-    </form>
 </div>
                     </td>
                 </tr>

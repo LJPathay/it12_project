@@ -93,9 +93,9 @@
                                                             <i class="fas fa-undo me-1"></i>
                                                             <span>Restore</span>
                                                         </button>
-                                                        <button type="button" class="btn btn-outline-danger btn-sm d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#deletePatientModal{{ $patient->id }}">
-                                                            <i class="fas fa-trash me-1"></i>
-                                                            <span>Delete</span>
+                                                        <button type="button" class="btn btn-outline-success btn-sm d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#restorePatientModal{{ $patient->id }}">
+                                                            <i class="fas fa-undo me-1"></i>
+                                                            <span>Restore</span>
                                                         </button>
                                                     </div>
                                                 </td>
@@ -146,31 +146,6 @@
                     <form method="POST" action="{{ route('admin.patient.restore', $patient->id) }}" class="d-inline">
                         @csrf
                         <button type="submit" class="btn btn-success">Restore</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Patient Modal -->
-    <div class="modal fade" id="deletePatientModal{{ $patient->id }}" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Delete Patient</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="mb-2">Permanently delete this patient? This cannot be undone.</p>
-                    <p class="fw-bold mb-0">{{ $patient->name }}</p>
-                    <small class="text-muted">{{ $patient->email }}</small>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form method="POST" action="{{ route('admin.patient.force-delete', $patient->id) }}" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </div>
             </div>

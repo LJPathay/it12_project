@@ -103,10 +103,104 @@
         </div>
     </div>
 
-    <!-- Charts Row: Trends & Distribution -->
-    <div class="row g-4 mb-4">
-        <!-- Main Trend Chart (Comparison) -->
-        <div class="col-lg-8">
+    <!-- Charts Row: Service Demand & Inventory Side by Side -->
+    <div class="row g-3 mb-3">
+        <!-- Service Demand - Left Side -->
+        <div class="col-lg-6">
+            <div class="chart-section">
+                <div class="section-header">
+                    <div class="header-title">Demand by Service</div>
+                    <small class="text-muted">Service utilization and demand distribution</small>
+                </div>
+                <div style="height: 180px;" class="d-flex justify-content-center align-items-center">
+                    <canvas id="serviceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Composition - Right Side -->
+        <div class="col-lg-6">
+             <div class="chart-section p-0 overflow-hidden">
+                 <div class="p-2 border-bottom">
+                    <div class="header-title" style="font-size: 1rem;">Inventory Composition</div>
+                </div>
+                <div class="table-responsive" style="max-height: 180px; overflow-y: auto;">
+                    <table class="table analytics-table mb-0" style="font-size: 0.85rem;">
+                        <thead style="position: sticky; top: 0; background: white; z-index: 1;">
+                            <tr>
+                                <th class="ps-3 py-2">Category</th>
+                                <th class="text-end pe-3 py-2">Items Traced</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($inventoryByCategory as $cat)
+                                <tr>
+                                    <td class="ps-3 py-2">{{ $cat->category ?: 'Uncategorized' }}</td>
+                                    <td class="text-end pe-3 py-2 fw-bold">{{ $cat->count }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+             </div>
+        </div>
+    </div>
+
+    <!-- Service Efficiency Report - Connected to Demand -->
+    <div class="row g-3 mb-3">
+        <div class="col-12">
+            <div class="chart-section p-0 overflow-hidden">
+                <div class="p-2 border-bottom">
+                    <div class="header-title" style="font-size: 1rem;">Service Efficiency Report</div>
+                    <small class="text-muted" style="font-size: 0.75rem;">Performance metrics for each service type</small>
+                </div>
+                <div class="table-responsive">
+                    <table class="table analytics-table mb-0" style="font-size: 0.85rem;">
+                        <thead>
+                            <tr>
+                                <th class="ps-3 py-2">Service Name</th>
+                                <th class="py-2">Total Demand</th>
+                                <th class="py-2">Completion Rate</th>
+                                <th class="py-2">Cancellation</th>
+                                <th class="text-center pe-3 py-2">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($servicePerformance as $perf)
+                                @php 
+                                    $rate = $perf->total > 0 ? ($perf->completed / $perf->total) * 100 : 0;
+                                    $cancelRate = $perf->total > 0 ? ($perf->cancelled / $perf->total) * 100 : 0;
+                                @endphp
+                                <tr>
+                                    <td class="ps-3 py-2 fw-bold">{{ $perf->service_type }}</td>
+                                    <td class="py-2">{{ $perf->total }}</td>
+                                    <td class="py-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="progress-thin">
+                                                <div class="progress-bar-custom bg-success" style="width: {{ $rate }}%"></div>
+                                            </div>
+                                            <span class="small fw-bold">{{ number_format($rate, 0) }}%</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-muted small py-2">{{ number_format($cancelRate, 1) }}%</td>
+                                    <td class="text-center pe-3 py-2">
+                                        @if($rate >= 80) <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.7rem;">High Perf</span>
+                                        @elseif($rate >= 50) <span class="badge bg-warning bg-opacity-10 text-warning" style="font-size: 0.7rem;">Medium</span>
+                                        @else <span class="badge bg-danger bg-opacity-10 text-danger" style="font-size: 0.7rem;">Needs Attention</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment Performance Trends - Full Width -->
+    <div class="row g-3">
+        <div class="col-12">
             <div class="chart-section">
                 <div class="section-header">
                     <div class="header-title">Appointment Performance Trends</div>
@@ -119,101 +213,10 @@
                         </div>
                     </div>
                 </div>
-                <div style="height: 300px;">
+                <div style="height: 200px;">
                     <canvas id="trendChart"></canvas>
                 </div>
             </div>
-        </div>
-
-        <!-- Service Distribution -->
-        <div class="col-lg-4">
-            <div class="chart-section d-flex flex-column">
-                 <div class="section-header">
-                    <div class="header-title">Demand by Service</div>
-                </div>
-                <div class="flex-grow-1 position-relative d-flex justify-content-center align-items-center">
-                     <canvas id="serviceChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tables Row: Deep Dive -->
-    <div class="row g-4">
-        <!-- Service Efficiency Report -->
-        <div class="col-lg-8">
-            <div class="chart-section p-0 overflow-hidden">
-                <div class="p-4 border-bottom">
-                    <div class="header-title">Service Efficiency Report</div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table analytics-table mb-0">
-                        <thead>
-                            <tr>
-                                <th class="ps-4">Service Name</th>
-                                <th>Total Demand</th>
-                                <th>Completion Rate</th>
-                                <th>Cancellation</th>
-                                <th class="text-center pe-4">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($servicePerformance as $perf)
-                                @php 
-                                    $rate = $perf->total > 0 ? ($perf->completed / $perf->total) * 100 : 0;
-                                    $cancelRate = $perf->total > 0 ? ($perf->cancelled / $perf->total) * 100 : 0;
-                                @endphp
-                                <tr>
-                                    <td class="ps-4 fw-bold">{{ $perf->service_type }}</td>
-                                    <td>{{ $perf->total }}</td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="progress-thin">
-                                                <div class="progress-bar-custom bg-success" style="width: {{ $rate }}%"></div>
-                                            </div>
-                                            <span class="small fw-bold">{{ number_format($rate, 0) }}%</span>
-                                        </div>
-                                    </td>
-                                    <td class="text-muted small">{{ number_format($cancelRate, 1) }}%</td>
-                                    <td class="text-center pe-4">
-                                        @if($rate >= 80) <span class="badge bg-success bg-opacity-10 text-success">High Perf</span>
-                                        @elseif($rate >= 50) <span class="badge bg-warning bg-opacity-10 text-warning">Medium</span>
-                                        @else <span class="badge bg-danger bg-opacity-10 text-danger">Needs Attention</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Inventory Summary -->
-        <div class="col-lg-4">
-             <div class="chart-section p-0 overflow-hidden">
-                 <div class="p-4 border-bottom">
-                    <div class="header-title">Inventory Composition</div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table analytics-table mb-0">
-                        <thead>
-                            <tr>
-                                <th class="ps-4">Category</th>
-                                <th class="text-end pe-4">Items Traced</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($inventoryByCategory as $cat)
-                                <tr>
-                                    <td class="ps-4">{{ $cat->category ?: 'Uncategorized' }}</td>
-                                    <td class="text-end pe-4 fw-bold">{{ $cat->count }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-             </div>
         </div>
     </div>
 

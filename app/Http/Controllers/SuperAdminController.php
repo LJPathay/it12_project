@@ -478,18 +478,6 @@ class SuperAdminController extends Controller
         return redirect()->route('superadmin.users.archive')->with('success', 'User restored successfully.');
     }
 
-    public function forceDeleteUser($type, $id)
-    {
-        $modelClass = $this->getUserModel($type);
-        if (!$modelClass)
-            return redirect()->back()->with('error', 'Invalid user type.');
-
-        $user = $modelClass::onlyTrashed()->findOrFail($id);
-        $user->forceDelete();
-
-        return redirect()->route('superadmin.users.archive')->with('success', 'User permanently deleted.');
-    }
-
     public function systemLogs(Request $request)
     {
         $query = SystemLog::with('user');

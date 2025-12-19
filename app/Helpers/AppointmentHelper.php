@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Models\Appointment;
+use App\Models\Admin;
 use Carbon\Carbon;
 
 class AppointmentHelper
@@ -210,5 +211,19 @@ class AppointmentHelper
         }
 
         return $calendar;
+    }
+
+    /**
+     * Get the admin with the least number of pending appointments.
+     * 
+     * @return Admin|null
+     */
+    public static function getLeastBusyAdmin()
+    {
+        return Admin::withCount(['approvedAppointments' => function($query) {
+                $query->where('status', 'pending');
+            }])
+            ->orderBy('approved_appointments_count', 'asc')
+            ->first();
     }
 }

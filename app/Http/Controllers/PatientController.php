@@ -76,8 +76,11 @@ class PatientController extends Controller
              return redirect()->back()->with('error', 'Selected time slot is full or no longer available for this service type.');
         }
 
+        $assignedAdmin = AppointmentHelper::getLeastBusyAdmin();
+
         $appointment = Appointment::create([
             'patient_id' => Auth::guard('patient')->id(),
+            'approved_by_admin_id' => $assignedAdmin ? $assignedAdmin->id : null,
             'patient_name' => $request->patient_name,
             'patient_phone' => $request->patient_phone,
             'patient_address' => $patient->address ?? 'N/A',
