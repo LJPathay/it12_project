@@ -19,7 +19,8 @@ class InventoryBatch extends Model
         'received_date',
         'supplier',
         'notes',
-        'status',
+        'previous_stock',
+        'total_stock_after',
     ];
 
     protected $casts = [
@@ -66,8 +67,7 @@ class InventoryBatch extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('status', 'active')
-                    ->where('remaining_quantity', '>', 0);
+        return $query->where('remaining_quantity', '>', 0);
     }
 
     /**

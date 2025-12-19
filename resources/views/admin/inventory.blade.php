@@ -497,7 +497,7 @@
                                                 <th>Date</th>
                                                 <th>User</th>
                                                 <th>Qty</th>
-                                                <th>Prev. Expiry</th>
+                                                <th>Stock Change</th>
                                                 <th>Notes</th>
                                             </tr>
                                         </thead>
@@ -511,18 +511,63 @@
                                                         {{ $transaction->transaction_type === 'restock' ? '+' : '-' }}{{ $transaction->quantity }}
                                                     </td>
                                                     <td class="small">
+                                                        <span class="text-muted">{{ $transaction->balance_before ?? 0 }}</span>
+                                                        <i class="fas fa-long-arrow-alt-right mx-1 text-muted"></i>
+                                                        <span class="fw-bold text-primary">{{ $transaction->balance_after ?? $transaction->quantity }}</span>
+                                                    </td>
+                                                    <td class="small text-muted">
+                                                        {{ $transaction->notes ?? '-' }}
                                                         @if($transaction->previous_expiry_date)
-                                                            {{ \Carbon\Carbon::parse($transaction->previous_expiry_date)->format('M d, Y') }}
-                                                        @else
-                                                            <span class="text-muted">-</span>
+                                                            <br><small class="text-secondary">Prev. Expiry: {{ \Carbon\Carbon::parse($transaction->previous_expiry_date)->format('M d, Y') }}</small>
                                                         @endif
                                                     </td>
-                                                    <td class="small text-muted">{{ $transaction->notes ?? '-' }}</td>
                                                 </tr>
                                             @empty
                                                 <tr>
                                                     <td colspan="5" class="text-center text-muted py-3">No transaction history found.
                                                     </td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <style>
+                                    .badge.tiny {
+                                        font-size: 0.65rem;
+                                        padding: 0.2em 0.5em;
+                                    }
+                                </style>
+
+                                <h6 class="fw-bold mb-3 mt-4">Inventory Batches</h6>
+                                <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+                                    <table class="table table-sm table-hover">
+                                        <thead class="table-light sticky-top">
+                                            <tr>
+                                                <th>Batch #</th>
+                                                <th>Received</th>
+                                                <th>Qty</th>
+                                                <th>Stock Context</th>
+                                                <th>Expiry</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse($item->batches->sortByDesc('received_date') as $batch)
+                                                <tr>
+                                                    <td class="small font-monospace">{{ $batch->batch_number }}</td>
+                                                    <td class="small text-nowrap">{{ $batch->received_date->format('M d, Y') }}</td>
+                                                    <td class="fw-bold text-nowrap">{{ $batch->remaining_quantity }}/{{ $batch->quantity }}</td>
+                                                    <td class="small text-nowrap">
+                                                        <span class="text-muted">Prev: {{ $batch->previous_stock ?? 'N/A' }}</span><br>
+                                                        <span class="text-primary fw-bold">Total: {{ $batch->total_stock_after ?? 'N/A' }}</span>
+                                                    </td>
+                                                    <td class="small text-nowrap {{ $batch->isExpired() ? 'text-danger fw-bold' : '' }}">
+                                                        {{ $batch->expiry_date ? $batch->expiry_date->format('M d, Y') : 'N/A' }}
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="5" class="text-center text-muted py-3">No batch information found.</td>
                                                 </tr>
                                             @endforelse
                                         </tbody>

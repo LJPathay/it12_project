@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Inventory;
 use App\Models\InventoryTransaction;
+use App\Models\InventoryBatch;
 use App\Models\Patient;
 use App\Helpers\AppointmentHelper;
 use Illuminate\Http\Request;
@@ -859,7 +860,22 @@ class AdminController extends Controller
             'performable_id' => Auth::guard('admin')->id(),
             'transaction_type' => 'restock',
             'quantity' => $request->current_stock,
+            'balance_before' => 0,
+            'balance_after' => $request->current_stock,
             'notes' => 'Initial stock'
+        ]);
+
+        // Create initial batch
+        InventoryBatch::create([
+            'inventory_id' => $inventory->id,
+            'batch_number' => 'BATCH-' . strtoupper(Str::random(8)),
+            'quantity' => $request->current_stock,
+            'remaining_quantity' => $request->current_stock,
+            'previous_stock' => 0,
+            'total_stock_after' => $request->current_stock,
+            'expiry_date' => $request->expiry_date,
+            'received_date' => now(),
+            'supplier' => $request->supplier,
         ]);
 
         return redirect()->back()->with('success', 'Inventory item added successfully.');
@@ -890,6 +906,8 @@ class AdminController extends Controller
                 'performable_id' => Auth::guard('admin')->id(),
                 'transaction_type' => $difference > 0 ? 'restock' : 'usage',
                 'quantity' => abs($difference),
+                'balance_before' => $oldStock,
+                'balance_after' => $newStock,
                 'notes' => 'Stock adjustment'
             ]);
         }
@@ -905,7 +923,9 @@ class AdminController extends Controller
             'expiry_date' => 'nullable|date|after:today',
         ]);
 
+        $previousStock = $inventory->current_stock;
         $inventory->current_stock += (int) $request->quantity;
+        $newStock = $inventory->current_stock;
         
         $previousExpiry = $inventory->expiry_date;
         
@@ -921,7 +941,22 @@ class AdminController extends Controller
             'performable_id' => Auth::guard('admin')->id(),
             'transaction_type' => 'restock',
             'quantity' => (int) $request->quantity,
+            'balance_before' => $previousStock,
+            'balance_after' => $newStock,
             'previous_expiry_date' => $previousExpiry,
+            'notes' => $request->notes,
+        ]);
+
+        // Create new batch
+        InventoryBatch::create([
+            'inventory_id' => $inventory->id,
+            'batch_number' => 'BATCH-' . strtoupper(Str::random(8)),
+            'quantity' => (int) $request->quantity,
+            'remaining_quantity' => (int) $request->quantity,
+            'previous_stock' => $previousStock,
+            'total_stock_after' => $newStock,
+            'expiry_date' => $request->expiry_date ?: $previousExpiry,
+            'received_date' => now(),
             'notes' => $request->notes,
         ]);
 
@@ -936,9 +971,29 @@ class AdminController extends Controller
         ]);
 
         $quantity = (int) $request->quantity;
+        $previousStock = $inventory->current_stock;
         $inventory->current_stock = max(0, $inventory->current_stock - $quantity);
+        $newStock = $inventory->current_stock;
+        
         $inventory->save();
         $inventory->updateStatus();
+
+        // FIFO Deduction from batches
+        $remainingToDeduct = $quantity;
+        $batches = $inventory->batches()
+            ->where('remaining_quantity', '>', 0)
+            ->orderBy('expiry_date', 'asc')
+            ->orderBy('received_date', 'asc')
+            ->get();
+
+        foreach ($batches as $batch) {
+            if ($remainingToDeduct <= 0) break;
+
+            $deductFromBatch = min($remainingToDeduct, $batch->remaining_quantity);
+            $batch->remaining_quantity -= $deductFromBatch;
+            $batch->save();
+            $remainingToDeduct -= $deductFromBatch;
+        }
 
         InventoryTransaction::create([
             'inventory_id' => $inventory->id,
@@ -946,6 +1001,8 @@ class AdminController extends Controller
             'performable_id' => Auth::guard('admin')->id(),
             'transaction_type' => 'usage',
             'quantity' => $quantity,
+            'balance_before' => $previousStock,
+            'balance_after' => $newStock,
             'notes' => $request->notes,
         ]);
 

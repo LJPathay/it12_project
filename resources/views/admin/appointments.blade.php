@@ -2630,8 +2630,8 @@
 
             // Handle Reschedule Button Clicks
             document.addEventListener('click', function (e) {
-                if (e.target && e.target.classList.contains('reschedule-btn')) {
-                    const btn = e.target;
+                const btn = e.target.closest('.reschedule-btn');
+                if (btn) {
                     const appointmentId = btn.dataset.appointmentId;
                     const actionUrl = btn.dataset.actionUrl;
 
@@ -2641,7 +2641,7 @@
                     }
 
                     // Open the modal
-                    const modal = new bootstrap.Modal(document.getElementById('rescheduleAppointmentModal'));
+                    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('rescheduleAppointmentModal'));
                     modal.show();
                 }
             });
