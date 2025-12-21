@@ -11,16 +11,24 @@ use Illuminate\Validation\Rule;
 
 // Homepage
 Route::get('/', function () {
-    if (\App\Helpers\AuthHelper::check()) {
-        $role = \App\Helpers\AuthHelper::user()->role;
-        if ($role === 'super_admin') {
+    if (Auth::guard('super_admin')->check()) {
+        $user = Auth::guard('super_admin')->user();
+        if (method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin()) {
             return redirect()->route('superadmin.dashboard');
-        } elseif ($role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        } else {
-            return redirect()->route('patient.dashboard');
         }
     }
+
+    if (Auth::guard('admin')->check()) {
+        $user = Auth::guard('admin')->user();
+        if (method_exists($user, 'isAdmin') && $user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+    }
+
+    if (Auth::guard('patient')->check()) {
+        return redirect()->route('patient.dashboard');
+    }
+
     return view('home');
 })->name('home');
 
