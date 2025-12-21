@@ -17,6 +17,9 @@ ENV AUTORUN_LARAVEL_CONFIG_CACHE=true
 ENV AUTORUN_LARAVEL_ROUTE_CACHE=true
 ENV AUTORUN_LARAVEL_VIEW_CACHE=true
 
+# Disable internal database wait (Render handles health checks)
+ENV DB_WAIT_FOR_TIMEOUT=0
+
 # Laravel config
 ENV APP_ENV=production
 ENV APP_DEBUG=true
