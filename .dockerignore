@@ -15,5 +15,3 @@ Dockerfile
 .dockerignore
 nginx.conf
 nginx-site.conf
-conf/
-scripts/

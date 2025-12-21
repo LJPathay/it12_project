@@ -28,7 +28,7 @@ RUN install-php-extensions gd bcmath zip intl
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 # Ensure scripts and storage are correctly set
-RUN chmod -R +x /var/www/html/scripts \
+RUN if [ -d "/var/www/html/scripts" ]; then chmod -R +x /var/www/html/scripts; fi \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache \
     && chown -R www-data:www-data /var/www/html
 
