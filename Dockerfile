@@ -1,33 +1,34 @@
-# Use an image that supports PHP 8.3
-FROM richarvey/nginx-php-fpm:latest
+# Use PHP 8.3 with Nginx from ServerSideUp
+FROM serversideup/php:8.3-fpm-nginx
+
+# Switch to root to install dependencies and set permissions
+USER root
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy application files
-COPY . .
+# Copy application files (with correct ownership)
+COPY --chown=www-data:www-data . .
 
 # Image config
-ENV SKIP_COMPOSER 1
-ENV WEBROOT /var/www/html/public
-ENV PHP_ERRORS_STDERR 1
-ENV RUN_SCRIPTS 1
-ENV REAL_IP_HEADER 1
+ENV AUTORUN_ENABLED=true
+ENV AUTORUN_LARAVEL_MIGRATION=true
+ENV AUTORUN_LARAVEL_CONFIG_CACHE=true
+ENV AUTORUN_LARAVEL_ROUTE_CACHE=true
+ENV AUTORUN_LARAVEL_VIEW_CACHE=true
 
 # Laravel config
-ENV APP_ENV production
-ENV APP_DEBUG true
-ENV LOG_CHANNEL stderr
-
-# Allow composer to run as root
-ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV APP_ENV=production
+ENV APP_DEBUG=true
+ENV LOG_CHANNEL=stderr
 
 # Install dependencies during build
-# We add --ignore-platform-req=php if we want to force it, but better to match the image
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
-# Ensure scripts are executable
-RUN chmod -R +x /var/www/html/scripts
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Ensure scripts and storage are correctly set
+RUN chmod -R +x /var/www/html/scripts \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html
 
-CMD ["/start.sh"]
+# Switch back to www-data for security
+USER www-data
