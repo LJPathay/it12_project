@@ -33,6 +33,7 @@ class Appointment extends Model
         'appointment_date' => 'date',
         'appointment_time' => 'datetime:H:i',
         'approved_at' => 'datetime',
+        'is_walk_in' => 'boolean',
     ];
 
     public function services()
