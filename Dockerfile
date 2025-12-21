@@ -1,4 +1,5 @@
-FROM richarvey/nginx-php-fpm:3.1.6
+# Use an image that supports PHP 8.3
+FROM richarvey/nginx-php-fpm:latest
 
 # Set working directory
 WORKDIR /var/www/html
@@ -22,6 +23,7 @@ ENV LOG_CHANNEL stderr
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # Install dependencies during build
+# We add --ignore-platform-req=php if we want to force it, but better to match the image
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 # Ensure scripts are executable
