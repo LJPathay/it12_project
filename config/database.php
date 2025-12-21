@@ -121,11 +121,12 @@ return [
             'database' => env('DB_DATABASE_ONLINE', 'postgres'),
             'username' => env('DB_USERNAME_ONLINE', 'postgres'),
             'password' => env('DB_PASSWORD_ONLINE', 'Lebron123!'),
-            'charset' => env('DB_CHARSET', 'utf8'),
+            'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => 'require',
+            'connect_timeout' => 10,
             'options' => [
                 \PDO::ATTR_EMULATE_PREPARES => true,
             ],
