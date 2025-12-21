@@ -35,5 +35,5 @@ RUN if [ -d "/var/www/html/scripts" ]; then chmod -R +x /var/www/html/scripts; f
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache \
     && chown -R www-data:www-data /var/www/html
 
-# Switch back to www-data for security
-USER www-data
+# Note: Do not use USER www-data here. The serversideup image starts as root 
+# to run the S6 overlay init system and then drops privileges automatically.
