@@ -23,6 +23,8 @@ ENV APP_DEBUG=true
 ENV LOG_CHANNEL=stderr
 
 # Install dependencies during build
+RUN install-php-extensions gd bcmath zip intl
+
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 # Ensure scripts and storage are correctly set
