@@ -3,6 +3,7 @@ services:
     name: malasakit-clinic
     runtime: docker
     plan: free
+    port: 8080
     envVars:
       - key: APP_NAME
         value: "Malasakit Clinic"

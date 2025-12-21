@@ -10,7 +10,7 @@ fi
 
 # Run migrations
 echo "Running migrations..."
-# php artisan migrate --force
+php artisan migrate --force
 
 # Cache configuration
 echo "Caching configuration..."
