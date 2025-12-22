@@ -31,7 +31,7 @@ class PatientController extends Controller
     public function bookAppointment()
     {
         $user = Auth::guard('patient')->user();
-        $services = Service::where('active', true)->get();
+        $services = Service::whereRaw('active = TRUE')->get();
         return view('patient.book-appointment', compact('user', 'services'));
     }
 

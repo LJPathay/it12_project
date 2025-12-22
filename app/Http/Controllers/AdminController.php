@@ -38,23 +38,23 @@ class AdminController extends Controller
         // Today metrics (Personalized)
         $todayAppointments = Appointment::whereDate('appointment_date', today()->toDateString())
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->count();
         $todayCompleted = Appointment::whereDate('appointment_date', today()->toDateString())
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->where('status', 'completed')
             ->count();
         $todayPending = Appointment::whereDate('appointment_date', today()->toDateString())
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->whereIn('status', ['pending', 'approved', 'waiting', 'in_progress', 'rescheduled'])
             ->count();
 
         // Get today's appointment list (Personalized)
         $todaysAppointments = Appointment::whereDate('appointment_date', today()->toDateString())
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->whereIn('status', ['approved', 'waiting', 'completed']) // Exclude pending
             ->orderBy('appointment_time')
             ->get();
@@ -73,12 +73,12 @@ class AdminController extends Controller
         $monthlyServices = Appointment::whereMonth('created_at', $now->month)
             ->whereYear('created_at', $now->year)
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->count();
         $lastMonthServices = Appointment::whereMonth('created_at', $lastMonth->month)
             ->whereYear('created_at', $lastMonth->year)
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->count();
         $servicesChange = $lastMonthServices > 0
             ? round((($monthlyServices - $lastMonthServices) / $lastMonthServices) * 100)
@@ -99,7 +99,7 @@ class AdminController extends Controller
 
         $recentAppointments = Appointment::with('user')
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->latest()
             ->limit(5)
             ->get();
@@ -121,7 +121,7 @@ class AdminController extends Controller
         $weeklyOverview = Appointment::selectRaw("$dayOfWeekSql as label_key, count(*) as count")
             ->whereBetween('appointment_date', [now()->startOfWeek(), now()->endOfWeek()])
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->groupBy('label_key')
             ->pluck('count', 'label_key')
             ->toArray();
@@ -132,7 +132,7 @@ class AdminController extends Controller
             ->whereMonth('appointment_date', now()->month)
             ->whereYear('appointment_date', now()->year)
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->groupBy('label_key')
             ->pluck('count', 'label_key')
             ->toArray();
@@ -142,7 +142,7 @@ class AdminController extends Controller
         $yearlyOverview = Appointment::selectRaw("$monthSql as label_key, count(*) as count")
             ->whereYear('appointment_date', now()->year)
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->groupBy('label_key')
             ->pluck('count', 'label_key')
             ->toArray();
@@ -151,7 +151,7 @@ class AdminController extends Controller
         $weeklyServices = Appointment::selectRaw("$dayOfWeekSql as day, service_type, count(*) as count")
             ->whereBetween('appointment_date', [now()->startOfWeek(), now()->endOfWeek()])
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->groupBy('day', 'service_type')
             ->get();
 
@@ -160,7 +160,7 @@ class AdminController extends Controller
             ->whereMonth('appointment_date', now()->month)
             ->whereYear('appointment_date', now()->year)
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->groupBy('service_type')
             ->get();
 
@@ -168,7 +168,7 @@ class AdminController extends Controller
         $yearlyServices = Appointment::selectRaw("$monthSql as month, service_type, count(*) as count")
             ->whereYear('appointment_date', now()->year)
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->groupBy('month', 'service_type')
             ->get();
 
@@ -422,7 +422,7 @@ class AdminController extends Controller
         $adminId = Auth::guard('admin')->id();
         $query = Appointment::with(['patient', 'approvedByAdmin'])
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false);
+            ->whereRaw('is_walk_in = FALSE');
 
         $sort = $request->get('sort');
         $direction = strtolower($request->get('direction', 'desc')) === 'asc' ? 'asc' : 'desc';
@@ -476,7 +476,7 @@ class AdminController extends Controller
             'Family Planning',
         ];
         if (class_exists(Service::class) && Schema::hasTable('services')) {
-            $dbServices = Service::where('active', true)->pluck('name')->toArray();
+            $dbServices = Service::whereRaw('active = TRUE')->pluck('name')->toArray();
             if (!empty($dbServices)) {
                 $services = array_values(array_unique(array_merge($services, $dbServices)));
             }
@@ -493,16 +493,16 @@ class AdminController extends Controller
         // Additional Stats for KPI Cards (Personalized)
         $pendingCount = Appointment::where('status', 'pending')
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->count();
         $todayCount = Appointment::whereDate('appointment_date', today()->toDateString())
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->count();
         $completedToday = Appointment::whereDate('appointment_date', today()->toDateString())
             ->where('status', 'completed')
             ->where('approved_by_admin_id', $adminId)
-            ->where('is_walk_in', false)
+            ->whereRaw('is_walk_in = FALSE')
             ->count();
 
         return view('admin.appointments', compact(
@@ -1031,7 +1031,7 @@ class AdminController extends Controller
     public function walkIn(Request $request)
     {
         $query = Appointment::with(['patient', 'approvedByAdmin'])
-            ->where('is_walk_in', true);
+            ->whereRaw('is_walk_in = TRUE');
 
         // Search functionality
         $searchInput = $request->input('search', $request->input('q'));
@@ -1081,28 +1081,28 @@ class AdminController extends Controller
             'Family Planning',
         ];
         if (class_exists(Service::class) && Schema::hasTable('services')) {
-            $dbServices = Service::where('active', true)->pluck('name')->toArray();
+            $dbServices = Service::whereRaw('active = TRUE')->pluck('name')->toArray();
             if (!empty($dbServices)) {
                 $services = array_values(array_unique(array_merge($services, $dbServices)));
             }
         }
 
         // Stats for today
-        $todayWalkIns = Appointment::where('is_walk_in', true)
+        $todayWalkIns = Appointment::whereRaw('is_walk_in = TRUE')
             ->whereDate('appointment_date', today()->toDateString())
             ->count();
 
-        $todayCompleted = Appointment::where('is_walk_in', true)
+        $todayCompleted = Appointment::whereRaw('is_walk_in = TRUE')
             ->whereDate('appointment_date', today()->toDateString())
             ->where('status', 'completed')
             ->count();
 
-        $todayWaiting = Appointment::where('is_walk_in', true)
+        $todayWaiting = Appointment::whereRaw('is_walk_in = TRUE')
             ->whereDate('appointment_date', today()->toDateString())
             ->where('status', 'pending')
             ->count();
 
-        $todayInProgress = Appointment::where('is_walk_in', true)
+        $todayInProgress = Appointment::whereRaw('is_walk_in = TRUE')
             ->whereDate('appointment_date', today()->toDateString())
             ->where('status', 'in_progress')
             ->count();
@@ -1586,7 +1586,7 @@ class AdminController extends Controller
 
         // Get walk-in patients (appointments marked as walk-in)
         $walkIns = Appointment::with('patient')
-            ->where('is_walk_in', true)
+            ->whereRaw('is_walk_in = TRUE')
             ->whereBetween('appointment_date', [
                 $request->start_date,
                 $request->end_date,
@@ -1623,7 +1623,7 @@ class AdminController extends Controller
 
         // Get walk-in patients (appointments marked as walk-in)
         $walkIns = Appointment::with('patient')
-            ->where('is_walk_in', true)
+            ->whereRaw('is_walk_in = TRUE')
             ->whereBetween('appointment_date', [
                 $request->start_date,
                 $request->end_date,
