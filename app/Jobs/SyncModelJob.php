@@ -52,12 +52,32 @@ class SyncModelJob implements ShouldQueue
      */
     public function handle(): void
     {
+        // Circuit Breaker: Check if the online database is marked as unavailable
+        if (\Illuminate\Support\Facades\Cache::has('online_db_unavailable')) {
+            Log::info("SyncModelJob: Online database is marked as unavailable. Deferring sync for {$this->modelClass} ID: {$this->modelId}");
+            // Re-queue with a delay (e.g., 5 minutes) to try again later
+            $this->release(300); 
+            return;
+        }
+
         try {
             // Target the online connection
             $targetDb = DB::connection('pgsql_online');
 
             // Verify connection before attempting operations
-            $targetDb->getPdo();
+            // We use a try-catch specifically for the connection to set the circuit breaker
+            try {
+                $targetDb->getPdo();
+            } catch (\Exception $e) {
+                Log::warning("SyncModelJob: Connection to online database failed. Activating circuit breaker. Error: " . $e->getMessage());
+                
+                // Set circuit breaker for 5 minutes
+                \Illuminate\Support\Facades\Cache::put('online_db_unavailable', true, now()->addMinutes(5));
+                
+                // Re-queue the job
+                $this->release(300);
+                return;
+            }
 
             if ($this->action === 'created' || $this->action === 'updated') {
                 // Use updateOrInsert to handle both creation and updates, preserving the ID
@@ -84,6 +104,8 @@ class SyncModelJob implements ShouldQueue
 
             if ($isConnectionError) {
                 Log::warning("Offline/Connection Error syncing {$this->modelClass} ID: {$this->modelId}. Retrying... Error: " . $e->getMessage());
+                // Also set circuit breaker if we hit it here
+                \Illuminate\Support\Facades\Cache::put('online_db_unavailable', true, now()->addMinutes(5));
             } else {
                 Log::error("Failed to sync {$this->modelClass} ID: {$this->modelId}. Error: " . $e->getMessage());
             }

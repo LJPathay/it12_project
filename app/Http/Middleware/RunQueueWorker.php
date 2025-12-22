@@ -30,6 +30,13 @@ class RunQueueWorker
             return;
         }
 
+        // Circuit Breaker: If the online database is known to be down, don't run the worker
+        // to avoid hanging the PHP process during the terminate phase.
+        if (\Illuminate\Support\Facades\Cache::has('online_db_unavailable')) {
+            // Log it once in a while or just return. Returning is safer for performance.
+            return;
+        }
+
         try {
             // Run the queue worker to process pending jobs (stop when empty to avoid hanging)
             // --stop-when-empty: Process all jobs on the queue and exit
