@@ -61,6 +61,12 @@ class SyncModelJob implements ShouldQueue
         }
 
         try {
+            // Prevent self-syncing: if the default connection is already the target connection
+            if (config('database.default') === 'pgsql_online') {
+                Log::debug("SyncModelJob: Skipping sync as the default connection is already 'pgsql_online'.");
+                return;
+            }
+
             // Target the online connection
             $targetDb = DB::connection('pgsql_online');
 
