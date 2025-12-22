@@ -32,7 +32,7 @@ class AppointmentHelper
         $slotLimit = $limitConfig['slot'];
 
         // Check if date is blocked (Doctor Unavailable)
-        $isBlocked = Appointment::whereDate('appointment_date', $date)
+        $isBlocked = Appointment::whereDate('appointment_date', $selectedDate->toDateString())
             ->where('status', 'blocked')
             ->exists();
             
@@ -54,7 +54,7 @@ class AppointmentHelper
         }
 
         // Get daily total for this service
-        $dailyTotalQuery = Appointment::whereDate('appointment_date', $date)
+        $dailyTotalQuery = Appointment::whereDate('appointment_date', $selectedDate->toDateString())
             ->whereIn('status', ['approved', 'completed', 'waiting', 'pending']);
             
         if ($serviceType) {
@@ -64,7 +64,7 @@ class AppointmentHelper
         $isDailyFull = $currentDailyTotal >= $dailyLimit;
 
         // Get slot counts for this service
-        $countsQuery = Appointment::whereDate('appointment_date', $date)
+        $countsQuery = Appointment::whereDate('appointment_date', $selectedDate->toDateString())
             ->whereIn('status', ['approved', 'completed', 'waiting', 'pending']);
             
         if ($serviceType) {

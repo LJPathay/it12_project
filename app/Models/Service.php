@@ -16,6 +16,10 @@ class Service extends Model
         'active',
     ];
 
+    protected $casts = [
+        'active' => 'boolean',
+    ];
+
     public function appointments()
     {
         return $this->belongsToMany(Appointment::class, 'appointment_service');

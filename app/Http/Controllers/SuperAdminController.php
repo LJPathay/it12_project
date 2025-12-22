@@ -506,11 +506,11 @@ class SuperAdminController extends Controller
 
         // Filter by date range
         if ($request->has('date_from') && $request->date_from) {
-            $query->whereDate('created_at', '>=', $request->date_from);
+            $query->whereDate('created_at', '>=', \Carbon\Carbon::parse($request->date_from)->toDateString());
         }
 
         if ($request->has('date_to') && $request->date_to) {
-            $query->whereDate('created_at', '<=', $request->date_to);
+            $query->whereDate('created_at', '<=', \Carbon\Carbon::parse($request->date_to)->toDateString());
         }
 
         $logs = $query->latest()->get();

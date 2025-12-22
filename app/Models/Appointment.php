@@ -107,6 +107,6 @@ class Appointment extends Model
 
     public function scopeToday($query)
     {
-        return $query->whereDate('appointment_date', today());
+        return $query->whereDate('appointment_date', today()->toDateString());
     }
 }

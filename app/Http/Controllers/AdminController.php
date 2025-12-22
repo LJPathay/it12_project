@@ -36,23 +36,23 @@ class AdminController extends Controller
             ->count();
 
         // Today metrics (Personalized)
-        $todayAppointments = Appointment::whereDate('appointment_date', today())
+        $todayAppointments = Appointment::whereDate('appointment_date', today()->toDateString())
             ->where('approved_by_admin_id', $adminId)
             ->where('is_walk_in', false)
             ->count();
-        $todayCompleted = Appointment::whereDate('appointment_date', today())
+        $todayCompleted = Appointment::whereDate('appointment_date', today()->toDateString())
             ->where('approved_by_admin_id', $adminId)
             ->where('is_walk_in', false)
             ->where('status', 'completed')
             ->count();
-        $todayPending = Appointment::whereDate('appointment_date', today())
+        $todayPending = Appointment::whereDate('appointment_date', today()->toDateString())
             ->where('approved_by_admin_id', $adminId)
             ->where('is_walk_in', false)
             ->whereIn('status', ['pending', 'approved', 'waiting', 'in_progress', 'rescheduled'])
             ->count();
 
         // Get today's appointment list (Personalized)
-        $todaysAppointments = Appointment::whereDate('appointment_date', today())
+        $todaysAppointments = Appointment::whereDate('appointment_date', today()->toDateString())
             ->where('approved_by_admin_id', $adminId)
             ->where('is_walk_in', false)
             ->whereIn('status', ['approved', 'waiting', 'completed']) // Exclude pending
@@ -194,7 +194,7 @@ class AdminController extends Controller
         $totalSystemPending = Appointment::where('status', 'pending')->count();
 
         $appointmentsNeedingAction = Appointment::whereIn('status', ['pending', 'approved'])
-            ->whereDate('appointment_date', '<=', today())
+            ->whereDate('appointment_date', '<=', today()->toDateString())
             ->where('approved_by_admin_id', $adminId)
             ->count();
 
@@ -483,8 +483,8 @@ class AdminController extends Controller
         }
 
         // Simple availability metrics for today (all services)
-        $todaySlots = 9; // per service per day
-        $todayBooked = Appointment::whereDate('appointment_date', today())
+        $todaySlots = AppointmentHelper::getAvailableSlots(today()->toDateString(), 'General Checkup')['slots']; // Default total
+        $todayBooked = Appointment::whereDate('appointment_date', today()->toDateString())
             ->where('approved_by_admin_id', $adminId)
             ->where('status', '!=', 'cancelled')
             ->count();
@@ -495,11 +495,11 @@ class AdminController extends Controller
             ->where('approved_by_admin_id', $adminId)
             ->where('is_walk_in', false)
             ->count();
-        $todayCount = Appointment::whereDate('appointment_date', today())
+        $todayCount = Appointment::whereDate('appointment_date', today()->toDateString())
             ->where('approved_by_admin_id', $adminId)
             ->where('is_walk_in', false)
             ->count();
-        $completedToday = Appointment::whereDate('appointment_date', today())
+        $completedToday = Appointment::whereDate('appointment_date', today()->toDateString())
             ->where('status', 'completed')
             ->where('approved_by_admin_id', $adminId)
             ->where('is_walk_in', false)
@@ -1089,21 +1089,21 @@ class AdminController extends Controller
 
         // Stats for today
         $todayWalkIns = Appointment::where('is_walk_in', true)
-            ->whereDate('appointment_date', today())
+            ->whereDate('appointment_date', today()->toDateString())
             ->count();
 
         $todayCompleted = Appointment::where('is_walk_in', true)
-            ->whereDate('appointment_date', today())
+            ->whereDate('appointment_date', today()->toDateString())
             ->where('status', 'completed')
             ->count();
 
         $todayWaiting = Appointment::where('is_walk_in', true)
-            ->whereDate('appointment_date', today())
+            ->whereDate('appointment_date', today()->toDateString())
             ->where('status', 'pending')
             ->count();
 
         $todayInProgress = Appointment::where('is_walk_in', true)
-            ->whereDate('appointment_date', today())
+            ->whereDate('appointment_date', today()->toDateString())
             ->where('status', 'in_progress')
             ->count();
 

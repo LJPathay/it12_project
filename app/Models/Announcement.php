@@ -14,4 +14,8 @@ class Announcement extends Model
         'end_date',
         'is_active'
     ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 }

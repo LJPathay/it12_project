@@ -55,6 +55,17 @@ class PatientController extends Controller
 
         $service = Service::find($request->service_id);
         
+        // Check if the patient already has an appointment for the same service on the same day
+        $pastAppointments = Appointment::where('patient_id', $patient->id)
+            ->where('status', '!=', 'cancelled')
+            ->whereDate('appointment_date', $request->appointment_date)
+            ->where('service_type', $service->name)
+            ->count();
+
+        if ($pastAppointments > 0) {
+            return redirect()->back()->with('error', 'You already have an active appointment for this service on the selected date. Please choose another date or service.');
+        }
+
         // Check if the time slot is already approved (prevent overbooking)
         $approvedCount = Appointment::where('appointment_date', $request->appointment_date)
             ->where('appointment_time', $request->appointment_time)
