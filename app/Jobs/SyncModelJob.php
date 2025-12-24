@@ -86,11 +86,20 @@ class SyncModelJob implements ShouldQueue
             }
 
             if ($this->action === 'created' || $this->action === 'updated') {
+                // Manually cast boolean values to strings 'true'/'false' for PostgreSQL 
+                // when EMULATE_PREPARES is enabled (common in Supabase/Render)
+                $data = array_map(function ($value) {
+                    if (is_bool($value)) {
+                        return $value ? 'true' : 'false';
+                    }
+                    return $value;
+                }, $this->data);
+
                 // Use updateOrInsert to handle both creation and updates, preserving the ID
                 // We use the primary key (usually 'id') to match
                 $targetDb->table($this->table)->updateOrInsert(
                     ['id' => $this->modelId],
-                    $this->data
+                    $data
                 );
             } elseif ($this->action === 'deleted') {
                 $targetDb->table($this->table)->where('id', $this->modelId)->delete();

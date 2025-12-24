@@ -483,7 +483,7 @@ class AdminController extends Controller
         }
 
         // Simple availability metrics for today (all services)
-        $todaySlots = AppointmentHelper::getAvailableSlots(today()->toDateString(), 'General Checkup')['slots']; // Default total
+        $todaySlots = count(AppointmentHelper::getAvailableSlots(today()->toDateString(), 'General Checkup')); // Default total
         $todayBooked = Appointment::whereDate('appointment_date', today()->toDateString())
             ->where('approved_by_admin_id', $adminId)
             ->where('status', '!=', 'cancelled')

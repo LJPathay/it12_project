@@ -19,10 +19,39 @@ class ServiceSeeder extends Seeder
         ];
 
         foreach ($map as $day => [$name, $desc]) {
-            Service::updateOrCreate(
-                ['day_of_week' => $day],
-                ['name' => $name, 'description' => $desc, 'active' => true]
-            );
+            $connection = config('database.default');
+            $driver = config("database.connections.{$connection}.driver");
+
+            if ($driver === 'pgsql') {
+                $exists = \Illuminate\Support\Facades\DB::table('services')
+                    ->where('day_of_week', $day)
+                    ->exists();
+
+                if ($exists) {
+                    \Illuminate\Support\Facades\DB::table('services')
+                        ->where('day_of_week', $day)
+                        ->update([
+                            'name' => $name,
+                            'description' => $desc,
+                            'active' => \Illuminate\Support\Facades\DB::raw('true'),
+                            'updated_at' => now(),
+                        ]);
+                } else {
+                    \Illuminate\Support\Facades\DB::table('services')->insert([
+                        'day_of_week' => $day,
+                        'name' => $name,
+                        'description' => $desc,
+                        'active' => \Illuminate\Support\Facades\DB::raw('true'),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            } else {
+                Service::updateOrCreate(
+                    ['day_of_week' => $day],
+                    ['name' => $name, 'description' => $desc, 'active' => true]
+                );
+            }
         }
     }
 }
