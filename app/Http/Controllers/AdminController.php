@@ -535,16 +535,7 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Invalid service selected.');
         }
 
-        // Enforce 9 slots per day per service (excluding cancelled)
-        $existingCount = Appointment::whereDate('appointment_date', $request->appointment_date)
-            ->where('service_type', $request->service_type)
-            ->where('status', '!=', 'cancelled')
-            ->count();
-        if ($existingCount >= 9) {
-            return redirect()->back()->with('error', 'No slots available for this service on the selected date.');
-        }
-
-        // If user_id is provided, link to registered patient; otherwise link to admin
+        // Create appointment (Pending - doesn't consume slot yet as per requested logic)
         $userId = $request->filled('user_id') ? $request->user_id : Auth::guard('admin')->id();
         $isWalkIn = !$request->filled('user_id'); // Only walk-in if no user_id provided
 
@@ -662,20 +653,33 @@ class AdminController extends Controller
         ];
         if ($request->status === 'rescheduled') {
             if ($request->filled('new_date')) {
-                // Check for availability on the new date (Limit: 9 per service per day)
-                $existingCount = Appointment::whereDate('appointment_date', $request->new_date)
-                    ->where('service_type', $appointment->service_type)
-                    ->where('status', '!=', 'cancelled')
-                    ->count();
+                // Rescheduling - check for availability on the new date
+                $slots = AppointmentHelper::getAvailableSlots($request->new_date, $appointment->service_type);
+                $normalizedTime = substr($request->new_time ?: $appointment->appointment_time, 0, 5);
+                $selectedSlot = collect($slots)->firstWhere('time', $normalizedTime);
 
-                if ($existingCount >= 9) {
-                    return redirect()->back()->with('error', 'Cannot reschedule: The selected date is fully booked for ' . $appointment->service_type . '.');
+                // For rescheduling, we usually check if the slot is "available" (considering time and daily limit)
+                if (!$selectedSlot || !$selectedSlot['available']) {
+                    return redirect()->back()->with('error', 'Cannot reschedule: The selected time slot is full or unavailable.');
                 }
 
                 $update['appointment_date'] = $request->new_date;
             }
             if ($request->filled('new_time')) {
                 $update['appointment_time'] = $request->new_time;
+            }
+        }
+
+        // Check capacity if approving
+        if ($oldStatus !== 'approved' && $request->status === 'approved') {
+            $slots = AppointmentHelper::getAvailableSlots($appointment->appointment_date, $appointment->service_type);
+            $normalizedTime = substr($appointment->appointment_time, 0, 5);
+            $selectedSlot = collect($slots)->firstWhere('time', $normalizedTime);
+
+            // Important: We check occupied_count < capacity to ignore 'is_past' check.
+            // If the admin wants to approve a past or current slot, they should be able to as long as there is room.
+            if (!$selectedSlot || ($selectedSlot['occupied_count'] >= $selectedSlot['capacity'])) {
+                return redirect()->back()->with('error', 'Cannot approve: This time slot is already full (Limit: ' . ($selectedSlot['capacity'] ?? 'N/A') . ').');
             }
         }
 

@@ -55,7 +55,7 @@ class AppointmentHelper
 
         // Get daily total for this service
         $dailyTotalQuery = Appointment::whereDate('appointment_date', $selectedDate->toDateString())
-            ->whereIn('status', ['approved', 'completed', 'waiting', 'pending']);
+            ->whereIn('status', ['approved', 'completed', 'waiting', 'in_progress', 'rescheduled', 'no_show']);
             
         if ($serviceType) {
             $dailyTotalQuery->where('service_type', $serviceType);
@@ -65,7 +65,7 @@ class AppointmentHelper
 
         // Get slot counts for this service
         $countsQuery = Appointment::whereDate('appointment_date', $selectedDate->toDateString())
-            ->whereIn('status', ['approved', 'completed', 'waiting', 'pending']);
+            ->whereIn('status', ['approved', 'completed', 'waiting', 'in_progress', 'rescheduled', 'no_show']);
             
         if ($serviceType) {
             $countsQuery->where('service_type', $serviceType);
@@ -151,7 +151,7 @@ class AppointmentHelper
 
         // Optimize: Use DB aggregation to count slots per day
         $dailyCounts = Appointment::whereBetween('appointment_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-            ->whereIn('status', ['approved', 'completed', 'waiting', 'pending'])
+            ->whereIn('status', ['approved', 'completed', 'waiting', 'in_progress', 'rescheduled', 'no_show'])
             ->selectRaw('appointment_date, count(*) as total')
             ->groupBy('appointment_date')
             ->pluck('total', 'appointment_date');
