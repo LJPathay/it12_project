@@ -557,7 +557,7 @@ class AdminController extends Controller
             'appointment_time' => $request->appointment_time,
             'service_type' => $request->service_type,
             'notes' => $request->notes,
-            'is_walk_in' => $isWalkIn,
+            'is_walk_in' => $isWalkIn ? \Illuminate\Support\Facades\DB::raw('true') : \Illuminate\Support\Facades\DB::raw('false'),
             'approved_by_admin_id' => ($assignedAdmin = AppointmentHelper::getLeastBusyAdmin()) ? $assignedAdmin->id : null,
             'status' => 'pending'
         ]);
@@ -1138,7 +1138,7 @@ class AdminController extends Controller
                 'appointment_time' => now()->toTimeString(),
                 'service_type' => $request->service_type,
                 'notes' => $request->notes,
-                'is_walk_in' => true,
+                'is_walk_in' => \Illuminate\Support\Facades\DB::raw('true'),
                 'status' => 'pending',
                 'priority' => $request->input('priority', 'regular'), // Default to regular if not specified
                 'approved_by_admin_id' => ($assignedAdmin = AppointmentHelper::getLeastBusyAdmin()) ? $assignedAdmin->id : Auth::guard('admin')->id(),
@@ -1522,7 +1522,7 @@ class AdminController extends Controller
         Service::create([
             'name' => $request->name,
             'description' => $request->description,
-            'active' => $request->has('active')
+            'active' => $request->has('active') ? \Illuminate\Support\Facades\DB::raw('true') : \Illuminate\Support\Facades\DB::raw('false')
         ]);
 
         return redirect()->route('admin.services.index')->with('success', 'Service created successfully.');
@@ -1544,7 +1544,7 @@ class AdminController extends Controller
         $service->update([
             'name' => $request->name,
             'description' => $request->description,
-            'active' => $request->has('active')
+            'active' => $request->has('active') ? \Illuminate\Support\Facades\DB::raw('true') : \Illuminate\Support\Facades\DB::raw('false')
         ]);
 
         return redirect()->route('admin.services.index')->with('success', 'Service updated successfully.');

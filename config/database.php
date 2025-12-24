@@ -96,6 +96,9 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => 'prefer',
+            'options' => [
+                \PDO::ATTR_EMULATE_PREPARES => false,
+            ],
         ],
 
         'pgsql_local' => [
@@ -128,7 +131,7 @@ return [
             'sslmode' => 'require',
             'connect_timeout' => 10,
             'options' => [
-                \PDO::ATTR_EMULATE_PREPARES => true,
+                \PDO::ATTR_EMULATE_PREPARES => false,
             ],
         ],
 
