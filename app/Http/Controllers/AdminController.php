@@ -601,7 +601,7 @@ class AdminController extends Controller
             'service_type' => 'Blocked',
             'notes' => $request->reason ?? 'Doctor Unavailable',
             'status' => 'blocked',
-            'is_walk_in' => false
+            'is_walk_in' => \Illuminate\Support\Facades\DB::raw('false')
         ]);
 
         // 2. Handle existing appointments (Emergency Reschedule)
@@ -1204,7 +1204,7 @@ class AdminController extends Controller
             'appointment_time' => now()->toTimeString(),
             'service_type' => $request->service_type,
             'notes' => $request->notes,
-            'is_walk_in' => true,
+            'is_walk_in' => \Illuminate\Support\Facades\DB::raw('true'),
             'status' => 'pending', // Default status for new appointments
             'priority' => $request->input('priority', 'regular'),
             'approved_by_admin_id' => ($assignedAdmin = AppointmentHelper::getLeastBusyAdmin()) ? $assignedAdmin->id : Auth::guard('admin')->id(),
