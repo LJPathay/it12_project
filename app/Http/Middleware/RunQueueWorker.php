@@ -32,8 +32,8 @@ class RunQueueWorker
 
         // Circuit Breaker: If the online database is known to be down, don't run the worker
         // to avoid hanging the PHP process during the terminate phase.
-        if (\Illuminate\Support\Facades\Cache::has('online_db_unavailable')) {
-            // Log it once in a while or just return. Returning is safer for performance.
+        // We use the 'file' store specifically to avoid hitting the database (the thing that might be down).
+        if (\Illuminate\Support\Facades\Cache::store('file')->has('online_db_unavailable')) {
             return;
         }
 
